@@ -1,7 +1,11 @@
-export default function DashboardPage() {
+import { getUserRole } from './mock-api';
+
+export default async function DashboardPage() {
+  const role = await getUserRole();
   return (
     <main>
       <h1>Dashboard Page</h1>
+      <p>You are logged in as {role}</p>
     </main>
   );
 }

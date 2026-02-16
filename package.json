@@ -12,11 +12,11 @@
     "prepare": "husky"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.95.3",
     "next": "^15.0.0",
     "node": "^25.6.1",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0",
-    "supabase": "^2.76.8"
+    "react-dom": "^19.0.0"
   },
   "devDependencies": {
     "@commitlint/cli": "^19.6.0",
@@ -35,9 +35,7 @@
     "tailwindcss": "^3.4.16",
     "typescript": "^5.7.2"
   },
-  
   "engines": {
     "node": "20.x"
   }
-
 }

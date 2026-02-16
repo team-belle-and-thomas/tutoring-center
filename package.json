@@ -10,14 +10,14 @@
     "prettier:check": "prettier --check .",
     "prettier:fix": "prettier --write .",
     "prepare": "node -e \"process.exit(process.env.CI ? 0 : 1)\" || husky"
-
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.95.3",
     "next": "^15.0.0",
     "node": "^25.6.1",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "typescript": "^5.9.3"
   },
   "devDependencies": {
     "@commitlint/cli": "^19.6.0",
@@ -32,8 +32,7 @@
     "eslint-config-prettier": "^9.1.0",
     "postcss": "^8.4.49",
     "prettier": "^3.4.2",
-    "tailwindcss": "^3.4.16",
-    "typescript": "^5.7.2"
+    "tailwindcss": "^3.4.16"
   },
   "engines": {
     "node": "20.x"

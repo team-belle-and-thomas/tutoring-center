@@ -8,8 +8,9 @@
     "start": "next start",
     "lint": "next lint",
     "prettier:check": "prettier --check .",
-    "prettier:fix": "prettier --write ."
-    
+    "prettier:fix": "prettier --write .",
+    "prepare": "node -e \"process.exit(process.env.CI ? 0 : 1)\" || husky"
+
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.95.3",

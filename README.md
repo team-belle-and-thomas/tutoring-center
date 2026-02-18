@@ -89,3 +89,4 @@ npm run prepare
 - `npm run start` — production server
 - `npm run lint` — ESLint
 - `npm run prettier:check` / `npm run prettier:fix` — Prettier
+- `npm run test` - runs tests

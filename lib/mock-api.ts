@@ -1,6 +1,6 @@
 import { cookies } from 'next/headers';
 import { notFound, redirect } from 'next/navigation';
-import { parents } from '@/lib/mock-data';
+import { allParents, allStudents } from '@/lib/mock-data';
 
 export type UserRole = 'admin' | 'parent';
 
@@ -12,7 +12,20 @@ export async function getParents() {
   if (role !== 'admin') {
     notFound();
   }
-  return parents;
+  return allParents;
+}
+
+export async function getParent(id: number) {
+  const role = await getUserRole();
+  if (role !== 'admin') {
+    notFound();
+  }
+  const parent = allParents.find(parent => parent.user_id === id);
+  if (!parent) {
+    notFound();
+  }
+  const students = allStudents.filter(student => student.parent_id === parent.id);
+  return { ...parent, students };
 }
 
 function isUserRole(value: unknown) {

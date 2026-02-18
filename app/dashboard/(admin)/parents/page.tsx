@@ -1,12 +1,12 @@
-import { getUserRole } from '@/lib/mock-api';
+import { getParents } from '@/lib/mock-api';
+import { columns } from './columns';
+import { DataTable } from './data-table';
 
 export default async function ParentsPage() {
-  const role = await getUserRole();
-  // based on user role we will either filter or display all parents
+  const data = await getParents();
   return (
-    <main>
-      <h1>Parents Page</h1>
-      <p>You are logged in as {role}</p>
-    </main>
+    <div className='p-8'>
+      <DataTable columns={columns} data={data} />
+    </div>
   );
 }

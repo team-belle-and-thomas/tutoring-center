@@ -1,4 +1,4 @@
-import { getUserRole } from '../../mock-api';
+import { getUserRole } from '../../../mock-api';
 
 export default async function SingleParentPage({ params }: { params: Promise<{ id: string }> }) {
   const role = await getUserRole();

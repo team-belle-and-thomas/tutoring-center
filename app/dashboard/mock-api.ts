@@ -14,8 +14,7 @@ export async function getUserRole() {
   const cookieStore = await cookies();
   const role = cookieStore.get(USER_ROLE_COOKIE_NAME)?.value;
   if (!isUserRole(role)) {
-    cookieStore.delete(USER_ROLE_COOKIE_NAME);
-    redirect('/login');
+    redirect('/login?redirect=/auth/logout');
   }
 
   return role;

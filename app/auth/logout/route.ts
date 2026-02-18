@@ -1,6 +1,6 @@
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
-import { USER_ROLE_COOKIE_NAME } from '@/app/dashboard/mock-api';
+import { USER_ROLE_COOKIE_NAME } from '@/lib/mock-api';
 
 export async function GET(request: Request) {
   const url = new URL(request.url);

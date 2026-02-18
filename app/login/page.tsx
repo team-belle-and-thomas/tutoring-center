@@ -1,4 +1,4 @@
-import { login } from '../dashboard/mock-api';
+import { login } from '@/lib/mock-api';
 
 export default function LoginPage() {
   return (

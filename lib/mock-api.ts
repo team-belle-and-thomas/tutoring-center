@@ -1,10 +1,19 @@
 import { cookies } from 'next/headers';
-import { redirect } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
+import { parents } from '@/lib/mock-data';
 
 export type UserRole = 'admin' | 'parent';
 
 export const USER_ROLE_COOKIE_NAME = 'user-role';
 const USER_ROLE_COOKIE_MAX_AGE = 60 * 60 * 1; // 1 hour
+
+export async function getParents() {
+  const role = await getUserRole();
+  if (role !== 'admin') {
+    notFound();
+  }
+  return parents;
+}
 
 function isUserRole(value: unknown) {
   return value === 'admin' || value === 'parent';

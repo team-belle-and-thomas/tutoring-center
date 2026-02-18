@@ -1,7 +1,9 @@
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 
-const USER_ROLE_COOKIE_NAME = 'user-role';
+export type UserRole = 'admin' | 'parent';
+
+export const USER_ROLE_COOKIE_NAME = 'user-role';
 const USER_ROLE_COOKIE_MAX_AGE = 60 * 60 * 1; // 1 hour
 
 function isUserRole(value: unknown) {

@@ -1,5 +1,6 @@
 import type { Route } from 'next';
-import type { UserRole } from './mock-api';
+
+export type UserRole = 'admin' | 'parent';
 
 export interface SidebarLink {
   id: number;

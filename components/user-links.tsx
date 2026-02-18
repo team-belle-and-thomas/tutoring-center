@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { SidebarLink } from '@/app/dashboard/links';
+import type { SidebarLink } from '@/lib/dashboard-links';
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem } from './ui/sidebar';
 
 export function UserLinks({ links }: { links: SidebarLink[] }) {

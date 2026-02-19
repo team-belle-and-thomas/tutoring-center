@@ -25,12 +25,6 @@ export async function placeSession(
   const duration = (end_time.getTime() - start_time.getTime()) / (1000 * 60 * 60); // Get the duration in hours
   const slot_units = Math.ceil(duration / 0.5); // Assuming each slot is 30 minutes
 
-  // Check if the parent has enough credits and deduct them before placing the session reservation
-  const { data: balanceData, error: balanceError } = await deductCredits(parent_id, slot_units);
-  if (balanceError) {
-    return { data: null, error: balanceError };
-  }
-
   const { data, error } = await client
     .from('sessions')
     .insert({
@@ -45,5 +39,15 @@ export async function placeSession(
     })
     .select('*')
     .single();
-  return { data, error };
+
+  if (error) {
+    return { data: null, error };
+  }
+
+  // Check if the parent has enough credits and deduct them after placing the session
+  const { data: balanceData, error: balanceError } = await deductCredits(parent_id, slot_units);
+  if (balanceError) {
+    return { data: null, error: balanceError };
+  }
+  return { data, error: null };
 }

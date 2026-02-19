@@ -16,7 +16,9 @@ export default function Home() {
       </div>
       <div className={`${dm_sans.className} hero w-full md:w-3/4 lg:w-1/2 flex flex-col gap-y-8 `}>
         <div className='border-3 bg-primary border-primary w-1/10' />
-        <h1 className='text-4xl md:text-6xl lg:text-[5em] leading-tight font-extrabold wrap-break-word'>
+        <h1
+          className={`${playfair.className} text-4xl md:text-6xl lg:text-[5em] leading-tight font-extrabold wrap-break-word`}
+        >
           Where Learning Becomes <span className='text-primary'>Art</span>
         </h1>
         <p className='line-clamp-6 md:line-clamp-5 text-xl md:text-2xl md:w-3/4 text-gray-800'>

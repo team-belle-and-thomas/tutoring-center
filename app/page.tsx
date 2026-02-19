@@ -3,8 +3,8 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { ArrowRight } from 'lucide-react';
 
-const playfair = Playfair_Display({ style: 'italic' });
-const dm_sans = DM_Sans();
+const playfair = Playfair_Display({ style: 'italic', subsets: ['latin'] });
+const dm_sans = DM_Sans({ subsets: ['latin'] });
 
 export default function Home() {
   return (

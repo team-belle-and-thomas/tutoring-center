@@ -18,13 +18,8 @@ export const columns: ColumnDef<Tutor>[] = [
     cell: ({ row }) => <div className='w-fit'>{row.getValue('email')}</div>,
   },
   {
-    accessorKey: 'education',
-    header: 'Education',
-    cell: ({ row }) => (
-      <div className='w-40' title={row.getValue('education')}>
-        {row.getValue('education')}
-      </div>
-    ),
+    accessorKey: 'phone',
+    header: () => <div className='text-left'>Phone</div>,
   },
   {
     accessorKey: 'yoe',
@@ -39,10 +34,9 @@ export const columns: ColumnDef<Tutor>[] = [
   {
     id: 'actions',
     header: () => <div>Actions</div>,
-    cell: ({}) => (
+    cell: ({ row }) => (
       <Button asChild variant='default' size='sm'>
-        {/* TODO: add the correct route once it is made */}
-        <Link href='/'>View</Link>
+        <Link href={`/dashboard/tutors/${row.original.user_id}`}>View</Link>
       </Button>
     ),
   },

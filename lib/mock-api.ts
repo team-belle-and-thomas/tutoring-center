@@ -76,6 +76,11 @@ export async function getTutors() {
   return allTutors;
 }
 
+export async function getTutor(id: number) {
+  const tutor = allTutors.find(tutor => tutor.user_id == id);
+  return tutor;
+}
+
 function isUserRole(value: unknown) {
   return value === 'admin' || value === 'parent';
 }

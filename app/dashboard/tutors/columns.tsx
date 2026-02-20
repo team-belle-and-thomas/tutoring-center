@@ -19,17 +19,21 @@ export const columns: ColumnDef<Tutor>[] = [
   },
   {
     accessorKey: 'phone',
-    header: () => <div className='text-left'>Phone</div>,
+    header: () => <div>Phone</div>,
   },
   {
     accessorKey: 'yoe',
-    header: () => <div className='text-left'>Years of Exp.</div>,
+    header: () => <div>Years of Exp.</div>,
     cell: ({ row }) => <div>{row.getValue('yoe')}</div>,
   },
   {
     accessorKey: 'verified',
     header: () => <div>Verified</div>,
-    cell: ({ row }) => <div>{row.getValue('verified') ? <CircleCheck color='green' /> : <CircleX color='red' />}</div>,
+    cell: ({ row }) => (
+      <div>
+        {row.getValue('verified') ? <CircleCheck className='text-green-600' /> : <CircleX className='text-red-600' />}
+      </div>
+    ),
   },
   {
     id: 'actions',

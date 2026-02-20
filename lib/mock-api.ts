@@ -78,6 +78,11 @@ export async function getTutors() {
 
 export async function getTutor(id: number) {
   const tutor = allTutors.find(tutor => tutor.user_id == id);
+
+  if (!tutor) {
+    notFound();
+  }
+
   return tutor;
 }
 

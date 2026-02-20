@@ -34,7 +34,7 @@ export const columns: ColumnDef<Tutor>[] = [
   {
     accessorKey: 'verified',
     header: () => <div>Verified</div>,
-    cell: ({ row }) => <div>{row.getValue('verified') ? <CircleCheck /> : <CircleX />}</div>,
+    cell: ({ row }) => <div>{row.getValue('verified') ? <CircleCheck color='green' /> : <CircleX color='red' />}</div>,
   },
   {
     id: 'actions',

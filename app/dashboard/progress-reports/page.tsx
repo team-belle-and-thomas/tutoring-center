@@ -1,4 +1,4 @@
-import { getUserRole } from '../mock-api';
+import { getUserRole } from '@/lib/mock-api';
 
 export default async function ProgressReportsPage() {
   const role = await getUserRole();

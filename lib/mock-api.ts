@@ -1,10 +1,32 @@
 import { cookies } from 'next/headers';
-import { redirect } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
+import { allParents, allStudents } from '@/lib/mock-data';
 
 export type UserRole = 'admin' | 'parent';
 
 export const USER_ROLE_COOKIE_NAME = 'user-role';
 const USER_ROLE_COOKIE_MAX_AGE = 60 * 60 * 1; // 1 hour
+
+export async function getParents() {
+  const role = await getUserRole();
+  if (role !== 'admin') {
+    notFound();
+  }
+  return allParents;
+}
+
+export async function getParent(id: number) {
+  const role = await getUserRole();
+  if (role !== 'admin') {
+    notFound();
+  }
+  const parent = allParents.find(parent => parent.user_id === id);
+  if (!parent) {
+    notFound();
+  }
+  const students = allStudents.filter(student => student.parent_id === parent.id);
+  return { ...parent, students };
+}
 
 function isUserRole(value: unknown) {
   return value === 'admin' || value === 'parent';
@@ -14,8 +36,7 @@ export async function getUserRole() {
   const cookieStore = await cookies();
   const role = cookieStore.get(USER_ROLE_COOKIE_NAME)?.value;
   if (!isUserRole(role)) {
-    cookieStore.delete(USER_ROLE_COOKIE_NAME);
-    redirect('/login');
+    redirect('/login?redirect=/auth/logout');
   }
 
   return role;

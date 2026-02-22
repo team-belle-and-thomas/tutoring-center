@@ -71,7 +71,7 @@ export async function getReport(id: number) {
 export async function getTutors() {
   const role = await getUserRole();
   if (role !== 'admin') {
-    notFound();
+    redirect('/dashboard')
   }
   return allTutors;
 }

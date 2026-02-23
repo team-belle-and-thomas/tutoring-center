@@ -850,3 +850,137 @@ export const allReports: DetailedProgressReport[] = [
     ends_at: '2026-02-28T16:00:00Z',
   },
 ];
+
+export interface Metric {
+  id: number;
+  student_id: number;
+  session_id: number;
+  confidence_score: number;
+  attendance_score: number;
+  homework_completed: boolean;
+  tutor_comments: string;
+  recorded_at: string;
+}
+
+export const allMetrics: Metric[] = [
+  {
+    id: 1,
+    student_id: 1,
+    session_id: 2001,
+    confidence_score: 8,
+    attendance_score: 10,
+    homework_completed: true,
+    tutor_comments: 'High confidence in factoring today.',
+    recorded_at: '2026-02-23T15:05:00Z',
+  },
+  {
+    id: 2,
+    student_id: 2,
+    session_id: 2002,
+    confidence_score: 9,
+    attendance_score: 10,
+    homework_completed: true,
+    tutor_comments: 'Excellent focus on periodic table elements.',
+    recorded_at: '2026-02-23T17:35:00Z',
+  },
+  {
+    id: 3,
+    student_id: 3,
+    session_id: 2003,
+    confidence_score: 6,
+    attendance_score: 9,
+    homework_completed: false,
+    tutor_comments: 'A bit hesitant with the thesis statement.',
+    recorded_at: '2026-02-24T11:05:00Z',
+  },
+  {
+    id: 4,
+    student_id: 4,
+    session_id: 2004,
+    confidence_score: 9,
+    attendance_score: 10,
+    homework_completed: true,
+    tutor_comments: 'Navigating JS variables very effectively.',
+    recorded_at: '2026-02-24T14:35:00Z',
+  },
+  {
+    id: 5,
+    student_id: 5,
+    session_id: 2005,
+    confidence_score: 5,
+    attendance_score: 10,
+    homework_completed: false,
+    tutor_comments: 'Struggled with volume formulas today.',
+    recorded_at: '2026-02-25T16:05:00Z',
+  },
+  {
+    id: 6,
+    student_id: 6,
+    session_id: 2006,
+    confidence_score: 10,
+    attendance_score: 10,
+    homework_completed: true,
+    tutor_comments: 'High engagement and perfect recall in Biology.',
+    recorded_at: '2026-02-25T18:05:00Z',
+  },
+  {
+    id: 7,
+    student_id: 7,
+    session_id: 2007,
+    confidence_score: 7,
+    attendance_score: 10,
+    homework_completed: true,
+    tutor_comments: 'Improving with organic chemistry nomenclature.',
+    recorded_at: '2026-02-26T12:35:00Z',
+  },
+  {
+    id: 8,
+    student_id: 8,
+    session_id: 2008,
+    confidence_score: 6,
+    attendance_score: 8,
+    homework_completed: false,
+    tutor_comments: 'Needs more practice with past tense conjugations.',
+    recorded_at: '2026-02-26T15:05:00Z',
+  },
+  {
+    id: 9,
+    student_id: 9,
+    session_id: 2009,
+    confidence_score: 8,
+    attendance_score: 10,
+    homework_completed: true,
+    tutor_comments: 'Great speed with substitution methods.',
+    recorded_at: '2026-02-27T10:05:00Z',
+  },
+  {
+    id: 10,
+    student_id: 10,
+    session_id: 2010,
+    confidence_score: 9,
+    attendance_score: 10,
+    homework_completed: true,
+    tutor_comments: 'Strong understanding of supply/demand shifts.',
+    recorded_at: '2026-02-27T14:05:00Z',
+  },
+  {
+    id: 11,
+    student_id: 11,
+    session_id: 2011,
+    confidence_score: 7,
+    attendance_score: 9,
+    homework_completed: true,
+    tutor_comments: 'Syntax is improving, logic is sound.',
+    recorded_at: '2026-02-28T11:35:00Z',
+  },
+  {
+    id: 12,
+    student_id: 12,
+    session_id: 2012,
+    confidence_score: 8,
+    attendance_score: 10,
+    homework_completed: true,
+    tutor_comments: 'Applied physics concepts effectively today.',
+    recorded_at: '2026-02-28T16:05:00',
+  },
+];

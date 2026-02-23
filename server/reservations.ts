@@ -47,6 +47,8 @@ export async function placeSession(
   // Check if the parent has enough credits and deduct them after placing the session
   const { data: balanceData, error: balanceError } = await deductCredits(parent_id, slot_units);
   if (balanceError) {
+    // If there's an error deducting credits, delete the session that was just created
+    await client.from('sessions').delete().eq('id', data.id);
     return { data: null, error: balanceError };
   }
   return { data, error: null };

@@ -52,3 +52,26 @@ export const SessionListQuerySchema = z.object({
 
 export type SessionCreateInput = z.infer<typeof SessionCreateSchema>;
 export type SessionListQuery = z.infer<typeof SessionListQuerySchema>;
+
+// Output validation for sessions + joins
+const EmbeddedRecordSchema = z.record(z.unknown());
+const EmbeddedOneSchema = z.union([EmbeddedRecordSchema, z.array(EmbeddedRecordSchema), z.null()]).optional();
+
+export const SessionWithJoinsSchema = z.object({
+  id: z.number(),
+  tutor_id: z.number(),
+  student_id: z.number(),
+  subject_id: z.number(),
+  parent_id: z.number(),
+  slot_units: z.number(),
+  scheduled_at: z.string(),
+  ends_at: z.string(),
+  status: StatusSchema,
+
+  student: EmbeddedOneSchema,
+  tutor: EmbeddedOneSchema,
+  parent: EmbeddedOneSchema,
+});
+
+export const SessionWithJoinsListSchema = z.array(SessionWithJoinsSchema);
+export type SessionWithJoins = z.infer<typeof SessionWithJoinsSchema>;

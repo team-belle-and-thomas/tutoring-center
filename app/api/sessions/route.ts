@@ -1,10 +1,26 @@
+// app/api/sessions/route.ts
 import { NextResponse } from 'next/server';
 import { createSupabaseServiceClient } from '@/lib/supabase/serverClient';
-import type { SessionRow } from '@/lib/supabase/types';
-import { CANCELED_SESSION_STATUS, DEFAULT_SESSION_STATUS, SESSION_SELECT_FIELDS } from '@/lib/supabase/types';
-import { SessionCreateSchema, SessionListQuerySchema } from '@/lib/validators/sessions';
+import {
+  CANCELED_SESSION_STATUS,
+  DEFAULT_SESSION_STATUS,
+  SESSION_SELECT_FIELDS,
+  SESSION_SELECT_WITH_JOINS,
+} from '@/lib/supabase/types';
+import { pickFirstEmbedded } from '@/lib/utils/normalize';
+import {
+  SessionCreateSchema,
+  SessionListQuerySchema,
+  SessionWithJoinsListSchema,
+  type SessionWithJoins,
+} from '@/lib/validators/sessions';
 
-// part of this makes me wish I was not using supabase api, but hey it is working
+type SessionApiRow = Omit<SessionWithJoins, 'student' | 'tutor' | 'parent'> & {
+  student: Record<string, unknown> | null;
+  tutor: Record<string, unknown> | null;
+  parent: Record<string, unknown> | null;
+};
+
 export async function GET(req: Request) {
   const url = new URL(req.url);
 
@@ -34,7 +50,7 @@ export async function GET(req: Request) {
   const supabase = createSupabaseServiceClient();
   const nowIso = new Date().toISOString();
 
-  // using count first to avoid 416 errors on out of range pages
+  // Count first to avoid 416 errors for out-of-range pages
   let countQuery = supabase.from('sessions').select('id', { count: 'exact', head: true });
 
   if (parent_id) countQuery = countQuery.eq('parent_id', parent_id);
@@ -52,9 +68,6 @@ export async function GET(req: Request) {
   const total = count ?? 0;
   const totalPages = total === 0 ? 0 : Math.ceil(total / page_size);
 
-  // Out-of-range page should be "empty data", not a 416
-  // kept facing that before I added it
-  // lets the person calling the api realize that there's no data after the initial page instead of returning generic "error"
   if (total === 0 || from >= total) {
     return NextResponse.json({
       data: [],
@@ -68,7 +81,7 @@ export async function GET(req: Request) {
     });
   }
 
-  let q = supabase.from('sessions').select(SESSION_SELECT_FIELDS).range(from, to);
+  let q = supabase.from('sessions').select(SESSION_SELECT_WITH_JOINS).range(from, to);
 
   if (parent_id) q = q.eq('parent_id', parent_id);
   if (tutor_id) q = q.eq('tutor_id', tutor_id);
@@ -85,8 +98,27 @@ export async function GET(req: Request) {
   const { data, error } = await q;
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 
+  // Validate the joined shape so we don't guess at nested fields
+  const joinedParsed = SessionWithJoinsListSchema.safeParse(data ?? []);
+  if (!joinedParsed.success) {
+    return NextResponse.json({ error: 'Unexpected sessions join shape returned from Supabase' }, { status: 500 });
+  }
+
+  const normalized: SessionApiRow[] = joinedParsed.data.map((row: SessionWithJoins) => {
+    const student = pickFirstEmbedded(row.student) as Record<string, unknown> | null;
+    const tutor = pickFirstEmbedded(row.tutor) as Record<string, unknown> | null;
+    const parent = pickFirstEmbedded(row.parent) as Record<string, unknown> | null;
+
+    return {
+      ...row,
+      student,
+      tutor,
+      parent,
+    };
+  });
+
   return NextResponse.json({
-    data: (data ?? []) as SessionRow[],
+    data: normalized,
     page,
     page_size,
     total,
@@ -109,8 +141,8 @@ export async function POST(req: Request) {
 
   const s = parsed.data;
 
-  // basic overlap protection: existing.start < new.end AND existing.end > new.start
-  // Ignores canceled sessions, if we want that I can remove the neq filter.
+  // Overlap protection: existing.start < new.end AND existing.end > new.start
+  // Ignore canceled sessions
   const { data: overlaps, error: overlapErr } = await supabase
     .from('sessions')
     .select('id')
@@ -120,9 +152,8 @@ export async function POST(req: Request) {
     .gt('ends_at', s.scheduled_at)
     .limit(1);
 
-  if (overlapErr) {
-    return NextResponse.json({ error: overlapErr.message }, { status: 500 });
-  }
+  if (overlapErr) return NextResponse.json({ error: overlapErr.message }, { status: 500 });
+
   if (overlaps && overlaps.length > 0) {
     return NextResponse.json({ error: 'Tutor already has a session in that time range' }, { status: 409 });
   }
@@ -144,5 +175,5 @@ export async function POST(req: Request) {
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 
-  return NextResponse.json({ data: data as SessionRow }, { status: 201 });
+  return NextResponse.json({ data }, { status: 201 });
 }

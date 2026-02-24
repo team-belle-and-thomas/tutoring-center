@@ -133,54 +133,6 @@ export type Database = {
           },
         ];
       };
-      metrics: {
-        Row: {
-          attendance_score: number | null;
-          confidence_score: number | null;
-          homework_completed: boolean;
-          id: number;
-          recorded_at: string;
-          session_id: number | null;
-          student_id: number | null;
-          tutor_comments: string | null;
-        };
-        Insert: {
-          attendance_score?: number | null;
-          confidence_score?: number | null;
-          homework_completed?: boolean;
-          id?: number;
-          recorded_at?: string;
-          session_id?: number | null;
-          student_id?: number | null;
-          tutor_comments?: string | null;
-        };
-        Update: {
-          attendance_score?: number | null;
-          confidence_score?: number | null;
-          homework_completed?: boolean;
-          id?: number;
-          recorded_at?: string;
-          session_id?: number | null;
-          student_id?: number | null;
-          tutor_comments?: string | null;
-        };
-        Relationships: [
-          {
-            foreignKeyName: 'metrics_session_id_fkey';
-            columns: ['session_id'];
-            isOneToOne: false;
-            referencedRelation: 'sessions';
-            referencedColumns: ['id'];
-          },
-          {
-            foreignKeyName: 'metrics_student_id_fkey';
-            columns: ['student_id'];
-            isOneToOne: false;
-            referencedRelation: 'students';
-            referencedColumns: ['id'];
-          },
-        ];
-      };
       parents: {
         Row: {
           billing_address: string | null;
@@ -210,7 +162,70 @@ export type Database = {
           },
         ];
       };
-      progress_reports: {
+      roles: {
+        Row: {
+          id: number;
+          name: string;
+        };
+        Insert: {
+          id?: number;
+          name: string;
+        };
+        Update: {
+          id?: number;
+          name?: string;
+        };
+        Relationships: [];
+      };
+      session_metrics: {
+        Row: {
+          confidence_score: number | null;
+          homework_completed: boolean;
+          id: number;
+          recorded_at: string;
+          session_id: number | null;
+          session_performance: number | null;
+          student_id: number | null;
+          tutor_comments: string | null;
+        };
+        Insert: {
+          confidence_score?: number | null;
+          homework_completed?: boolean;
+          id?: number;
+          recorded_at?: string;
+          session_id?: number | null;
+          session_performance?: number | null;
+          student_id?: number | null;
+          tutor_comments?: string | null;
+        };
+        Update: {
+          confidence_score?: number | null;
+          homework_completed?: boolean;
+          id?: number;
+          recorded_at?: string;
+          session_id?: number | null;
+          session_performance?: number | null;
+          student_id?: number | null;
+          tutor_comments?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'metrics_session_id_fkey';
+            columns: ['session_id'];
+            isOneToOne: false;
+            referencedRelation: 'sessions';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'metrics_student_id_fkey';
+            columns: ['student_id'];
+            isOneToOne: false;
+            referencedRelation: 'students';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      session_progress: {
         Row: {
           created_at: string;
           homework_assigned: string | null;
@@ -270,21 +285,6 @@ export type Database = {
             referencedColumns: ['id'];
           },
         ];
-      };
-      roles: {
-        Row: {
-          id: number;
-          name: string;
-        };
-        Insert: {
-          id?: number;
-          name: string;
-        };
-        Update: {
-          id?: number;
-          name?: string;
-        };
-        Relationships: [];
       };
       sessions: {
         Row: {

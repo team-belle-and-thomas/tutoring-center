@@ -1,4 +1,3 @@
-import client from './client';
 import { getBalance } from './credits';
 import { placeSession } from './reservations';
 

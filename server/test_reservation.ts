@@ -23,7 +23,7 @@ async function testPlaceSession() {
     return;
   }
 
-  const { amount_available, amount_pending } = balance.data[0];
+  const { amount_available } = balance.data[0];
 
   const { data, error } = await placeSession(parent_id, student_id, tutor_id, subject_id, scheduled_at, ends_at);
 

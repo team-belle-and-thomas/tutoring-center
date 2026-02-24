@@ -1,6 +1,6 @@
 import { cookies } from 'next/headers';
 import { notFound, redirect, unauthorized } from 'next/navigation';
-import { allParents, allReports, allStudents } from '@/lib/mock-data';
+import { allParents, allReports, allStudents, allTutors } from '@/lib/mock-data';
 
 export type UserRole = 'admin' | 'parent';
 
@@ -67,6 +67,13 @@ export async function getReport(id: number) {
     return unauthorized();
   }
   return report;
+}
+export async function getTutors() {
+  const role = await getUserRole();
+  if (role !== 'admin') {
+    notFound();
+  }
+  return allTutors;
 }
 
 function isUserRole(value: unknown) {

@@ -622,7 +622,96 @@ export const allStudents: Student[] = [
     grade: '3rd',
   },
 ];
+export type SessionStatus = 'Scheduled' | 'Completed' | 'Cancelled' | 'In-Progress';
 
+export interface Session {
+  id: number;
+  tutor_id: number;
+  student_id: number;
+  subject_id: number;
+  parent_id: number;
+  slot_units: number;
+  scheduled_at: string;
+  ends_at: string;
+  status: SessionStatus;
+  // Joined fields for display
+  student_name: string;
+  tutor_name: string;
+  subject_name: string;
+}
+
+export const allSessions: Session[] = [
+  {
+    id: 1,
+    tutor_id: 1,
+    student_id: 1,
+    subject_id: 10,
+    parent_id: 1, // Maria Santos
+    slot_units: 2,
+    scheduled_at: '2026-02-23T14:00:00Z',
+    ends_at: '2026-02-23T15:00:00Z',
+    status: 'Completed',
+    student_name: 'Sofia Santos',
+    tutor_name: 'Sarah Jennings',
+    subject_name: 'Calculus',
+  },
+  {
+    id: 2,
+    tutor_id: 2,
+    student_id: 3,
+    subject_id: 11,
+    parent_id: 2, // James Thompson
+    slot_units: 3,
+    scheduled_at: '2026-02-24T10:00:00Z',
+    ends_at: '2026-02-24T11:30:00Z',
+    status: 'Completed',
+    student_name: 'Tyler Thompson',
+    tutor_name: 'Marcus Chen',
+    subject_name: 'Computer Science',
+  },
+  {
+    id: 3,
+    tutor_id: 5,
+    student_id: 4,
+    subject_id: 12,
+    parent_id: 3, // Aisha Johnson
+    slot_units: 2,
+    scheduled_at: '2026-02-25T13:00:00Z',
+    ends_at: '2026-02-25T14:00:00Z',
+    status: 'Scheduled',
+    student_name: 'Zara Johnson',
+    tutor_name: 'Priya Patel',
+    subject_name: 'Chemistry',
+  },
+  {
+    id: 4,
+    tutor_id: 10,
+    student_id: 9,
+    subject_id: 13,
+    parent_id: 5, // Fatima Ali
+    slot_units: 4,
+    scheduled_at: '2026-02-26T09:00:00Z',
+    ends_at: '2026-02-26T11:00:00Z',
+    status: 'In-Progress',
+    student_name: 'Yusuf Ali',
+    tutor_name: 'Omar Hassan',
+    subject_name: 'Physics',
+  },
+  {
+    id: 5,
+    tutor_id: 1,
+    student_id: 2,
+    subject_id: 10,
+    parent_id: 1, // Maria Santos
+    slot_units: 1,
+    scheduled_at: '2026-02-27T16:00:00Z',
+    ends_at: '2026-02-27T16:30:00Z',
+    status: 'Scheduled',
+    student_name: 'Miguel Santos',
+    tutor_name: 'Sarah Jennings',
+    subject_name: 'Calculus',
+  },
+];
 export type ProgressReport = {
   id: number;
   student_id: number;

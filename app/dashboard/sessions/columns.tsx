@@ -38,6 +38,11 @@ export const columns: ColumnDef<Session>[] = [
     header: () => <div>Session Timing</div>,
   },
   {
+    id: 'session_status',
+    accessorKey: 'status',
+    header: () => <div>Session Status</div>,
+  },
+  {
     id: 'actions',
     header: () => <div>Actions</div>,
     cell: ({ row }) => (

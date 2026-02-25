@@ -624,7 +624,7 @@ export const allStudents: Student[] = [
 ];
 export type SessionStatus = 'Scheduled' | 'Completed' | 'Cancelled' | 'In-Progress';
 
-export interface Session {
+export type Session = {
   id: number;
   tutor_id: number;
   student_id: number;
@@ -638,7 +638,7 @@ export interface Session {
   student_name: string;
   tutor_name: string;
   subject_name: string;
-}
+};
 
 export const allSessions: Session[] = [
   {

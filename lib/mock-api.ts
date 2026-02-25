@@ -1,6 +1,6 @@
 import { cookies } from 'next/headers';
 import { notFound, redirect, unauthorized } from 'next/navigation';
-import { allParents, allReports, allStudents, allTutors } from '@/lib/mock-data';
+import { allParents, allReports, allSessions, allStudents, allTutors } from '@/lib/mock-data';
 
 export type UserRole = 'admin' | 'parent';
 
@@ -30,21 +30,23 @@ export async function getParent(id: number) {
   return { ...parent, students };
 }
 
-export async function getReports() {
+export async function getSessions() {
   const role = await getUserRole();
   if (role === 'admin') {
-    return allReports;
+    return allSessions;
   }
   const userID = await getCurrentUserID();
   const parent = allParents.find(parent => parent.user_id === userID);
   if (!parent) {
-    notFound();
+    return notFound();
   }
-  const students = new Set(allStudents.filter(student => student.parent_id === parent.id).map(s => s.id));
 
-  const reports = allReports.filter(report => students.has(report.student_id));
+  const parentsSessions = allSessions.filter(session => session.parent_id === parent.id);
+  if (!parentsSessions) {
+    return notFound();
+  }
 
-  return reports;
+  return parentsSessions;
 }
 
 export async function getReport(id: number) {

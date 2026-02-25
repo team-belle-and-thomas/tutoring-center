@@ -642,12 +642,12 @@ export type Session = {
 
 export const allSessions: Session[] = [
   {
-    id: 1,
-    tutor_id: 1,
-    student_id: 1,
+    id: 2001,
+    tutor_id: 101, // Sarah
+    student_id: 1, // Sofia
     subject_id: 10,
-    parent_id: 1, // Maria Santos
-    slot_units: 2,
+    parent_id: 1,
+    slot_units: 1,
     scheduled_at: '2026-02-23T14:00:00Z',
     ends_at: '2026-02-23T15:00:00Z',
     status: 'Completed',
@@ -656,60 +656,130 @@ export const allSessions: Session[] = [
     subject_name: 'Calculus',
   },
   {
-    id: 2,
-    tutor_id: 2,
-    student_id: 3,
-    subject_id: 11,
-    parent_id: 2, // James Thompson
-    slot_units: 3,
-    scheduled_at: '2026-02-24T10:00:00Z',
-    ends_at: '2026-02-24T11:30:00Z',
-    status: 'Completed',
-    student_name: 'Tyler Thompson',
-    tutor_name: 'Marcus Chen',
-    subject_name: 'Computer Science',
-  },
-  {
-    id: 3,
-    tutor_id: 5,
-    student_id: 4,
+    id: 2002,
+    tutor_id: 105, // Priya
+    student_id: 2, // Miguel
     subject_id: 12,
-    parent_id: 3, // Aisha Johnson
-    slot_units: 2,
-    scheduled_at: '2026-02-25T13:00:00Z',
-    ends_at: '2026-02-25T14:00:00Z',
-    status: 'Scheduled',
-    student_name: 'Zara Johnson',
+    parent_id: 1,
+    slot_units: 1,
+    scheduled_at: '2026-02-23T16:00:00Z',
+    ends_at: '2026-02-23T17:00:00Z',
+    status: 'Completed',
+    student_name: 'Miguel Santos',
     tutor_name: 'Priya Patel',
     subject_name: 'Chemistry',
   },
   {
-    id: 4,
-    tutor_id: 10,
-    student_id: 9,
-    subject_id: 13,
-    parent_id: 5, // Fatima Ali
-    slot_units: 4,
-    scheduled_at: '2026-02-26T09:00:00Z',
-    ends_at: '2026-02-26T11:00:00Z',
-    status: 'In-Progress',
-    student_name: 'Yusuf Ali',
-    tutor_name: 'Omar Hassan',
-    subject_name: 'Physics',
+    id: 2003,
+    tutor_id: 108, // Liam
+    student_id: 3, // Tyler
+    subject_id: 15,
+    parent_id: 2,
+    slot_units: 1,
+    scheduled_at: '2026-02-24T10:00:00Z',
+    ends_at: '2026-02-24T11:00:00Z',
+    status: 'Completed',
+    student_name: 'Tyler Thompson',
+    tutor_name: "Liam O'Connor",
+    subject_name: 'English',
   },
   {
-    id: 5,
-    tutor_id: 1,
-    student_id: 2,
-    subject_id: 10,
-    parent_id: 1, // Maria Santos
+    id: 2004,
+    tutor_id: 102, // Marcus
+    student_id: 4, // Zara
+    subject_id: 11,
+    parent_id: 3,
     slot_units: 1,
-    scheduled_at: '2026-02-27T16:00:00Z',
-    ends_at: '2026-02-27T16:30:00Z',
-    status: 'Scheduled',
-    student_name: 'Miguel Santos',
+    scheduled_at: '2026-02-24T13:00:00Z',
+    ends_at: '2026-02-24T14:00:00Z',
+    status: 'Completed',
+    student_name: 'Zara Johnson',
+    tutor_name: 'Marcus Chen',
+    subject_name: 'Computer Science',
+  },
+  {
+    id: 2005,
+    tutor_id: 101, // Sarah
+    student_id: 5, // Kofi
+    subject_id: 10,
+    parent_id: 3,
+    slot_units: 1,
+    scheduled_at: '2026-02-25T15:00:00Z',
+    ends_at: '2026-02-25T16:00:00Z',
+    status: 'Completed',
+    student_name: 'Kofi Johnson',
     tutor_name: 'Sarah Jennings',
     subject_name: 'Calculus',
+  },
+  {
+    id: 2006,
+    tutor_id: 115, // Grace
+    student_id: 6, // Amara
+    subject_id: 16,
+    parent_id: 3,
+    slot_units: 1,
+    scheduled_at: '2026-02-25T17:00:00Z',
+    ends_at: '2026-02-25T18:00:00Z',
+    status: 'Completed',
+    student_name: 'Amara Johnson',
+    tutor_name: 'Grace Lee',
+    subject_name: 'Biology',
+  },
+  {
+    id: 2007,
+    tutor_id: 105, // Priya
+    student_id: 7, // Emma
+    subject_id: 12,
+    parent_id: 4,
+    slot_units: 1,
+    scheduled_at: '2026-02-26T11:00:00Z',
+    ends_at: '2026-02-26T12:00:00Z',
+    status: 'Completed',
+    student_name: 'Emma Williams',
+    tutor_name: 'Priya Patel',
+    subject_name: 'Chemistry',
+  },
+  {
+    id: 2008,
+    tutor_id: 103, // Elena
+    student_id: 8, // Ethan
+    subject_id: 17,
+    parent_id: 4,
+    slot_units: 1,
+    scheduled_at: '2026-02-26T14:00:00Z',
+    ends_at: '2026-02-26T15:00:00Z',
+    status: 'Completed',
+    student_name: 'Ethan Williams',
+    tutor_name: 'Elena Rodriguez',
+    subject_name: 'French',
+  },
+  {
+    id: 2009,
+    tutor_id: 101, // Sarah
+    student_id: 9, // Yusuf
+    subject_id: 10,
+    parent_id: 5,
+    slot_units: 1,
+    scheduled_at: '2026-02-27T09:00:00Z',
+    ends_at: '2026-02-27T10:00:00Z',
+    status: 'Completed',
+    student_name: 'Yusuf Ali',
+    tutor_name: 'Sarah Jennings',
+    subject_name: 'Calculus',
+  },
+  {
+    id: 2010,
+    tutor_id: 112, // Noah
+    student_id: 10, // Lily
+    subject_id: 18,
+    parent_id: 6,
+    slot_units: 1,
+    scheduled_at: '2026-02-27T13:00:00Z',
+    ends_at: '2026-02-27T14:00:00Z',
+    status: 'Completed',
+    student_name: 'Lily Chen',
+    tutor_name: 'Noah Friedman',
+    subject_name: 'Economics',
   },
 ];
 export type ProgressReport = {

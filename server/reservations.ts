@@ -23,7 +23,6 @@ export async function placeSession(
   const start_time = new Date(scheduled_at);
   const end_time = new Date(ends_at);
   const duration = (end_time.getTime() - start_time.getTime()) / (1000 * 60 * 60); // Get the duration in hours
-  const slot_units = Math.ceil(duration / 0.5); // Assuming each slot is 30 minutes
 
   const { data, error } = await client
     .from('sessions')
@@ -34,7 +33,7 @@ export async function placeSession(
       subject_id,
       scheduled_at,
       ends_at,
-      slot_units,
+      duration,
       status: 'Scheduled',
     })
     .select('*')
@@ -45,7 +44,7 @@ export async function placeSession(
   }
 
   // Check if the parent has enough credits and deduct them after placing the session
-  const { data: balanceData, error: balanceError } = await deductCredits(parent_id, slot_units);
+  const { error: balanceError } = await deductCredits(parent_id, duration);
   if (balanceError) {
     // If there's an error deducting credits, delete the session that was just created
     await client.from('sessions').delete().eq('id', data.id);

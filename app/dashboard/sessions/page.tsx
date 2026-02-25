@@ -1,26 +1,28 @@
 import Link from 'next/link';
+import { DataTable } from '@/components/data-table';
 import { Button } from '@/components/ui/button';
-import { getUserRole } from '@/lib/mock-api';
+import { getSessions, getUserRole } from '@/lib/mock-api';
+import { columns } from './columns';
+import { DM_Sans } from 'next/font/google';
 
+const dm_sans = DM_Sans({ subsets: ['latin'] });
 export default async function SessionsPage() {
   const role = await getUserRole();
+  const sessions = await getSessions();
 
-  if (role === 'parent') {
-    return (
-      <main>
-        <h1>Sessions</h1>
+  return (
+    <main className={dm_sans.className}>
+
+      <h1>Sessions</h1>
+      <p>You are logged in as {role}</p>
+      {role == 'parent' && (
         <Button asChild>
           <Link href='/dashboard/sessions/new'>New Session</Link>
         </Button>
-        {/* TODO: list of past/upcoming sessions for parent's children */}
-      </main>
-    );
-  }
-
-  return (
-    <main>
-      <h1>Sessions</h1>
-      {/* TODO: admin sessions list with search/filter/sort */}
+      )}
+      <div className='p-2 md:p-8'>
+        <DataTable columns={columns} data={sessions} />
+      </div>
     </main>
   );
 }

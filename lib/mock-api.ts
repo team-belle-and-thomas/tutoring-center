@@ -31,14 +31,7 @@ export async function getParent(id: number) {
 export async function getReports() {
   const role = await getUserRole();
   if (role === 'admin') {
-<<<<<<< HEAD
     return allReports;
-=======
-    return allSessions;
-  } else if (role === 'tutor') {
-    // TODO: get sessions where session feedback has not been filled out yet.
-    return null;
->>>>>>> bbcd682 (feat: mock api supports tutor view for user role and get sessions returns nothing for now)
   }
   const userID = await getCurrentUserID();
   const parent = allParents.find(parent => parent.user_id === userID);

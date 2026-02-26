@@ -38,12 +38,12 @@ export async function getSessions() {
   const userID = await getCurrentUserID();
   const parent = allParents.find(parent => parent.user_id === userID);
   if (!parent) {
-    return notFound();
+    notFound();
   }
 
   const parentsSessions = allSessions.filter(session => session.parent_id === parent.id);
   if (!parentsSessions) {
-    return notFound();
+    notFound();
   }
 
   return parentsSessions;
@@ -61,12 +61,12 @@ export async function getReport(id: number) {
   const userID = await getCurrentUserID();
   const parent = allParents.find(parent => parent.user_id === userID);
   if (!parent) {
-    return unauthorized();
+    unauthorized();
   }
   const students = new Set(allStudents.filter(student => student.parent_id === parent.id).map(s => s.id));
 
   if (!students.has(report.student_id)) {
-    return unauthorized();
+    unauthorized();
   }
   return report;
 }

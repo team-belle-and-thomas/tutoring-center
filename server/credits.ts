@@ -25,14 +25,14 @@ export async function deductCredits(parent_id: number, amount: number) {
     return { data: null, error };
   }
 
-  if (!data) {
-    return { data: null, error: new Error('No credit balance found for parent') };
+  if (!data || data.length === 0) {
+    return { data: null, error: new CreditBalanceNotFoundError('No credit balance found for parent') };
   }
 
   const { amount_available, amount_pending } = data[0];
 
   if (amount_available < amount) {
-    return { data: null, error: new Error('Insufficient credits') };
+    return { data: null, error: new InsufficientCreditsError('Insufficient credits') };
   }
 
   const { data: updateData, error: updateError } = await client
@@ -46,4 +46,18 @@ export async function deductCredits(parent_id: number, amount: number) {
     .single();
 
   return { data: updateData, error: updateError };
+}
+
+class InsufficientCreditsError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'InsufficientCreditsError';
+  }
+}
+
+class CreditBalanceNotFoundError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'CreditBalanceNotFoundError';
+  }
 }

@@ -622,7 +622,166 @@ export const allStudents: Student[] = [
     grade: '3rd',
   },
 ];
+export type SessionStatus = 'Scheduled' | 'Completed' | 'Cancelled' | 'In-Progress';
 
+export type Session = {
+  id: number;
+  tutor_id: number;
+  student_id: number;
+  subject_id: number;
+  parent_id: number;
+  slot_units: number;
+  scheduled_at: string;
+  ends_at: string;
+  status: SessionStatus;
+  // Joined fields for display
+  student_name: string;
+  tutor_name: string;
+  subject_name: string;
+};
+
+export const allSessions: Session[] = [
+  {
+    id: 2001,
+    tutor_id: 101, // Sarah
+    student_id: 1, // Sofia
+    subject_id: 10,
+    parent_id: 1,
+    slot_units: 1,
+    scheduled_at: '2026-02-23T14:00:00Z',
+    ends_at: '2026-02-23T15:00:00Z',
+    status: 'Completed',
+    student_name: 'Sofia Santos',
+    tutor_name: 'Sarah Jennings',
+    subject_name: 'Calculus',
+  },
+  {
+    id: 2002,
+    tutor_id: 105, // Priya
+    student_id: 2, // Miguel
+    subject_id: 12,
+    parent_id: 1,
+    slot_units: 1,
+    scheduled_at: '2026-02-23T16:00:00Z',
+    ends_at: '2026-02-23T17:00:00Z',
+    status: 'Completed',
+    student_name: 'Miguel Santos',
+    tutor_name: 'Priya Patel',
+    subject_name: 'Chemistry',
+  },
+  {
+    id: 2003,
+    tutor_id: 108, // Liam
+    student_id: 3, // Tyler
+    subject_id: 15,
+    parent_id: 2,
+    slot_units: 1,
+    scheduled_at: '2026-02-24T10:00:00Z',
+    ends_at: '2026-02-24T11:00:00Z',
+    status: 'Completed',
+    student_name: 'Tyler Thompson',
+    tutor_name: "Liam O'Connor",
+    subject_name: 'English',
+  },
+  {
+    id: 2004,
+    tutor_id: 102, // Marcus
+    student_id: 4, // Zara
+    subject_id: 11,
+    parent_id: 3,
+    slot_units: 1,
+    scheduled_at: '2026-02-24T13:00:00Z',
+    ends_at: '2026-02-24T14:00:00Z',
+    status: 'Completed',
+    student_name: 'Zara Johnson',
+    tutor_name: 'Marcus Chen',
+    subject_name: 'Computer Science',
+  },
+  {
+    id: 2005,
+    tutor_id: 101, // Sarah
+    student_id: 5, // Kofi
+    subject_id: 10,
+    parent_id: 3,
+    slot_units: 1,
+    scheduled_at: '2026-02-25T15:00:00Z',
+    ends_at: '2026-02-25T16:00:00Z',
+    status: 'Completed',
+    student_name: 'Kofi Johnson',
+    tutor_name: 'Sarah Jennings',
+    subject_name: 'Calculus',
+  },
+  {
+    id: 2006,
+    tutor_id: 115, // Grace
+    student_id: 6, // Amara
+    subject_id: 16,
+    parent_id: 3,
+    slot_units: 1,
+    scheduled_at: '2026-02-25T17:00:00Z',
+    ends_at: '2026-02-25T18:00:00Z',
+    status: 'Completed',
+    student_name: 'Amara Johnson',
+    tutor_name: 'Grace Lee',
+    subject_name: 'Biology',
+  },
+  {
+    id: 2007,
+    tutor_id: 105, // Priya
+    student_id: 7, // Emma
+    subject_id: 12,
+    parent_id: 4,
+    slot_units: 1,
+    scheduled_at: '2026-02-26T11:00:00Z',
+    ends_at: '2026-02-26T12:00:00Z',
+    status: 'Completed',
+    student_name: 'Emma Williams',
+    tutor_name: 'Priya Patel',
+    subject_name: 'Chemistry',
+  },
+  {
+    id: 2008,
+    tutor_id: 103, // Elena
+    student_id: 8, // Ethan
+    subject_id: 17,
+    parent_id: 4,
+    slot_units: 1,
+    scheduled_at: '2026-02-26T14:00:00Z',
+    ends_at: '2026-02-26T15:00:00Z',
+    status: 'Completed',
+    student_name: 'Ethan Williams',
+    tutor_name: 'Elena Rodriguez',
+    subject_name: 'French',
+  },
+  {
+    id: 2009,
+    tutor_id: 101, // Sarah
+    student_id: 9, // Yusuf
+    subject_id: 10,
+    parent_id: 5,
+    slot_units: 1,
+    scheduled_at: '2026-02-27T09:00:00Z',
+    ends_at: '2026-02-27T10:00:00Z',
+    status: 'Completed',
+    student_name: 'Yusuf Ali',
+    tutor_name: 'Sarah Jennings',
+    subject_name: 'Calculus',
+  },
+  {
+    id: 2010,
+    tutor_id: 112, // Noah
+    student_id: 10, // Lily
+    subject_id: 18,
+    parent_id: 6,
+    slot_units: 1,
+    scheduled_at: '2026-02-27T13:00:00Z',
+    ends_at: '2026-02-27T14:00:00Z',
+    status: 'Completed',
+    student_name: 'Lily Chen',
+    tutor_name: 'Noah Friedman',
+    subject_name: 'Economics',
+  },
+];
 export type ProgressReport = {
   id: number;
   student_id: number;

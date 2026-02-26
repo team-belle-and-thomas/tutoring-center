@@ -2,8 +2,6 @@ import { cookies } from 'next/headers';
 import { notFound, redirect, unauthorized } from 'next/navigation';
 import { allParents, allReports, allStudents, allTutors } from '@/lib/mock-data';
 
-export type UserRole = 'admin' | 'parent' | 'tutor';
-
 export const USER_ROLE_COOKIE_NAME = 'user-role';
 export const USER_ID_COOKIE_NAME = 'user-id';
 const USER_ROLE_COOKIE_MAX_AGE = 60 * 60 * 1; // 1 hour

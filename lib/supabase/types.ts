@@ -36,12 +36,11 @@ export const SESSION_SELECT_WITH_JOINS = `
   ends_at,
   status,
 
-  student:students!sessions_student_id_fkey (
+  student:students (
     id,
     parent_id,
-    grade,
     learning_goals,
-    user:users!students_user_id_fkey (
+    users:user_id (
       id,
       first_name,
       last_name,
@@ -49,12 +48,12 @@ export const SESSION_SELECT_WITH_JOINS = `
     )
   ),
 
-  tutor:tutors!sessions_tutor_id_fkey (
+  tutor:tutors (
     id,
     verified,
     years_experience,
     tagline,
-    user:users!tutors_user_id_fkey (
+    users:user_id (
       id,
       first_name,
       last_name,
@@ -62,11 +61,11 @@ export const SESSION_SELECT_WITH_JOINS = `
     )
   ),
 
-  parent:parents!sessions_parent_id_fkey (
+  parent:parents (
     id,
     billing_address,
     notification_preferences,
-    user:users!parents_user_id_fkey (
+    users:user_id (
       id,
       first_name,
       last_name,

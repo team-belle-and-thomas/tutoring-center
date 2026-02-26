@@ -2,7 +2,7 @@ import { cookies } from 'next/headers';
 import { notFound, redirect, unauthorized } from 'next/navigation';
 import { allParents, allReports, allStudents, allTutors } from '@/lib/mock-data';
 
-export type UserRole = 'admin' | 'parent';
+export type UserRole = 'admin' | 'parent' | 'tutor';
 
 export const USER_ROLE_COOKIE_NAME = 'user-role';
 export const USER_ID_COOKIE_NAME = 'user-id';
@@ -33,7 +33,14 @@ export async function getParent(id: number) {
 export async function getReports() {
   const role = await getUserRole();
   if (role === 'admin') {
+<<<<<<< HEAD
     return allReports;
+=======
+    return allSessions;
+  } else if (role === 'tutor') {
+    // TODO: get sessions where session feedback has not been filled out yet.
+    return null;
+>>>>>>> bbcd682 (feat: mock api supports tutor view for user role and get sessions returns nothing for now)
   }
   const userID = await getCurrentUserID();
   const parent = allParents.find(parent => parent.user_id === userID);
@@ -87,7 +94,7 @@ export async function getTutor(id: number) {
 }
 
 function isUserRole(value: unknown) {
-  return value === 'admin' || value === 'parent';
+  return value === 'admin' || value === 'parent' || value === 'tutor';
 }
 
 export async function getUserRole() {

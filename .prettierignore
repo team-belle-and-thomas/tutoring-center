@@ -11,3 +11,7 @@ bun.lock
 *.config.mjs
 *.config.ts
 .eslintcache
+_bmad
+_bmad-output
+.opencode
+.cursor

@@ -50,6 +50,7 @@ export type Database = {
         Row: {
           amount_available: number;
           amount_pending: number;
+          created_at: string;
           id: number;
           parent_id: number;
           updated_at: string;
@@ -57,6 +58,7 @@ export type Database = {
         Insert: {
           amount_available?: number;
           amount_pending?: number;
+          created_at?: string;
           id?: number;
           parent_id: number;
           updated_at?: string;
@@ -64,6 +66,7 @@ export type Database = {
         Update: {
           amount_available?: number;
           amount_pending?: number;
+          created_at?: string;
           id?: number;
           parent_id?: number;
           updated_at?: string;
@@ -136,20 +139,26 @@ export type Database = {
       parents: {
         Row: {
           billing_address: string | null;
+          created_at: string;
           id: number;
           notification_preferences: string | null;
+          updated_at: string;
           user_id: number;
         };
         Insert: {
           billing_address?: string | null;
+          created_at?: string;
           id?: number;
           notification_preferences?: string | null;
+          updated_at?: string;
           user_id: number;
         };
         Update: {
           billing_address?: string | null;
+          created_at?: string;
           id?: number;
           notification_preferences?: string | null;
+          updated_at?: string;
           user_id?: number;
         };
         Relationships: [
@@ -187,6 +196,7 @@ export type Database = {
           session_performance: number | null;
           student_id: number | null;
           tutor_comments: string | null;
+          updated_at: string;
         };
         Insert: {
           confidence_score?: number | null;
@@ -197,6 +207,7 @@ export type Database = {
           session_performance?: number | null;
           student_id?: number | null;
           tutor_comments?: string | null;
+          updated_at?: string;
         };
         Update: {
           confidence_score?: number | null;
@@ -207,17 +218,18 @@ export type Database = {
           session_performance?: number | null;
           student_id?: number | null;
           tutor_comments?: string | null;
+          updated_at?: string;
         };
         Relationships: [
           {
-            foreignKeyName: 'metrics_session_id_fkey';
+            foreignKeyName: 'session_metrics_session_id_fkey';
             columns: ['session_id'];
             isOneToOne: false;
             referencedRelation: 'sessions';
             referencedColumns: ['id'];
           },
           {
-            foreignKeyName: 'metrics_student_id_fkey';
+            foreignKeyName: 'session_metrics_student_id_fkey';
             columns: ['student_id'];
             isOneToOne: false;
             referencedRelation: 'students';
@@ -230,64 +242,45 @@ export type Database = {
           created_at: string;
           homework_assigned: string | null;
           id: number;
-          session_id: number | null;
-          student_id: number;
-          student_notes: string | null;
-          student_performance: number | null;
+          internal_notes: string | null;
+          public_notes: string | null;
+          session_id: number;
           topics: string | null;
-          tutor_id: number;
-          tutor_notes: string | null;
+          updated_at: string;
         };
         Insert: {
           created_at?: string;
           homework_assigned?: string | null;
           id?: number;
-          session_id?: number | null;
-          student_id: number;
-          student_notes?: string | null;
-          student_performance?: number | null;
+          internal_notes?: string | null;
+          public_notes?: string | null;
+          session_id: number;
           topics?: string | null;
-          tutor_id: number;
-          tutor_notes?: string | null;
+          updated_at?: string;
         };
         Update: {
           created_at?: string;
           homework_assigned?: string | null;
           id?: number;
-          session_id?: number | null;
-          student_id?: number;
-          student_notes?: string | null;
-          student_performance?: number | null;
+          internal_notes?: string | null;
+          public_notes?: string | null;
+          session_id?: number;
           topics?: string | null;
-          tutor_id?: number;
-          tutor_notes?: string | null;
+          updated_at?: string;
         };
         Relationships: [
           {
-            foreignKeyName: 'progress_reports_session_id_fkey';
+            foreignKeyName: 'session_progress_session_id_fkey';
             columns: ['session_id'];
             isOneToOne: true;
             referencedRelation: 'sessions';
-            referencedColumns: ['id'];
-          },
-          {
-            foreignKeyName: 'progress_reports_student_id_fkey';
-            columns: ['student_id'];
-            isOneToOne: false;
-            referencedRelation: 'students';
-            referencedColumns: ['id'];
-          },
-          {
-            foreignKeyName: 'progress_reports_tutor_id_fkey';
-            columns: ['tutor_id'];
-            isOneToOne: false;
-            referencedRelation: 'tutors';
             referencedColumns: ['id'];
           },
         ];
       };
       sessions: {
         Row: {
+          created_at: string;
           ends_at: string;
           id: number;
           parent_id: number;
@@ -297,8 +290,10 @@ export type Database = {
           student_id: number;
           subject_id: number;
           tutor_id: number;
+          updated_at: string;
         };
         Insert: {
+          created_at?: string;
           ends_at: string;
           id?: number;
           parent_id: number;
@@ -308,8 +303,10 @@ export type Database = {
           student_id: number;
           subject_id: number;
           tutor_id: number;
+          updated_at?: string;
         };
         Update: {
+          created_at?: string;
           ends_at?: string;
           id?: number;
           parent_id?: number;
@@ -319,6 +316,7 @@ export type Database = {
           student_id?: number;
           subject_id?: number;
           tutor_id?: number;
+          updated_at?: string;
         };
         Relationships: [
           {
@@ -351,29 +349,64 @@ export type Database = {
           },
         ];
       };
+      student_grades: {
+        Row: {
+          created_at: string;
+          grade: string;
+          id: number;
+          student_id: number;
+          subject: string;
+        };
+        Insert: {
+          created_at?: string;
+          grade: string;
+          id?: number;
+          student_id: number;
+          subject: string;
+        };
+        Update: {
+          created_at?: string;
+          grade?: string;
+          id?: number;
+          student_id?: number;
+          subject?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'student_grades_student_id_fkey';
+            columns: ['student_id'];
+            isOneToOne: false;
+            referencedRelation: 'students';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       students: {
         Row: {
           birth_date: string | null;
-          grade: string | null;
+          created_at: string;
           id: number;
           learning_goals: string | null;
           parent_id: number | null;
+          updated_at: string;
           user_id: number;
         };
         Insert: {
           birth_date?: string | null;
-          grade?: string | null;
+          created_at?: string;
           id?: number;
           learning_goals?: string | null;
           parent_id?: number | null;
+          updated_at?: string;
           user_id: number;
         };
         Update: {
           birth_date?: string | null;
-          grade?: string | null;
+          created_at?: string;
           id?: number;
           learning_goals?: string | null;
           parent_id?: number | null;
+          updated_at?: string;
           user_id?: number;
         };
         Relationships: [
@@ -396,18 +429,24 @@ export type Database = {
       subjects: {
         Row: {
           category: string;
+          created_at: string;
           id: number;
           tutor_id: number;
+          updated_at: string;
         };
         Insert: {
           category: string;
+          created_at?: string;
           id?: number;
           tutor_id: number;
+          updated_at?: string;
         };
         Update: {
           category?: string;
+          created_at?: string;
           id?: number;
           tutor_id?: number;
+          updated_at?: string;
         };
         Relationships: [
           {
@@ -422,27 +461,33 @@ export type Database = {
       tutors: {
         Row: {
           bio: string | null;
+          created_at: string;
           education: string | null;
           id: number;
           tagline: string | null;
+          updated_at: string;
           user_id: number;
           verified: boolean;
           years_experience: number | null;
         };
         Insert: {
           bio?: string | null;
+          created_at?: string;
           education?: string | null;
           id?: number;
           tagline?: string | null;
+          updated_at?: string;
           user_id: number;
           verified?: boolean;
           years_experience?: number | null;
         };
         Update: {
           bio?: string | null;
+          created_at?: string;
           education?: string | null;
           id?: number;
           tagline?: string | null;
+          updated_at?: string;
           user_id?: number;
           verified?: boolean;
           years_experience?: number | null;
@@ -470,6 +515,7 @@ export type Database = {
           profile_pic: string | null;
           role: number | null;
           timezone: string;
+          updated_at: string;
         };
         Insert: {
           created_at?: string;
@@ -483,6 +529,7 @@ export type Database = {
           profile_pic?: string | null;
           role?: number | null;
           timezone?: string;
+          updated_at?: string;
         };
         Update: {
           created_at?: string;
@@ -496,6 +543,7 @@ export type Database = {
           profile_pic?: string | null;
           role?: number | null;
           timezone?: string;
+          updated_at?: string;
         };
         Relationships: [
           {
@@ -515,7 +563,7 @@ export type Database = {
       [_ in never]: never;
     };
     Enums: {
-      session_status: 'Scheduled' | 'Completed' | 'Canceled' | 'No-show' | 'Rescheduled';
+      session_status: 'Scheduled' | 'Pending-Notes' | 'Completed' | 'Canceled' | 'No-show' | 'Rescheduled';
       transaction_type: 'Purchase' | 'Session Debit' | 'Refund' | 'Adjustment' | 'Cancellation Fee';
       week_day: 'Monday' | 'Tuesday' | 'Wednesday' | 'Thursday' | 'Friday' | 'Saturday' | 'Sunday';
     };
@@ -637,7 +685,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      session_status: ['Scheduled', 'Completed', 'Canceled', 'No-show', 'Rescheduled'],
+      session_status: ['Scheduled', 'Pending-Notes', 'Completed', 'Canceled', 'No-show', 'Rescheduled'],
       transaction_type: ['Purchase', 'Session Debit', 'Refund', 'Adjustment', 'Cancellation Fee'],
       week_day: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
     },

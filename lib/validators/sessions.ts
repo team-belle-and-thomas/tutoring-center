@@ -1,7 +1,14 @@
 import { z } from 'zod';
 import { id, isoDateTime, page, pageSize, units1to100 } from './shared';
 
-export const SESSION_STATUS_OPTIONS = ['Scheduled', 'Completed', 'Canceled', 'No-show', 'Rescheduled'] as const;
+export const SESSION_STATUS_OPTIONS = [
+  'Pending-Notes',
+  'Scheduled',
+  'Completed',
+  'Canceled',
+  'No-show',
+  'Rescheduled',
+] as const;
 
 export type SessionStatus = (typeof SESSION_STATUS_OPTIONS)[number];
 

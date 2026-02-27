@@ -2,8 +2,6 @@ import { cookies } from 'next/headers';
 import { notFound, redirect, unauthorized } from 'next/navigation';
 import { allParents, allReports, allSessions, allStudents, allTutors } from '@/lib/mock-data';
 
-export type UserRole = 'admin' | 'parent';
-
 export const USER_ROLE_COOKIE_NAME = 'user-role';
 export const USER_ID_COOKIE_NAME = 'user-id';
 const USER_ROLE_COOKIE_MAX_AGE = 60 * 60 * 1; // 1 hour
@@ -89,7 +87,7 @@ export async function getTutor(id: number) {
 }
 
 function isUserRole(value: unknown) {
-  return value === 'admin' || value === 'parent';
+  return value === 'admin' || value === 'parent' || value === 'tutor';
 }
 
 export async function getUserRole() {

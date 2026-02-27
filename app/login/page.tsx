@@ -12,7 +12,7 @@ import {
 } from '@/components/ui/field';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { login } from '@/lib/mock-api';
-import { UserRound, UserRoundCog } from 'lucide-react';
+import { GraduationCap, UserRound, UserRoundCog } from 'lucide-react';
 
 const playfair = Playfair_Display({ style: 'italic', subsets: ['latin'] });
 export default function LoginPage() {
@@ -62,6 +62,16 @@ function RoleField() {
                 <UserRound size={48} />
               </FieldContent>
               <RadioGroupItem value='parent' id='parent' className='mt-2' />
+            </Field>
+          </FieldLabel>
+
+          <FieldLabel htmlFor='tutor' className='cursor-pointer border'>
+            <Field orientation='vertical' className='items-center'>
+              <FieldContent className='flex flex-col items-center'>
+                <FieldTitle className='text-black'>Tutor</FieldTitle>
+                <GraduationCap size={48} />
+              </FieldContent>
+              <RadioGroupItem value='tutor' id='tutor' className='mt-2' />
             </Field>
           </FieldLabel>
 

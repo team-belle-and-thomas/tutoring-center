@@ -21,6 +21,21 @@ export const DEFAULT_SESSION_STATUS: SessionStatus = 'Scheduled';
 export const CANCELED_SESSION_STATUS: SessionStatus = 'Canceled';
 
 // Shared select fields so I don't have to repeat it
+export const STUDENT_SELECT_WITH_JOINS = `
+  id,
+  parent_id,
+  birth_date,
+  grade,
+  learning_goals,
+  users:user_id (
+    id,
+    first_name,
+    last_name,
+    email,
+    phone
+  )
+` as const;
+
 export const SESSION_SELECT_FIELDS =
   'id,tutor_id,student_id,subject_id,parent_id,slot_units,scheduled_at,ends_at,status' as const;
 

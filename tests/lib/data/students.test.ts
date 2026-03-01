@@ -1,21 +1,16 @@
 ﻿import { getStudents } from '@/lib/data/students';
+import type { UserRole } from '@/lib/mock-api';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-const {
-  mockGetUserRole,
-  mockGetCurrentUserID,
-  mockForbidden,
-  mockNotFound,
-  mockFrom,
-  mockCreateSupabaseServiceClient,
-} = vi.hoisted(() => ({
-  mockGetUserRole: vi.fn(),
-  mockGetCurrentUserID: vi.fn(),
-  mockForbidden: vi.fn(),
-  mockNotFound: vi.fn(),
-  mockFrom: vi.fn(),
-  mockCreateSupabaseServiceClient: vi.fn(),
-}));
+const { mockGetCurrentUserID, mockForbidden, mockNotFound, mockFrom, mockCreateSupabaseServiceClient } = vi.hoisted(
+  () => ({
+    mockGetCurrentUserID: vi.fn(),
+    mockForbidden: vi.fn(),
+    mockNotFound: vi.fn(),
+    mockFrom: vi.fn(),
+    mockCreateSupabaseServiceClient: vi.fn(),
+  })
+);
 
 vi.mock('next/navigation', () => ({
   forbidden: mockForbidden,
@@ -23,7 +18,6 @@ vi.mock('next/navigation', () => ({
 }));
 
 vi.mock('@/lib/mock-api', () => ({
-  getUserRole: mockGetUserRole,
   getCurrentUserID: mockGetCurrentUserID,
 }));
 
@@ -71,9 +65,7 @@ describe('getStudents', () => {
     });
   });
 
-  it('resolves role when omitted and maps admin rows with name + fallback grade', async () => {
-    mockGetUserRole.mockResolvedValue('admin');
-
+  it('maps admin rows with name + fallback grade', async () => {
     const studentsQuery = createMockQuery({
       data: [
         {
@@ -91,7 +83,7 @@ describe('getStudents', () => {
 
     setupSupabaseMock({ students: studentsQuery });
 
-    const result = await getStudents();
+    const result = await getStudents('admin');
 
     expect(result).toEqual([
       {
@@ -103,9 +95,13 @@ describe('getStudents', () => {
         grade: '—',
       },
     ]);
-    expect(mockGetUserRole).toHaveBeenCalledTimes(1);
     expect(mockGetCurrentUserID).not.toHaveBeenCalled();
     expect(mockFrom).toHaveBeenCalledWith('students');
+  });
+
+  it('throws a clear error when role is missing at runtime', async () => {
+    await expect(getStudents(undefined as unknown as UserRole)).rejects.toThrow('Role is required to fetch students.');
+    expect(mockFrom).not.toHaveBeenCalled();
   });
 
   it('throws notFound when parent lookup fails', async () => {
@@ -142,8 +138,6 @@ describe('getStudents', () => {
   });
 
   it('throws a role-specific validation message for admin', async () => {
-    mockGetUserRole.mockResolvedValue('admin');
-
     const studentsQuery = createMockQuery({
       data: [{ id: 'bad-id', user_id: 10 }],
       error: null,
@@ -151,7 +145,7 @@ describe('getStudents', () => {
 
     setupSupabaseMock({ students: studentsQuery });
 
-    await expect(getStudents()).rejects.toThrow('Student data format is invalid. Please try again later.');
+    await expect(getStudents('admin')).rejects.toThrow('Student data format is invalid. Please try again later.');
     expect(mockFrom).toHaveBeenCalledWith('students');
   });
 });

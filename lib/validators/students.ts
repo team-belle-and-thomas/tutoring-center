@@ -3,6 +3,7 @@ import { EmbeddedOneUserSchema } from './shared';
 
 export const StudentWithJoinsSchema = z.object({
   id: z.number(),
+  user_id: z.number(),
   parent_id: z.number().nullable(),
   birth_date: z.string().nullable(),
   grade: z.string().nullable(),

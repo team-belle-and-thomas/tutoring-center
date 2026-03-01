@@ -92,6 +92,7 @@ describe('getStudents integration', () => {
         user_id: userId,
         name: 'Integration Student',
         email,
+        phone: '—',
         grade: '11',
       });
     } finally {
@@ -217,6 +218,7 @@ describe('getStudents integration', () => {
         user_id: studentAUserID,
         name: 'Scoped A',
         email: `student-a-${unique}@example.com`,
+        phone: '—',
         grade: '7',
       });
     } finally {

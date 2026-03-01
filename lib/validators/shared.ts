@@ -12,7 +12,6 @@ export const EmbeddedRecordSchema = z.record(z.unknown());
 export const EmbeddedOneSchema = z.union([EmbeddedRecordSchema, z.array(EmbeddedRecordSchema), z.null()]).optional();
 
 export const EmbeddedUserSchema = z.object({
-  id: z.number(),
   first_name: z.string().nullable(),
   last_name: z.string().nullable(),
   email: z.string(),
@@ -21,7 +20,7 @@ export const EmbeddedUserSchema = z.object({
 
 export type EmbeddedUser = Pick<
   Database['public']['Tables']['users']['Row'],
-  'id' | 'first_name' | 'last_name' | 'email' | 'phone'
+  'first_name' | 'last_name' | 'email' | 'phone'
 >;
 
 export const EmbeddedOneUserSchema = z.union([EmbeddedUserSchema, z.array(EmbeddedUserSchema), z.null()]).optional();

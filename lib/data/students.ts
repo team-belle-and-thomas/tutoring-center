@@ -1,6 +1,6 @@
 ﻿import 'server-only';
 import { forbidden, notFound } from 'next/navigation';
-import { getCurrentUserID, getUserRole, type UserRole } from '@/lib/mock-api';
+import { getCurrentUserID, type UserRole } from '@/lib/mock-api';
 import { createSupabaseServiceClient } from '@/lib/supabase/serverClient';
 import { STUDENT_SELECT_WITH_JOINS } from '@/lib/supabase/types';
 import { pickFirstEmbedded } from '@/lib/utils/normalize';
@@ -17,6 +17,8 @@ export type StudentRow = {
 
 type StudentLoadErrorReason = 'database' | 'validation';
 type AllowedRole = Exclude<UserRole, 'tutor'>;
+
+const isValidRole = (value: unknown): value is UserRole => value === 'admin' || value === 'parent' || value === 'tutor';
 
 const STUDENT_ERROR_MESSAGES = {
   admin: {
@@ -52,8 +54,12 @@ const mapStudentRow = (student: Pick<StudentWithJoins, 'id' | 'user_id' | 'grade
   };
 };
 
-export async function getStudents(role?: UserRole) {
-  const resolvedRole = role ?? (await getUserRole());
+export async function getStudents(role: UserRole) {
+  if (!isValidRole(role)) {
+    throw new Error('Role is required to fetch students.');
+  }
+
+  const resolvedRole = role;
   const supabase = createSupabaseServiceClient();
 
   if (resolvedRole === 'tutor') forbidden();

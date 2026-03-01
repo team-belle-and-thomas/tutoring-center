@@ -110,6 +110,8 @@ export async function getCurrentUserID() {
   return parseInt(id, 10);
 }
 
+export type UserRole = Awaited<ReturnType<typeof getUserRole>>;
+
 export async function login(formData: FormData) {
   'use server';
 
@@ -127,7 +129,7 @@ export async function login(formData: FormData) {
     secure: process.env.NODE_ENV === 'production',
   });
   // For now use a temp user but in production get actual userid
-  const TEMP_USER = '101';
+  const TEMP_USER = '23';
   cookieStore.set(USER_ID_COOKIE_NAME, TEMP_USER, {
     httpOnly: true,
     maxAge: USER_ID_COOKIE_MAX_AGE,

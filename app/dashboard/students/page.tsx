@@ -1,12 +1,32 @@
+import { forbidden } from 'next/navigation';
+import { DataTable } from '@/components/data-table';
+import { Badge } from '@/components/ui/badge';
+import { getStudents } from '@/lib/data/students';
 import { getUserRole } from '@/lib/mock-api';
+import { columns } from './columns';
 
 export default async function StudentsPage() {
   const role = await getUserRole();
-  // based on user role we will either filter or display all students
+
+  if (role === 'tutor') forbidden();
+  const data = await getStudents(role);
+
+  const description = role === 'admin' ? 'All enrolled students' : 'Your enrolled children';
+
   return (
     <main>
-      <h1>Students Page</h1>
-      <p>You are logged in as {role}</p>
+      <div className='p-2 md:p-8'>
+        <div className='mb-6 flex items-center justify-between'>
+          <div>
+            <div className='flex items-center gap-2'>
+              <h1 className='font-serif text-3xl text-primary'>Students</h1>
+              <Badge variant='secondary'>{data.length}</Badge>
+            </div>
+            <p className='text-muted-foreground mt-1 text-sm'>{description}</p>
+          </div>
+        </div>
+        <DataTable columns={columns} data={data} />
+      </div>
     </main>
   );
 }

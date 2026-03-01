@@ -99,6 +99,7 @@ describe('getStudents', () => {
         user_id: 10,
         name: 'Jane Doe',
         email: 'jane@x.com',
+        phone: '—',
         grade: '—',
       },
     ]);

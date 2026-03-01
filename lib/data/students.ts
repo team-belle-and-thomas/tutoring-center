@@ -11,6 +11,7 @@ export type StudentRow = {
   user_id: number;
   name: string;
   email: string;
+  phone: string;
   grade: string;
 };
 
@@ -34,6 +35,7 @@ const parseStudentUser = (users: StudentWithJoins['users']) => {
   return {
     name: [user?.first_name, user?.last_name].filter(Boolean).join(' '),
     email: user?.email ?? '',
+    phone: user?.phone ?? '—',
   };
 };
 
@@ -45,6 +47,7 @@ const mapStudentRow = (student: Pick<StudentWithJoins, 'id' | 'user_id' | 'grade
     user_id: student.user_id,
     name: user.name,
     email: user.email,
+    phone: user.phone,
     grade: student.grade ?? '—',
   };
 };

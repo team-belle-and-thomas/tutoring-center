@@ -385,6 +385,7 @@ export type Database = {
         Row: {
           birth_date: string | null;
           created_at: string;
+          grade: string | null;
           id: number;
           learning_goals: string | null;
           parent_id: number | null;
@@ -394,6 +395,7 @@ export type Database = {
         Insert: {
           birth_date?: string | null;
           created_at?: string;
+          grade?: string | null;
           id?: number;
           learning_goals?: string | null;
           parent_id?: number | null;
@@ -403,6 +405,7 @@ export type Database = {
         Update: {
           birth_date?: string | null;
           created_at?: string;
+          grade?: string | null;
           id?: number;
           learning_goals?: string | null;
           parent_id?: number | null;

@@ -22,7 +22,9 @@ export async function placeSession(
   // Calculate the cost of credits of the session
   const start_time = new Date(scheduled_at);
   const end_time = new Date(ends_at);
-  const duration = (end_time.getTime() - start_time.getTime()) / (1000 * 60 * 60); // Get the duration in hours
+  let duration = (end_time.getTime() - start_time.getTime()) / (1000 * 60 * 60); // Get the duration in hours
+  duration = Math.round(duration); // Convert to the nearest whole number of hours
+  console.log(`Calculated session duration: ${duration} hours`);
 
   const { data, error } = await client
     .from('sessions')
@@ -33,7 +35,6 @@ export async function placeSession(
       subject_id,
       scheduled_at,
       ends_at,
-      duration,
       status: 'Scheduled',
     })
     .select('*')

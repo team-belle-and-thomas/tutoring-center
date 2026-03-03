@@ -1,5 +1,5 @@
 import 'server-only';
-import { forbidden, notFound } from 'next/navigation';
+import { notFound } from 'next/navigation';
 import type { UserRole } from '@/lib/auth';
 import { getCurrentUserID, getUserRole } from '@/lib/mock-api';
 import { createSupabaseServiceClient } from '@/lib/supabase/serverClient';
@@ -96,11 +96,7 @@ export async function getSessions(kind: 'all' | 'upcoming' | 'past' = 'all') {
     throw new Error('Role is required to fetch sessions.');
   }
 
-  const resolvedRole = role;
   const supabase = createSupabaseServiceClient();
-
-  if (resolvedRole === 'tutor') forbidden();
-  const allowedRole: AllowedRole = resolvedRole;
 
   let sessionsQuery = supabase.from('sessions').select(SESSION_SELECT_WITH_JOINS);
 
@@ -112,7 +108,7 @@ export async function getSessions(kind: 'all' | 'upcoming' | 'past' = 'all') {
     sessionsQuery = sessionsQuery.lt('scheduled_at', now);
   }
 
-  if (resolvedRole !== 'admin') {
+  if (role !== 'admin') {
     const userID = await getCurrentUserID();
     const { data: parent, error: parentErr } = await supabase
       .from('parents')
@@ -126,12 +122,12 @@ export async function getSessions(kind: 'all' | 'upcoming' | 'past' = 'all') {
 
   const { data, error } = await sessionsQuery;
   if (error) {
-    throw new Error(SESSION_ERROR_MESSAGES[allowedRole]['database']);
+    throw new Error(SESSION_ERROR_MESSAGES[role as AllowedRole]['database']);
   }
 
   const parsedSessions = SessionWithJoinsListSchema.safeParse(data ?? []);
   if (!parsedSessions.success) {
-    throw new Error(SESSION_ERROR_MESSAGES[allowedRole]['validation']);
+    throw new Error(SESSION_ERROR_MESSAGES[role as AllowedRole]['validation']);
   }
 
   return parsedSessions.data.map(mapSessionRow);

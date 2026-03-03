@@ -20,8 +20,6 @@ export type TutorRow = {
   years_experience: number;
 };
 
-type TutorLoadErrorReason = 'database' | 'validation';
-
 const TUTOR_ERROR_MESSAGES = {
   admin: {
     database: 'Tutor data is temporarily unavailable. Please retry in a moment.',

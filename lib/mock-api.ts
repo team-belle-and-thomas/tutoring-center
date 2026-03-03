@@ -86,7 +86,7 @@ export async function getTutor(id: number) {
   return tutor;
 }
 
-function isUserRole(value: unknown) {
+export function isUserRole(value: unknown) {
   return value === 'admin' || value === 'parent' || value === 'tutor';
 }
 

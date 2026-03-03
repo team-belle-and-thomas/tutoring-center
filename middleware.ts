@@ -1,8 +1,7 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
-const ADMIN_ONLY_ROUTES = ['/dashboard/tutors', '/dashboard/parents', '/dashboard/sessions'];
-const TUTOR_ONLY_ROUTES: string[] = [];
+const ADMIN_ONLY_ROUTES = ['/dashboard/tutors', '/dashboard/parents'];
 
 export function middleware(request: NextRequest) {
   const userRole = request.cookies.get('user-role')?.value;

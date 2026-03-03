@@ -1,12 +1,13 @@
 'use client';
 
 import Link from 'next/link';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Session } from '@/lib/mock-data';
+import { SessionRow } from '@/lib/data/sessions';
 import { ColumnDef } from '@tanstack/react-table';
 import { format, parseISO } from 'date-fns';
 
-export const columns: ColumnDef<Session>[] = [
+export const columns: ColumnDef<SessionRow>[] = [
   {
     id: 'name',
     accessorKey: 'student_name',
@@ -38,16 +39,37 @@ export const columns: ColumnDef<Session>[] = [
     header: () => <div>Session Timing</div>,
   },
   {
+    id: 'units',
+    accessorKey: 'units',
+    header: () => <div>Units</div>,
+  },
+  {
     id: 'session_status',
     accessorKey: 'status',
-    header: () => <div>Session Status</div>,
+    header: () => <div>Status</div>,
+    cell: ({ row }) => {
+      const status = row.original.status;
+      let variant: 'default' | 'secondary' | 'destructive' | 'outline' = 'default';
+
+      if (status === 'Completed') {
+        variant = 'default';
+      } else if (status === 'Scheduled' || status === 'Rescheduled') {
+        variant = 'secondary';
+      } else if (status === 'Canceled' || status === 'No-show') {
+        variant = 'destructive';
+      } else {
+        variant = 'outline';
+      }
+
+      return <Badge variant={variant}>{status}</Badge>;
+    },
   },
   {
     id: 'actions',
     header: () => <div>Actions</div>,
     cell: ({ row }) => (
       <Button asChild variant='default' size='sm'>
-        <Link href={`/dashboard/sessions/${row.original.id}`}>View Progress</Link>
+        <Link href={`/dashboard/sessions/${row.original.id}`}>View Details</Link>
       </Button>
     ),
   },

@@ -34,9 +34,10 @@ function TableSkeleton() {
   );
 }
 
-export default async function SessionsPage({ searchParams }: { searchParams: { kind?: string } }) {
+export default async function SessionsPage({ searchParams }: { searchParams: Promise<{ kind?: string }> }) {
   const role = await getUserRole();
-  const kind = searchParams.kind as 'all' | 'upcoming' | 'past' | undefined;
+  const params = await searchParams;
+  const kind = params.kind as 'all' | 'upcoming' | 'past' | undefined;
 
   return (
     <main>

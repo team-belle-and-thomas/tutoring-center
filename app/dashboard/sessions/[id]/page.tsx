@@ -185,7 +185,7 @@ async function SessionDetail({ id, role }: { id: number; role: string }) {
         </section>
 
         {/* Metrics Section */}
-        {session.metrics && (
+        {session.metrics && Object.keys(session.metrics).length > 0 && (
           <section>
             <h3 className='text-lg font-semibold mb-3'>Performance</h3>
             <div className='grid grid-cols-2 md:grid-cols-4 gap-4 text-sm'>

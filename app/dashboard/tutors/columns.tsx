@@ -2,14 +2,13 @@
 
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { Tutor } from '@/lib/mock-data';
+import { TutorRow } from '@/lib/data/tutors';
 import { ColumnDef } from '@tanstack/react-table';
 import { CircleCheck, CircleX } from 'lucide-react';
 
-export const columns: ColumnDef<Tutor>[] = [
+export const columns: ColumnDef<TutorRow>[] = [
   {
-    id: 'name',
-    accessorFn: row => `${row.first_name} ${row.last_name}`,
+    accessorKey: 'name',
     header: () => <div>Name</div>,
   },
   {
@@ -22,9 +21,13 @@ export const columns: ColumnDef<Tutor>[] = [
     header: () => <div>Phone</div>,
   },
   {
-    accessorKey: 'yoe',
+    accessorKey: 'education',
+    header: () => <div>Education</div>,
+  },
+  {
+    accessorKey: 'years_experience',
     header: () => <div>Years of Exp.</div>,
-    cell: ({ row }) => <div>{row.getValue('yoe')}</div>,
+    cell: ({ row }) => <div>{row.getValue('years_experience')}</div>,
   },
   {
     accessorKey: 'verified',

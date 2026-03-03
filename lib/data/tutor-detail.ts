@@ -1,11 +1,12 @@
 import 'server-only';
-import { cookies } from 'next/headers';
-import { notFound, redirect } from 'next/navigation';
+import { notFound } from 'next/navigation';
+import { getUserRole } from '@/lib/auth';
 import { createSupabaseServiceClient } from '@/lib/supabase/serverClient';
 import { TUTOR_SELECT_WITH_JOINS } from '@/lib/supabase/types';
-import type { UserRole } from '@/lib/types';
 import { pickFirstEmbedded } from '@/lib/utils/normalize';
 import { TutorWithJoinsSchema, type TutorWithJoins } from '@/lib/validators/tutors';
+
+export { getUserRole } from '@/lib/auth';
 
 export type TutorDetailType = {
   id: number;
@@ -20,18 +21,6 @@ export type TutorDetailType = {
   verified: boolean;
   years_experience: number;
 };
-
-const isValidRole = (value: unknown): value is UserRole => value === 'admin' || value === 'parent' || value === 'tutor';
-
-export async function getUserRole() {
-  const cookieStore = await cookies();
-  const role = cookieStore.get('user-role')?.value;
-  if (!isValidRole(role)) {
-    redirect('/login?redirect=/auth/logout');
-  }
-
-  return role;
-}
 
 const mapTutorDetail = (tutor: TutorWithJoins): TutorDetailType => {
   const user = pickFirstEmbedded(tutor.users);

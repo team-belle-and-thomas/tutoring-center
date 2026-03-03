@@ -36,6 +36,22 @@ export const STUDENT_SELECT_WITH_JOINS = `
   )
 ` as const;
 
+export const TUTOR_SELECT_WITH_JOINS = `
+  id,
+  user_id,
+  verified,
+  education,
+  bio,
+  tagline,
+  years_experience,
+  users:user_id (
+    first_name,
+    last_name,
+    email,
+    phone
+  )
+` as const;
+
 export const SESSION_SELECT_FIELDS =
   'id,tutor_id,student_id,subject_id,parent_id,slot_units,scheduled_at,ends_at,status' as const;
 

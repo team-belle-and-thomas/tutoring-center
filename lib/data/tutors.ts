@@ -1,11 +1,13 @@
 import 'server-only';
-import { cookies } from 'next/headers';
-import { forbidden, redirect } from 'next/navigation';
+import { forbidden } from 'next/navigation';
+import { isValidRole } from '@/lib/auth';
+import type { UserRole } from '@/lib/auth';
 import { createSupabaseServiceClient } from '@/lib/supabase/serverClient';
 import { TUTOR_SELECT_WITH_JOINS } from '@/lib/supabase/types';
-import type { UserRole } from '@/lib/types';
 import { pickFirstEmbedded } from '@/lib/utils/normalize';
 import { TutorWithJoinsListSchema, type TutorWithJoins } from '@/lib/validators/tutors';
+
+export { getUserRole } from '@/lib/auth';
 
 export type TutorRow = {
   id: number;
@@ -26,22 +28,6 @@ const TUTOR_ERROR_MESSAGES = {
     validation: 'Tutor data format is invalid. Please try again later.',
   },
 } as const;
-
-const isValidRole = (value: unknown): value is UserRole => value === 'admin' || value === 'parent' || value === 'tutor';
-
-export async function getUserRole() {
-  const cookieStore = await cookies();
-  const role = cookieStore.get('user-role')?.value;
-  if (!isValidRole(role)) {
-    redirect('/login?redirect=/auth/logout');
-  }
-
-  if (role !== 'admin') {
-    redirect('/dashboard');
-  }
-
-  return role;
-}
 
 const parseTutorUser = (users: TutorWithJoins['users']) => {
   const user = pickFirstEmbedded(users);

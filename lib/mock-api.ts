@@ -1,8 +1,6 @@
 import { cookies } from 'next/headers';
 import { notFound, redirect, unauthorized } from 'next/navigation';
-import { allParents, allReports, allStudents, allTutors } from '@/lib/mock-data';
-
-export type UserRole = 'admin' | 'parent';
+import { allParents, allReports, allSessions, allStudents, allTutors } from '@/lib/mock-data';
 
 export const USER_ROLE_COOKIE_NAME = 'user-role';
 export const USER_ID_COOKIE_NAME = 'user-id';
@@ -30,21 +28,23 @@ export async function getParent(id: number) {
   return { ...parent, students };
 }
 
-export async function getReports() {
+export async function getSessions() {
   const role = await getUserRole();
   if (role === 'admin') {
-    return allReports;
+    return allSessions;
   }
   const userID = await getCurrentUserID();
   const parent = allParents.find(parent => parent.user_id === userID);
   if (!parent) {
     notFound();
   }
-  const students = new Set(allStudents.filter(student => student.parent_id === parent.id).map(s => s.id));
 
-  const reports = allReports.filter(report => students.has(report.student_id));
+  const parentsSessions = allSessions.filter(session => session.parent_id === parent.id);
+  if (!parentsSessions) {
+    notFound();
+  }
 
-  return reports;
+  return parentsSessions;
 }
 
 export async function getReport(id: number) {
@@ -59,12 +59,12 @@ export async function getReport(id: number) {
   const userID = await getCurrentUserID();
   const parent = allParents.find(parent => parent.user_id === userID);
   if (!parent) {
-    return unauthorized();
+    unauthorized();
   }
   const students = new Set(allStudents.filter(student => student.parent_id === parent.id).map(s => s.id));
 
   if (!students.has(report.student_id)) {
-    return unauthorized();
+    unauthorized();
   }
   return report;
 }
@@ -87,7 +87,7 @@ export async function getTutor(id: number) {
 }
 
 function isUserRole(value: unknown) {
-  return value === 'admin' || value === 'parent';
+  return value === 'admin' || value === 'parent' || value === 'tutor';
 }
 
 export async function getUserRole() {
@@ -110,6 +110,8 @@ export async function getCurrentUserID() {
   return parseInt(id, 10);
 }
 
+export type UserRole = Awaited<ReturnType<typeof getUserRole>>;
+
 export async function login(formData: FormData) {
   'use server';
 
@@ -127,7 +129,7 @@ export async function login(formData: FormData) {
     secure: process.env.NODE_ENV === 'production',
   });
   // For now use a temp user but in production get actual userid
-  const TEMP_USER = '101';
+  const TEMP_USER = '23';
   cookieStore.set(USER_ID_COOKIE_NAME, TEMP_USER, {
     httpOnly: true,
     maxAge: USER_ID_COOKIE_MAX_AGE,

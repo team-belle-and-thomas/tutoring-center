@@ -3,5 +3,8 @@ module.exports = {
   eslint: {
     ignoreDuringBuilds: true,
   },
-  typedRoutes: true
+  typedRoutes: true,
+  experimental: {
+    authInterrupts: true,
+  },
 };

@@ -1,6 +1,6 @@
 import type { Route } from 'next';
 
-export type UserRole = 'admin' | 'parent';
+export type UserRole = 'admin' | 'parent' | 'tutor';
 
 export interface SidebarLink {
   id: number;
@@ -14,6 +14,8 @@ export function getUserLinks(role: UserRole) {
       return adminLinks;
     case 'parent':
       return parentLinks;
+    case 'tutor':
+      return tutorLinks;
     default:
       throw new Error('Invalid user role');
   }
@@ -44,3 +46,5 @@ const parentLinks: SidebarLink[] = [
   },
   { id: 5, href: '/dashboard/progress-reports', text: 'Progress Reports' },
 ];
+
+const tutorLinks: SidebarLink[] = [{ id: 1, href: '/dashboard/sessions', text: 'Active Sessions' }];

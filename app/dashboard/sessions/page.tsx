@@ -1,4 +1,5 @@
-import { DM_Sans } from 'next/font/google';
+'use client';
+
 import Link from 'next/link';
 import { Suspense } from 'react';
 import { DataTable } from '@/components/data-table';
@@ -8,15 +9,29 @@ import { getSessions } from '@/lib/data/sessions';
 import { getUserRole } from '@/lib/mock-api';
 import { columns } from './columns';
 
-const dm_sans = DM_Sans({ subsets: ['latin'] });
-
 function TableSkeleton() {
   return (
-    <div className='space-y-4'>
-      <Skeleton className='h-10 w-full' />
-      <Skeleton className='h-24 w-full' />
-      <Skeleton className='h-24 w-full' />
-      <Skeleton className='h-24 w-full' />
+    <div className='space-y-3'>
+      {/* Header row */}
+      <div className='grid grid-cols-6 gap-4'>
+        <Skeleton className='h-6 w-full' />
+        <Skeleton className='h-6 w-full' />
+        <Skeleton className='h-6 w-full' />
+        <Skeleton className='h-6 w-full' />
+        <Skeleton className='h-6 w-full' />
+        <Skeleton className='h-6 w-full' />
+      </div>
+      {/* Data rows */}
+      {[1, 2, 3, 4, 5].map(i => (
+        <div key={i} className='grid grid-cols-6 gap-4'>
+          <Skeleton className='h-8 w-full' />
+          <Skeleton className='h-8 w-full' />
+          <Skeleton className='h-8 w-full' />
+          <Skeleton className='h-8 w-full' />
+          <Skeleton className='h-8 w-full' />
+          <Skeleton className='h-8 w-full' />
+        </div>
+      ))}
     </div>
   );
 }
@@ -24,10 +39,9 @@ function TableSkeleton() {
 export default async function SessionsPage({ searchParams }: { searchParams: { kind?: string } }) {
   const role = await getUserRole();
   const kind = searchParams.kind as 'all' | 'upcoming' | 'past' | undefined;
-  const sessions = await getSessions(kind);
 
   return (
-    <main className={dm_sans.className}>
+    <main>
       <div className='flex flex-col gap-4'>
         <div className='flex items-center justify-between'>
           <div>
@@ -55,10 +69,15 @@ export default async function SessionsPage({ searchParams }: { searchParams: { k
 
         <div className='p-2 md:p-8'>
           <Suspense fallback={<TableSkeleton />}>
-            <DataTable columns={columns} data={sessions} />
+            <SessionsList kind={kind} />
           </Suspense>
         </div>
       </div>
     </main>
   );
+}
+
+async function SessionsList({ kind }: { kind?: 'all' | 'upcoming' | 'past' }) {
+  const sessions = await getSessions(kind);
+  return <DataTable columns={columns} data={sessions} />;
 }

@@ -1,6 +1,6 @@
 import { cookies } from 'next/headers';
 import { notFound, redirect, unauthorized } from 'next/navigation';
-import { allParents, allReports, allSessions, allStudents, allTutors } from '@/lib/mock-data';
+import { allParents, allReports, allStudents, allTutors } from '@/lib/mock-data';
 
 export const USER_ROLE_COOKIE_NAME = 'user-role';
 export const USER_ID_COOKIE_NAME = 'user-id';
@@ -26,25 +26,6 @@ export async function getParent(id: number) {
   }
   const students = allStudents.filter(student => student.parent_id === parent.id);
   return { ...parent, students };
-}
-
-export async function getSessions() {
-  const role = await getUserRole();
-  if (role === 'admin') {
-    return allSessions;
-  }
-  const userID = await getCurrentUserID();
-  const parent = allParents.find(parent => parent.user_id === userID);
-  if (!parent) {
-    notFound();
-  }
-
-  const parentsSessions = allSessions.filter(session => session.parent_id === parent.id);
-  if (!parentsSessions) {
-    notFound();
-  }
-
-  return parentsSessions;
 }
 
 export async function getReport(id: number) {

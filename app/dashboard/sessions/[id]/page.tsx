@@ -53,8 +53,9 @@ function SessionDetailSkeleton() {
   );
 }
 
-async function SessionDetail({ id }: { id: number }) {
+async function SessionDetail({ id, role }: { id: number; role: string }) {
   const session = await getSession(id);
+  const showParentInfo = role === 'admin';
 
   return (
     <Card className='w-full'>
@@ -125,26 +126,32 @@ async function SessionDetail({ id }: { id: number }) {
         {/* Student Section */}
         <section>
           <h3 className='text-lg font-semibold mb-3'>Student</h3>
-          <div className='grid grid-cols-2 md:grid-cols-3 gap-4 text-sm'>
+          <div
+            className={`grid gap-4 text-sm ${showParentInfo ? 'grid-cols-2 md:grid-cols-3' : 'grid-cols-1 md:grid-cols-2'}`}
+          >
             <div>
               <p className='text-muted-foreground'>Name</p>
               <Link className='font-medium text-blue-800 underline' href={`/dashboard/students/${session.student.id}`}>
                 {session.student.name}
               </Link>
             </div>
-            <div>
-              <p className='text-muted-foreground'>Parent Name</p>
-              <Link
-                className='font-medium text-blue-800 underline'
-                href={`/dashboard/parents/${session.student.parent_id}`}
-              >
-                {session.student.parent_name}
-              </Link>
-            </div>
-            <div>
-              <p className='text-muted-foreground'>Parent Email</p>
-              <p className='font-medium'>{session.student.parent_email}</p>
-            </div>
+            {showParentInfo && (
+              <>
+                <div>
+                  <p className='text-muted-foreground'>Parent Name</p>
+                  <Link
+                    className='font-medium text-blue-800 underline'
+                    href={`/dashboard/parents/${session.student.parent_id}`}
+                  >
+                    {session.student.parent_name}
+                  </Link>
+                </div>
+                <div>
+                  <p className='text-muted-foreground'>Parent Email</p>
+                  <p className='font-medium'>{session.student.parent_email}</p>
+                </div>
+              </>
+            )}
           </div>
         </section>
 
@@ -260,7 +267,7 @@ export default async function SingleSessionPage({ params }: { params: Promise<{ 
     <main className={dm_sans.className}>
       <p className='mb-4'>You are logged in as {role}</p>
       <Suspense fallback={<SessionDetailSkeleton />}>
-        <SessionDetail id={sessionId} />
+        <SessionDetail id={sessionId} role={role} />
       </Suspense>
     </main>
   );

@@ -65,7 +65,6 @@ export const STUDENT_DETAIL_SELECT_WITH_JOINS = `
     ${STUDENT_DETAIL_SESSION_SELECT}
   )
 ` as const;
-
 export const TUTOR_SELECT_WITH_JOINS = `
   id,
   user_id,
@@ -81,7 +80,6 @@ export const TUTOR_SELECT_WITH_JOINS = `
     phone
   )
 ` as const;
-
 export const SESSION_SELECT_FIELDS =
   'id,tutor_id,student_id,subject_id,parent_id,slot_units,scheduled_at,ends_at,status' as const;
 

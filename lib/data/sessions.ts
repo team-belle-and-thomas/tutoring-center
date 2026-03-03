@@ -1,15 +1,11 @@
 import 'server-only';
 import { forbidden, notFound } from 'next/navigation';
+import type { UserRole } from '@/lib/auth';
 import { getCurrentUserID, getUserRole } from '@/lib/mock-api';
 import { createSupabaseServiceClient } from '@/lib/supabase/serverClient';
 import { SESSION_SELECT_WITH_JOINS } from '@/lib/supabase/types';
-import type { UserRole } from '@/lib/auth';
 import { pickFirstEmbedded } from '@/lib/utils/normalize';
 import { SessionWithJoinsListSchema, type SessionWithJoins } from '@/lib/validators/sessions';
-
-// ============================================
-// Session List Types (Story 1-2)
-// ============================================
 
 export type SessionRow = {
   id: number;
@@ -21,7 +17,7 @@ export type SessionRow = {
   subject_name: string;
   scheduled_at: string;
   ends_at: string;
-  hours: number; // 1 unit = 1 hour
+  hours: number;
   status: string;
 };
 
@@ -44,14 +40,10 @@ const SESSION_ERROR_MESSAGES = {
 const parseStudentUser = (student: SessionWithJoins['student']) => {
   if (!student) return { name: '—' };
 
-  // Handle array or object case
   const studentData = Array.isArray(student) ? student[0] : student;
-
-  // Handle the users field which might be an array or object
   const usersData = studentData?.users;
   const user = usersData ? pickFirstEmbedded(usersData) : null;
 
-  // Safely access properties
   const firstName =
     user && typeof user === 'object' ? ((user as Record<string, unknown>).first_name as string | null) : null;
   const lastName =
@@ -65,14 +57,10 @@ const parseStudentUser = (student: SessionWithJoins['student']) => {
 const parseTutorUser = (tutor: SessionWithJoins['tutor']) => {
   if (!tutor) return { name: '—' };
 
-  // Handle array or object case
   const tutorData = Array.isArray(tutor) ? tutor[0] : tutor;
-
-  // Handle the users field which might be an array or object
   const usersData = tutorData?.users;
   const user = usersData ? pickFirstEmbedded(usersData) : null;
 
-  // Safely access properties
   const firstName =
     user && typeof user === 'object' ? ((user as Record<string, unknown>).first_name as string | null) : null;
   const lastName =
@@ -94,10 +82,10 @@ const mapSessionRow = (session: SessionWithJoins): SessionRow => {
     tutor_name: tutor.name,
     student_id: session.student_id,
     subject_id: session.subject_id,
-    subject_name: 'Mathematics', // TODO: Add subject join to get actual name
+    subject_name: 'Mathematics',
     scheduled_at: session.scheduled_at,
     ends_at: session.ends_at,
-    hours: session.slot_units, // 1 unit = 1 hour
+    hours: session.slot_units,
     status: session.status,
   };
 };
@@ -116,7 +104,6 @@ export async function getSessions(kind: 'all' | 'upcoming' | 'past' = 'all') {
 
   let sessionsQuery = supabase.from('sessions').select(SESSION_SELECT_WITH_JOINS);
 
-  // Apply kind filter
   if (kind === 'upcoming') {
     const now = new Date().toISOString();
     sessionsQuery = sessionsQuery.gte('scheduled_at', now);
@@ -125,7 +112,6 @@ export async function getSessions(kind: 'all' | 'upcoming' | 'past' = 'all') {
     sessionsQuery = sessionsQuery.lt('scheduled_at', now);
   }
 
-  // Apply role-based filtering
   if (resolvedRole !== 'admin') {
     const userID = await getCurrentUserID();
     const { data: parent, error: parentErr } = await supabase
@@ -150,10 +136,6 @@ export async function getSessions(kind: 'all' | 'upcoming' | 'past' = 'all') {
 
   return parsedSessions.data.map(mapSessionRow);
 }
-
-// ============================================
-// Session Detail Types (Story 2-2)
-// ============================================
 
 export type SessionDetailType = {
   id: number;
@@ -250,25 +232,20 @@ export async function getSession(id: number): Promise<SessionDetailType> {
     notFound();
   }
 
-  // Parse tutor user info
   const tutorData = Array.isArray(data.tutor) ? data.tutor[0] : data.tutor;
   const tutorUsersData = tutorData?.users;
   const tutorUser = tutorUsersData ? pickFirstEmbedded(tutorUsersData) : null;
 
-  // Parse student user info
   const studentData = Array.isArray(data.student) ? data.student[0] : data.student;
   const studentUsersData = studentData?.users;
   const studentUser = studentUsersData ? pickFirstEmbedded(studentUsersData) : null;
 
-  // Parse parent user info
   const parentData = Array.isArray(data.parent) ? data.parent[0] : data.parent;
   const parentUsersData = parentData?.users;
   const parentUser = parentUsersData ? pickFirstEmbedded(parentUsersData) : null;
 
-  // Parse subject
   const subjectData = Array.isArray(data.subjects) ? data.subjects[0] : data.subjects;
 
-  // Parse progress (take first if exists)
   const progressRaw = data.session_progress as unknown as Array<{
     topics: string | null;
     homework_assigned: string | null;
@@ -277,13 +254,12 @@ export async function getSession(id: number): Promise<SessionDetailType> {
   const progress =
     progressRaw && progressRaw.length > 0
       ? {
-        topics: progressRaw[0].topics,
-        homework_assigned: progressRaw[0].homework_assigned,
-        public_notes: progressRaw[0].public_notes,
-      }
+          topics: progressRaw[0].topics,
+          homework_assigned: progressRaw[0].homework_assigned,
+          public_notes: progressRaw[0].public_notes,
+        }
       : null;
 
-  // Parse metrics (take first if exists)
   const metricsRaw = data.session_metrics as unknown as Array<{
     confidence_score: number | null;
     session_performance: number | null;
@@ -293,11 +269,11 @@ export async function getSession(id: number): Promise<SessionDetailType> {
   const metrics =
     metricsRaw && metricsRaw.length > 0
       ? {
-        confidence_score: metricsRaw[0].confidence_score,
-        session_performance: metricsRaw[0].session_performance,
-        homework_completed: metricsRaw[0].homework_completed,
-        tutor_comments: metricsRaw[0].tutor_comments,
-      }
+          confidence_score: metricsRaw[0].confidence_score,
+          session_performance: metricsRaw[0].session_performance,
+          homework_completed: metricsRaw[0].homework_completed,
+          tutor_comments: metricsRaw[0].tutor_comments,
+        }
       : null;
 
   return {

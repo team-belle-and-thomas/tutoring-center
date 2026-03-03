@@ -267,6 +267,19 @@ describe('getStudent', () => {
     expect(mockFrom).toHaveBeenCalledWith('parents');
   });
 
+  it('throws notFound when a parent requests a student outside their family', async () => {
+    mockGetCurrentUserID.mockResolvedValue(99);
+    const parentQuery = createMockQuery({ data: { id: 55 }, error: null });
+    const studentsQuery = createStudentDetailsMockQuery({ data: null, error: null });
+    setupSupabaseMock({ students: studentsQuery, parents: parentQuery });
+
+    await expect(getStudent(999, 'parent')).rejects.toThrow('notFound');
+
+    expect(studentsQuery.eq).toHaveBeenCalledWith('id', 999);
+    expect(studentsQuery.eq).toHaveBeenCalledWith('parent_id', 55);
+    expect(mockNotFound).toHaveBeenCalledTimes(1);
+  });
+
   it('throws notFound when joined student query returns null', async () => {
     const studentsQuery = createStudentDetailsMockQuery({ data: null, error: null });
     setupSupabaseMock({ students: studentsQuery });

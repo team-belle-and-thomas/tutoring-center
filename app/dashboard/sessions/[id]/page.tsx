@@ -19,11 +19,35 @@ function SessionDetailSkeleton() {
         <Skeleton className='h-8 w-[300px] mb-2' />
         <Skeleton className='h-4 w-[200px]' />
       </CardHeader>
-      <CardContent>
-        <div className='grid grid-cols-2 gap-4'>
-          <Skeleton className='h-20 w-full' />
-          <Skeleton className='h-20 w-full' />
-        </div>
+      <CardContent className='space-y-6'>
+        {/* Session Info */}
+        <section>
+          <Skeleton className='h-6 w-32 mb-3' />
+          <div className='grid grid-cols-2 md:grid-cols-4 gap-4'>
+            <Skeleton className='h-16 w-full' />
+            <Skeleton className='h-16 w-full' />
+            <Skeleton className='h-16 w-full' />
+            <Skeleton className='h-16 w-full' />
+          </div>
+        </section>
+        {/* Tutor */}
+        <section>
+          <Skeleton className='h-6 w-20 mb-3' />
+          <div className='grid grid-cols-2 md:grid-cols-3 gap-4'>
+            <Skeleton className='h-16 w-full' />
+            <Skeleton className='h-16 w-full' />
+            <Skeleton className='h-16 w-full' />
+          </div>
+        </section>
+        {/* Student */}
+        <section>
+          <Skeleton className='h-6 w-24 mb-3' />
+          <div className='grid grid-cols-2 md:grid-cols-3 gap-4'>
+            <Skeleton className='h-16 w-full' />
+            <Skeleton className='h-16 w-full' />
+            <Skeleton className='h-16 w-full' />
+          </div>
+        </section>
       </CardContent>
     </Card>
   );
@@ -39,10 +63,7 @@ async function SessionDetail({ id }: { id: number }) {
           <div>
             <CardTitle className='text-2xl'>Session Details</CardTitle>
             <p className='text-muted-foreground mt-1'>
-              {session.subject_name} with{' '}
-              <Link className='text-blue-800 underline' href={`/dashboard/tutors/${session.tutor.id}`}>
-                {session.tutor.name}
-              </Link>
+              {session.subject_name} with {session.tutor.name}
             </p>
           </div>
           <Badge
@@ -62,7 +83,7 @@ async function SessionDetail({ id }: { id: number }) {
         {/* Session Info Section */}
         <section>
           <h3 className='text-lg font-semibold mb-3'>Session Info</h3>
-          <div className='grid grid-cols-2 md:grid-cols-4 gap-4 text-sm'>
+          <div className='grid grid-cols-2 md:grid-cols-3 gap-4 text-sm'>
             <div>
               <p className='text-muted-foreground'>Date</p>
               <p className='font-medium'>{format(parseISO(session.scheduled_at), 'MMMM d, yyyy')}</p>
@@ -71,12 +92,6 @@ async function SessionDetail({ id }: { id: number }) {
               <p className='text-muted-foreground'>Time</p>
               <p className='font-medium'>
                 {format(parseISO(session.scheduled_at), 'h:mm a')} - {format(parseISO(session.ends_at), 'h:mm a')}
-              </p>
-            </div>
-            <div>
-              <p className='text-muted-foreground'>Duration</p>
-              <p className='font-medium'>
-                {session.slot_units} hour{session.slot_units > 1 ? 's' : ''}
               </p>
             </div>
             <div>
@@ -119,7 +134,12 @@ async function SessionDetail({ id }: { id: number }) {
             </div>
             <div>
               <p className='text-muted-foreground'>Parent Name</p>
-              <p className='font-medium'>{session.student.parent_name}</p>
+              <Link
+                className='font-medium text-blue-800 underline'
+                href={`/dashboard/parents/${session.student.parent_id}`}
+              >
+                {session.student.parent_name}
+              </Link>
             </div>
             <div>
               <p className='text-muted-foreground'>Parent Email</p>
@@ -160,11 +180,11 @@ async function SessionDetail({ id }: { id: number }) {
         {/* Metrics Section */}
         {session.metrics && (
           <section>
-            <h3 className='text-lg font-semibold mb-3'>Performance Metrics</h3>
+            <h3 className='text-lg font-semibold mb-3'>Performance</h3>
             <div className='grid grid-cols-2 md:grid-cols-4 gap-4 text-sm'>
               {session.metrics.confidence_score !== null && (
                 <div>
-                  <p className='text-muted-foreground'>Confidence Score</p>
+                  <p className='text-muted-foreground'>Confidence</p>
                   <div className='flex items-center gap-1'>
                     <div className='flex'>
                       {[1, 2, 3, 4, 5].map(star => (
@@ -179,32 +199,43 @@ async function SessionDetail({ id }: { id: number }) {
                         />
                       ))}
                     </div>
-                    <span className='font-medium'>({session.metrics.confidence_score}/5)</span>
                   </div>
                 </div>
               )}
               {session.metrics.session_performance !== null && (
                 <div>
                   <p className='text-muted-foreground'>Performance</p>
-                  <p className='font-medium'>{session.metrics.session_performance}/5</p>
+                  <div className='flex items-center gap-1'>
+                    <div className='flex'>
+                      {[1, 2, 3, 4, 5].map(star => (
+                        <Star
+                          key={star}
+                          size={16}
+                          className={
+                            star <= session.metrics!.session_performance!
+                              ? 'fill-yellow-400 text-yellow-400'
+                              : 'text-gray-300'
+                          }
+                        />
+                      ))}
+                    </div>
+                  </div>
                 </div>
               )}
               <div>
-                <p className='text-muted-foreground'>Homework Completion</p>
+                <p className='text-muted-foreground'>Homework</p>
                 <div className='flex items-center gap-1'>
                   {session.metrics.homework_completed ? (
                     <CircleCheck className='text-green-600' size={16} />
                   ) : (
                     <CircleX className='text-red-600' size={16} />
                   )}
-                  <span className='font-medium'>
-                    {session.metrics.homework_completed ? 'Completed' : 'Not Completed'}
-                  </span>
+                  <span className='font-medium'>{session.metrics.homework_completed ? 'Done' : 'Not Done'}</span>
                 </div>
               </div>
               {session.metrics.tutor_comments && (
                 <div>
-                  <p className='text-muted-foreground'>Tutor Comments</p>
+                  <p className='text-muted-foreground'>Comments</p>
                   <p className='font-medium'>{session.metrics.tutor_comments}</p>
                 </div>
               )}

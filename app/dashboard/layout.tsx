@@ -1,3 +1,5 @@
+import { CreditsProvider } from '@/components/add-credits/credits-context';
+import { ParentCreditWidget } from '@/components/add-credits/parent-credit-widget';
 import { AppSidebar } from '@/components/app-sidebar';
 import { SiteHeader } from '@/components/site-header';
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
@@ -12,12 +14,14 @@ export default async function DashboardLayout({
 }>) {
   const userRole = await getUserRole();
   const links = getUserLinks(userRole);
-  return (
+  const footerSlot = userRole === 'parent' ? <ParentCreditWidget /> : null;
+
+  const layout = (
     <div className='[--header-height:calc(--spacing(14))]'>
       <SidebarProvider className='flex flex-col'>
         <SiteHeader />
         <div className='flex flex-1'>
-          <AppSidebar>
+          <AppSidebar footerSlot={footerSlot}>
             <UserLinks links={links} />
           </AppSidebar>
           <SidebarInset>{children}</SidebarInset>
@@ -25,4 +29,7 @@ export default async function DashboardLayout({
       </SidebarProvider>
     </div>
   );
+
+  // TODO: delete below and "return layout"
+  return userRole === 'parent' ? <CreditsProvider>{layout}</CreditsProvider> : layout;
 }

@@ -20,7 +20,6 @@ function SessionDetailSkeleton() {
         <Skeleton className='h-4 w-[200px]' />
       </CardHeader>
       <CardContent className='space-y-6'>
-        {/* Session Info */}
         <section>
           <Skeleton className='h-6 w-32 mb-3' />
           <div className='grid grid-cols-2 md:grid-cols-4 gap-4'>
@@ -30,7 +29,6 @@ function SessionDetailSkeleton() {
             <Skeleton className='h-16 w-full' />
           </div>
         </section>
-        {/* Tutor */}
         <section>
           <Skeleton className='h-6 w-20 mb-3' />
           <div className='grid grid-cols-2 md:grid-cols-3 gap-4'>
@@ -39,7 +37,6 @@ function SessionDetailSkeleton() {
             <Skeleton className='h-16 w-full' />
           </div>
         </section>
-        {/* Student */}
         <section>
           <Skeleton className='h-6 w-24 mb-3' />
           <div className='grid grid-cols-2 md:grid-cols-3 gap-4'>
@@ -56,6 +53,7 @@ function SessionDetailSkeleton() {
 async function SessionDetail({ id, role }: { id: number; role: string }) {
   const session = await getSession(id);
   const showParentInfo = role === 'admin';
+  const metrics = session.metrics;
 
   return (
     <Card className='w-full'>
@@ -81,7 +79,6 @@ async function SessionDetail({ id, role }: { id: number; role: string }) {
         </div>
       </CardHeader>
       <CardContent className='space-y-6'>
-        {/* Session Info Section */}
         <section>
           <h3 className='text-lg font-semibold mb-3'>Session Info</h3>
           <div className='grid grid-cols-2 md:grid-cols-3 gap-4 text-sm'>
@@ -102,7 +99,6 @@ async function SessionDetail({ id, role }: { id: number; role: string }) {
           </div>
         </section>
 
-        {/* Tutor Section */}
         <section>
           <h3 className='text-lg font-semibold mb-3'>Tutor</h3>
           <div className='grid grid-cols-2 md:grid-cols-3 gap-4 text-sm'>
@@ -123,7 +119,6 @@ async function SessionDetail({ id, role }: { id: number; role: string }) {
           </div>
         </section>
 
-        {/* Student Section */}
         <section>
           <h3 className='text-lg font-semibold mb-3'>Student</h3>
           <div
@@ -155,7 +150,6 @@ async function SessionDetail({ id, role }: { id: number; role: string }) {
           </div>
         </section>
 
-        {/* Progress Report Section */}
         <section>
           <h3 className='text-lg font-semibold mb-3'>Progress Report</h3>
           {session.progress ? (
@@ -184,12 +178,11 @@ async function SessionDetail({ id, role }: { id: number; role: string }) {
           )}
         </section>
 
-        {/* Metrics Section */}
-        {session.metrics && Object.keys(session.metrics).length > 0 && (
+        {metrics?.confidence_score !== null && (
           <section>
             <h3 className='text-lg font-semibold mb-3'>Performance</h3>
             <div className='grid grid-cols-2 md:grid-cols-4 gap-4 text-sm'>
-              {session.metrics.confidence_score !== null && (
+              {metrics?.confidence_score !== null && (
                 <div>
                   <p className='text-muted-foreground'>Confidence</p>
                   <div className='flex items-center gap-1'>
@@ -199,7 +192,7 @@ async function SessionDetail({ id, role }: { id: number; role: string }) {
                           key={star}
                           size={16}
                           className={
-                            star <= session.metrics!.confidence_score!
+                            star <= (metrics?.confidence_score ?? 0)
                               ? 'fill-yellow-400 text-yellow-400'
                               : 'text-gray-300'
                           }
@@ -209,7 +202,7 @@ async function SessionDetail({ id, role }: { id: number; role: string }) {
                   </div>
                 </div>
               )}
-              {session.metrics.session_performance !== null && (
+              {metrics?.session_performance !== null && (
                 <div>
                   <p className='text-muted-foreground'>Performance</p>
                   <div className='flex items-center gap-1'>
@@ -219,7 +212,7 @@ async function SessionDetail({ id, role }: { id: number; role: string }) {
                           key={star}
                           size={16}
                           className={
-                            star <= session.metrics!.session_performance!
+                            star <= (metrics?.session_performance ?? 0)
                               ? 'fill-yellow-400 text-yellow-400'
                               : 'text-gray-300'
                           }
@@ -232,18 +225,18 @@ async function SessionDetail({ id, role }: { id: number; role: string }) {
               <div>
                 <p className='text-muted-foreground'>Homework</p>
                 <div className='flex items-center gap-1'>
-                  {session.metrics.homework_completed ? (
+                  {metrics?.homework_completed ? (
                     <CircleCheck className='text-green-600' size={16} />
                   ) : (
                     <CircleX className='text-red-600' size={16} />
                   )}
-                  <span className='font-medium'>{session.metrics.homework_completed ? 'Done' : 'Not Done'}</span>
+                  <span className='font-medium'>{metrics?.homework_completed ? 'Done' : 'Not Done'}</span>
                 </div>
               </div>
-              {session.metrics.tutor_comments && (
+              {metrics?.tutor_comments && (
                 <div>
                   <p className='text-muted-foreground'>Comments</p>
-                  <p className='font-medium'>{session.metrics.tutor_comments}</p>
+                  <p className='font-medium'>{metrics?.tutor_comments}</p>
                 </div>
               )}
             </div>

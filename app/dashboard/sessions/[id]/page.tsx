@@ -29,8 +29,8 @@ function SessionDetailSkeleton() {
   );
 }
 
-function SessionDetail({ id }: { id: number }) {
-  const session = getSession(id);
+async function SessionDetail({ id }: { id: number }) {
+  const session = await getSession(id);
 
   return (
     <Card className='w-full'>

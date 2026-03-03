@@ -42,7 +42,8 @@ const mapTutorDetail = (tutor: TutorWithJoins): TutorDetailType => {
 export async function getTutor(id: number): Promise<TutorDetailType> {
   const supabase = createSupabaseServiceClient();
 
-  const { data, error } = await supabase.from('tutors').select(TUTOR_SELECT_WITH_JOINS).eq('user_id', id).single();
+  // Query by tutor's actual id (not user_id)
+  const { data, error } = await supabase.from('tutors').select(TUTOR_SELECT_WITH_JOINS).eq('id', id).single();
 
   if (error || !data) {
     notFound();

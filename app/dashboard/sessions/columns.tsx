@@ -12,13 +12,18 @@ export const columns: ColumnDef<SessionRow>[] = [
     id: 'name',
     accessorKey: 'student_name',
     header: () => <div>Student</div>,
+    cell: ({ row }) => (
+      <Link className='text-blue-800 underline' href={`/dashboard/students/${row.original.student_id}`}>
+        {row.original.student_name}
+      </Link>
+    ),
   },
   {
     id: 'tutor_name',
     header: () => <div>Tutor</div>,
     cell: ({ row }) => (
       <Link className='text-blue-800 underline' href={`/dashboard/tutors/${row.original.tutor_id}`}>
-        {row.original.tutor_name}{' '}
+        {row.original.tutor_name}
       </Link>
     ),
   },
@@ -37,11 +42,6 @@ export const columns: ColumnDef<SessionRow>[] = [
       return `${format(start, 'MMM d, yyyy h:mm a')} - ${format(end, 'h:mm a')}`;
     },
     header: () => <div>Session Timing</div>,
-  },
-  {
-    id: 'units',
-    accessorKey: 'units',
-    header: () => <div>Units</div>,
   },
   {
     id: 'session_status',

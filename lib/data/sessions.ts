@@ -16,11 +16,12 @@ export type SessionRow = {
   student_name: string;
   tutor_id: number;
   tutor_name: string;
+  student_id: number;
   subject_id: number;
   subject_name: string;
   scheduled_at: string;
   ends_at: string;
-  units: number;
+  hours: number; // 1 unit = 1 hour
   status: string;
 };
 
@@ -91,11 +92,12 @@ const mapSessionRow = (session: SessionWithJoins): SessionRow => {
     student_name: student.name,
     tutor_id: session.tutor_id,
     tutor_name: tutor.name,
+    student_id: session.student_id,
     subject_id: session.subject_id,
     subject_name: 'Mathematics', // TODO: Add subject join to get actual name
     scheduled_at: session.scheduled_at,
     ends_at: session.ends_at,
-    units: session.slot_units,
+    hours: session.slot_units, // 1 unit = 1 hour
     status: session.status,
   };
 };

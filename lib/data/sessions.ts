@@ -172,6 +172,7 @@ export type SessionDetailType = {
   student: {
     id: number;
     name: string;
+    parent_id: number;
     parent_name: string;
     parent_email: string;
   };
@@ -316,6 +317,7 @@ export async function getSession(id: number): Promise<SessionDetailType> {
     student: {
       id: studentData?.id || 0,
       name: studentUser ? [studentUser.first_name, studentUser.last_name].filter(Boolean).join(' ') : '—',
+      parent_id: studentData?.parent_id || 0,
       parent_name: parentUser ? [parentUser.first_name, parentUser.last_name].filter(Boolean).join(' ') : '—',
       parent_email: parentUser?.email || '—',
     },

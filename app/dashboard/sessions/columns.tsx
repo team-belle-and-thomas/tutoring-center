@@ -41,7 +41,7 @@ export const columns: ColumnDef<SessionRow>[] = [
       // Formats to: "Feb 23, 2026 2:00 PM - 3:00 PM"
       return `${format(start, 'MMM d, yyyy h:mm a')} - ${format(end, 'h:mm a')}`;
     },
-    header: () => <div>Session Timing</div>,
+    header: () => <div>Timing</div>,
   },
   {
     id: 'session_status',

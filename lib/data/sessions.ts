@@ -3,7 +3,7 @@ import { forbidden, notFound } from 'next/navigation';
 import { getCurrentUserID, getUserRole } from '@/lib/mock-api';
 import { createSupabaseServiceClient } from '@/lib/supabase/serverClient';
 import { SESSION_SELECT_WITH_JOINS } from '@/lib/supabase/types';
-import type { UserRole } from '@/lib/types';
+import type { UserRole } from '@/lib/auth';
 import { pickFirstEmbedded } from '@/lib/utils/normalize';
 import { SessionWithJoinsListSchema, type SessionWithJoins } from '@/lib/validators/sessions';
 
@@ -277,10 +277,10 @@ export async function getSession(id: number): Promise<SessionDetailType> {
   const progress =
     progressRaw && progressRaw.length > 0
       ? {
-          topics: progressRaw[0].topics,
-          homework_assigned: progressRaw[0].homework_assigned,
-          public_notes: progressRaw[0].public_notes,
-        }
+        topics: progressRaw[0].topics,
+        homework_assigned: progressRaw[0].homework_assigned,
+        public_notes: progressRaw[0].public_notes,
+      }
       : null;
 
   // Parse metrics (take first if exists)
@@ -293,11 +293,11 @@ export async function getSession(id: number): Promise<SessionDetailType> {
   const metrics =
     metricsRaw && metricsRaw.length > 0
       ? {
-          confidence_score: metricsRaw[0].confidence_score,
-          session_performance: metricsRaw[0].session_performance,
-          homework_completed: metricsRaw[0].homework_completed,
-          tutor_comments: metricsRaw[0].tutor_comments,
-        }
+        confidence_score: metricsRaw[0].confidence_score,
+        session_performance: metricsRaw[0].session_performance,
+        homework_completed: metricsRaw[0].homework_completed,
+        tutor_comments: metricsRaw[0].tutor_comments,
+      }
       : null;
 
   return {

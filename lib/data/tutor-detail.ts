@@ -1,6 +1,5 @@
 import 'server-only';
 import { notFound } from 'next/navigation';
-import { getUserRole } from '@/lib/auth';
 import { createSupabaseServiceClient } from '@/lib/supabase/serverClient';
 import { TUTOR_SELECT_WITH_JOINS } from '@/lib/supabase/types';
 import { pickFirstEmbedded } from '@/lib/utils/normalize';

@@ -10,6 +10,8 @@ export const isoDateTime = z.string().datetime();
 // adding Scott's helpers
 export const EmbeddedRecordSchema = z.record(z.unknown());
 export const EmbeddedOneSchema = z.union([EmbeddedRecordSchema, z.array(EmbeddedRecordSchema), z.null()]).optional();
+export const EmbeddedOneOf = <T extends z.ZodTypeAny>(schema: T) =>
+  z.union([schema, z.array(schema), z.null()]).optional();
 
 export const EmbeddedUserSchema = z.object({
   first_name: z.string().nullable(),

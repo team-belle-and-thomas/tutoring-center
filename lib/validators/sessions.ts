@@ -12,7 +12,7 @@ export const SESSION_STATUS_OPTIONS = [
 
 export type SessionStatus = (typeof SESSION_STATUS_OPTIONS)[number];
 
-const StatusSchema = z.enum(SESSION_STATUS_OPTIONS);
+export const StatusSchema = z.enum(SESSION_STATUS_OPTIONS);
 
 export const SessionCreateSchema = z
   .object({

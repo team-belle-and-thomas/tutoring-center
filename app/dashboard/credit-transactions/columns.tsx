@@ -4,8 +4,8 @@ import Link from 'next/link';
 import { DataTable, DataTableFilter, DataTableToolbar } from '@/components/data-table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import type { UserRole } from '@/lib/auth';
 import type { CreditTransactionRow } from '@/lib/data/credit-transactions';
-import type { UserRole } from '@/lib/mock-api';
 import { ColumnDef } from '@tanstack/react-table';
 import { format } from 'date-fns';
 

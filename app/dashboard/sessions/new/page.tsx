@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation';
 import { BookingScreen } from '@/components/parents-sessions/booking-screen';
+import { getUserRole } from '@/lib/auth';
 import { getWeekStart } from '@/lib/date-utils';
-import { getUserRole } from '@/lib/mock-api';
 import { mockAvailableSessions } from '@/lib/mock-available-sessions';
 import { addDays, startOfDay } from 'date-fns';
 

@@ -1,7 +1,7 @@
 import { DataTable } from '@/components/data-table';
+import { getUserRole } from '@/lib/auth';
 import { getTutorAssignedSessions } from '@/lib/data/sessions';
 import type { TutorAssignedSession } from '@/lib/data/sessions';
-import { getUserRole } from '@/lib/mock-api';
 import { tutorSessionColumns } from './tutor-session-columns';
 
 export default async function DashboardPage() {

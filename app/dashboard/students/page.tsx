@@ -1,8 +1,8 @@
 import { forbidden } from 'next/navigation';
 import { DataTable } from '@/components/data-table';
 import { Badge } from '@/components/ui/badge';
+import { getUserRole } from '@/lib/auth';
 import { getStudents } from '@/lib/data/students';
-import { getUserRole } from '@/lib/mock-api';
 import { columns } from './columns';
 
 export default async function StudentsPage() {

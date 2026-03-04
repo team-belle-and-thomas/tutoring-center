@@ -2,8 +2,8 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { getUserRole } from '@/lib/auth';
 import { getSession } from '@/lib/data/sessions';
-import { getUserRole } from '@/lib/mock-api';
 import { format, parseISO } from 'date-fns';
 import { CircleCheck, CircleX, Star } from 'lucide-react';
 

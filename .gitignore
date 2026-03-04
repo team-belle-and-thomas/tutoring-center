@@ -140,3 +140,9 @@ vite.config.ts.timestamp-*
 
 # node version
 .node-version
+
+# Bmad
+bmad
+_bmad-output/
+.cursor/
+.opencode/

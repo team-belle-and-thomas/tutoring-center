@@ -36,6 +36,35 @@ export const STUDENT_SELECT_WITH_JOINS = `
   )
 ` as const;
 
+export const STUDENT_DETAIL_SESSION_SELECT = `
+  id,
+  scheduled_at,
+  ends_at,
+  status,
+  slot_units,
+  subject:subjects ( category ),
+  tutor:tutors (
+    users:user_id ( first_name, last_name )
+  )
+` as const;
+
+export const STUDENT_DETAIL_SELECT_WITH_JOINS = `
+  id,
+  user_id,
+  parent_id,
+  birth_date,
+  grade,
+  learning_goals,
+  users:user_id (
+    first_name,
+    last_name,
+    email,
+    phone
+  ),
+  sessions (
+    ${STUDENT_DETAIL_SESSION_SELECT}
+  )
+` as const;
 export const TUTOR_SELECT_WITH_JOINS = `
   id,
   user_id,
@@ -54,6 +83,20 @@ export const TUTOR_SELECT_WITH_JOINS = `
 
 export const SESSION_SELECT_FIELDS =
   'id,tutor_id,student_id,subject_id,parent_id,slot_units,scheduled_at,ends_at,status' as const;
+
+export const CREDIT_TRANSACTION_SELECT_WITH_JOINS = `
+  id,
+  amount,
+  balance_after,
+  created_at,
+  parent_id,
+  session_id,
+  student_id,
+  type,
+  student:students (
+    users:user_id ( first_name, last_name )
+  )
+` as const;
 
 // Sessions + joined parent/tutor/student user info
 export const SESSION_SELECT_WITH_JOINS = `

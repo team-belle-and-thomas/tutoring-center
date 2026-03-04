@@ -47,4 +47,7 @@ const parentLinks: SidebarLink[] = [
   { id: 5, href: '/dashboard/progress-reports', text: 'Progress Reports' },
 ];
 
-const tutorLinks: SidebarLink[] = [{ id: 1, href: '/dashboard/sessions', text: 'Active Sessions' }];
+const tutorLinks: SidebarLink[] = [
+  { id: 1, href: '/dashboard', text: 'Dashboard' },
+  { id: 2, href: '/dashboard/sessions', text: 'Sessions' },
+];

@@ -78,6 +78,8 @@ export const SessionWithJoinsSchema = z.object({
   student: EmbeddedOneSchema,
   tutor: EmbeddedOneSchema,
   parent: EmbeddedOneSchema,
+  session_progress: EmbeddedOneSchema,
+  session_metrics: EmbeddedOneSchema,
 });
 
 export const SessionWithJoinsListSchema = z.array(SessionWithJoinsSchema);

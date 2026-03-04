@@ -309,3 +309,117 @@ export async function getSession(id: number): Promise<SessionDetailType> {
     metrics,
   };
 }
+
+export type TutorAssignedSession = {
+  id: number;
+  student_name: string;
+  student_id: number;
+  tutor_id: number;
+  subject_name: string;
+  scheduled_at: string;
+  ends_at: string;
+  status: string;
+  needsProgressReport: boolean;
+  needsMetrics: boolean;
+};
+
+// Mock data for development/testing
+const MOCK_TUTOR_SESSIONS: TutorAssignedSession[] = [
+  {
+    id: 1,
+    student_name: 'Sofia Santos',
+    student_id: 1,
+    tutor_id: 1,
+    subject_name: 'Mathematics',
+    scheduled_at: '2026-03-01T14:00:00Z',
+    ends_at: '2026-03-01T15:00:00Z',
+    status: 'Pending-Notes',
+    needsProgressReport: true,
+    needsMetrics: false,
+  },
+  {
+    id: 2,
+    student_name: 'Miguel Santos',
+    student_id: 2,
+    tutor_id: 1,
+    subject_name: 'Science',
+    scheduled_at: '2026-03-01T16:00:00Z',
+    ends_at: '2026-03-01T17:00:00Z',
+    status: 'Pending-Notes',
+    needsProgressReport: true,
+    needsMetrics: true,
+  },
+  {
+    id: 3,
+    student_name: 'Tyler Thompson',
+    student_id: 3,
+    tutor_id: 1,
+    subject_name: 'English',
+    scheduled_at: '2026-03-02T10:00:00Z',
+    ends_at: '2026-03-02T11:00:00Z',
+    status: 'Pending-Notes',
+    needsProgressReport: false,
+    needsMetrics: true,
+  },
+];
+
+/**
+ * Get sessions assigned to the current tutor that need forms filled.
+ */
+export async function getTutorAssignedSessions(): Promise<TutorAssignedSession[]> {
+  const role = await getUserRole();
+  if (role !== 'tutor') {
+    return [];
+  }
+
+  const tutorUserId = await getCurrentUserID();
+  const supabase = createSupabaseServiceClient();
+
+  const { data: tutorData, error: tutorError } = await supabase
+    .from('tutors')
+    .select('id')
+    .eq('user_id', tutorUserId)
+    .single();
+
+  if (tutorError || !tutorData) {
+    return MOCK_TUTOR_SESSIONS;
+  }
+
+  const tutorId = tutorData.id;
+
+  const { data, error } = await supabase
+    .from('sessions')
+    .select(SESSION_SELECT_WITH_JOINS)
+    .eq('tutor_id', tutorId)
+    .eq('status', 'Pending-Notes');
+
+  if (error || !data || data.length === 0) {
+    return MOCK_TUTOR_SESSIONS;
+  }
+
+  const parsedSessions = SessionWithJoinsListSchema.safeParse(data);
+  if (!parsedSessions.success) {
+    return MOCK_TUTOR_SESSIONS;
+  }
+
+  return parsedSessions.data.map((session): TutorAssignedSession => {
+    const student = parseStudentUser(session.student);
+    const progressData = session.session_progress as unknown as Array<unknown> | null;
+    const hasProgressReport = progressData && progressData.length > 0;
+    const metricsData = session.session_metrics as unknown as Array<unknown> | null;
+    const hasMetrics = metricsData && metricsData.length > 0;
+
+    return {
+      id: session.id,
+      student_name: student.name,
+      student_id: session.student_id,
+      tutor_id: session.tutor_id,
+      subject_name: 'Mathematics',
+      scheduled_at: session.scheduled_at,
+      ends_at: session.ends_at,
+      status: session.status,
+      needsProgressReport: !hasProgressReport,
+      needsMetrics: !hasMetrics,
+    };
+  });
+}

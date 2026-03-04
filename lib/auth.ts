@@ -55,7 +55,6 @@ export async function getUserIdByRole(role: UserRole): Promise<string | null> {
       .limit(1);
 
     if (error) {
-      console.error('Error fetching parent user:', error);
       return null;
     }
     return data?.[0]?.user_id?.toString() ?? null;
@@ -69,7 +68,6 @@ export async function getUserIdByRole(role: UserRole): Promise<string | null> {
       .limit(1);
 
     if (error) {
-      console.error('Error fetching tutor user:', error);
       return null;
     }
     return data?.[0]?.user_id?.toString() ?? null;
@@ -84,7 +82,6 @@ export async function getUserIdByRole(role: UserRole): Promise<string | null> {
       .single();
 
     if (roleError || !roleData) {
-      console.error('Error fetching admin role:', roleError);
       return null;
     }
 
@@ -97,7 +94,6 @@ export async function getUserIdByRole(role: UserRole): Promise<string | null> {
       .limit(1);
 
     if (error) {
-      console.error('Error fetching admin user:', error);
       return null;
     }
     return data?.[0]?.id?.toString() ?? null;
@@ -116,7 +112,6 @@ export async function getCurrentUserName(): Promise<string | null> {
   const { data, error } = await supabase.from('users').select('first_name, last_name').eq('id', userId).single();
 
   if (error) {
-    console.error('Error fetching user name:', error);
     return null;
   }
 
@@ -141,7 +136,6 @@ export async function login(formData: FormData) {
   // Fallback to temp user if no user found for role
   let finalUserId = userId;
   if (!finalUserId) {
-    console.warn(`No user found for role '${role}', using fallback user ID`);
     finalUserId = '2'; // Fallback temp user
   }
 

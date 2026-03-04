@@ -1,5 +1,5 @@
 import 'server-only';
-import { notFound } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
 import type { UserRole } from '@/lib/auth';
 import { getCurrentUserID, getUserRole } from '@/lib/mock-api';
 import { createSupabaseServiceClient } from '@/lib/supabase/serverClient';
@@ -220,12 +220,22 @@ const SESSION_DETAIL_SELECT = `
 ` as const;
 
 export async function getSession(id: number): Promise<SessionDetailType> {
+  const role = await getUserRole();
   const supabase = createSupabaseServiceClient();
 
   const { data, error } = await supabase.from('sessions').select(SESSION_DETAIL_SELECT).eq('id', id).single();
 
   if (error || !data) {
     notFound();
+  }
+
+  if (role !== 'admin') {
+    const userID = await getCurrentUserID();
+    const { data: parent } = await supabase.from('parents').select('id').eq('user_id', userID).single();
+
+    if (!parent || data.parent_id !== parent.id) {
+      redirect('/dashboard/sessions');
+    }
   }
 
   const tutorData = Array.isArray(data.tutor) ? data.tutor[0] : data.tutor;

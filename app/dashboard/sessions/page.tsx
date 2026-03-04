@@ -1,43 +1,15 @@
 import Link from 'next/link';
-import { Suspense } from 'react';
 import { DataTable } from '@/components/data-table';
 import { Button } from '@/components/ui/button';
-import { Skeleton } from '@/components/ui/skeleton';
 import { getSessions } from '@/lib/data/sessions';
 import { getUserRole } from '@/lib/mock-api';
 import { columns } from './columns';
-
-function TableSkeleton() {
-  return (
-    <div className='space-y-3'>
-      {/* Header row */}
-      <div className='grid grid-cols-6 gap-4'>
-        <Skeleton className='h-6 w-full' />
-        <Skeleton className='h-6 w-full' />
-        <Skeleton className='h-6 w-full' />
-        <Skeleton className='h-6 w-full' />
-        <Skeleton className='h-6 w-full' />
-        <Skeleton className='h-6 w-full' />
-      </div>
-      {/* Data rows */}
-      {[1, 2, 3, 4, 5].map(i => (
-        <div key={i} className='grid grid-cols-6 gap-4'>
-          <Skeleton className='h-8 w-full' />
-          <Skeleton className='h-8 w-full' />
-          <Skeleton className='h-8 w-full' />
-          <Skeleton className='h-8 w-full' />
-          <Skeleton className='h-8 w-full' />
-          <Skeleton className='h-8 w-full' />
-        </div>
-      ))}
-    </div>
-  );
-}
 
 export default async function SessionsPage({ searchParams }: { searchParams: Promise<{ kind?: string }> }) {
   const role = await getUserRole();
   const params = await searchParams;
   const kind = params.kind as 'all' | 'upcoming' | 'past' | undefined;
+  const sessions = await getSessions(kind);
 
   return (
     <main>
@@ -67,16 +39,9 @@ export default async function SessionsPage({ searchParams }: { searchParams: Pro
         </div>
 
         <div className='p-2 md:p-8'>
-          <Suspense fallback={<TableSkeleton />}>
-            <SessionsList kind={kind} />
-          </Suspense>
+          <DataTable columns={columns} data={sessions} />
         </div>
       </div>
     </main>
   );
-}
-
-async function SessionsList({ kind }: { kind?: 'all' | 'upcoming' | 'past' }) {
-  const sessions = await getSessions(kind);
-  return <DataTable columns={columns} data={sessions} />;
 }

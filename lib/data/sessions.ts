@@ -229,11 +229,13 @@ export async function getSession(id: number): Promise<SessionDetailType> {
     notFound();
   }
 
+  const sessionParentId = (data.parent as unknown as Array<{ id: number }>)?.[0]?.id;
+
   if (role !== 'admin') {
     const userID = await getCurrentUserID();
     const { data: parent } = await supabase.from('parents').select('id').eq('user_id', userID).single();
 
-    if (!parent || data.parent_id !== parent.id) {
+    if (!parent || sessionParentId !== parent.id) {
       redirect('/dashboard/sessions');
     }
   }

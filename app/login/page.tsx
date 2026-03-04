@@ -11,7 +11,7 @@ import {
   FieldTitle,
 } from '@/components/ui/field';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { login } from '@/lib/mock-api';
+import { login } from '@/lib/auth';
 import { GraduationCap, UserRound, UserRoundCog } from 'lucide-react';
 
 const playfair = Playfair_Display({ style: 'italic', subsets: ['latin'] });

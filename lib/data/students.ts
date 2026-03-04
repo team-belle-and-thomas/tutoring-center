@@ -1,6 +1,6 @@
 ﻿import 'server-only';
 import { forbidden, notFound } from 'next/navigation';
-import { getCurrentUserID, type UserRole } from '@/lib/mock-api';
+import { getCurrentUserID, type UserRole } from '@/lib/auth';
 import { createSupabaseServiceClient } from '@/lib/supabase/serverClient';
 import { STUDENT_DETAIL_SELECT_WITH_JOINS, STUDENT_SELECT_WITH_JOINS } from '@/lib/supabase/types';
 import { pickFirstEmbedded } from '@/lib/utils/normalize';

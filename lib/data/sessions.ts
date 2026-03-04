@@ -397,7 +397,7 @@ export async function getTutorAssignedSessions(): Promise<TutorAssignedSession[]
     return MOCK_TUTOR_SESSIONS;
   }
 
-  const parsedSessions = SessionWithJoinsListSchema.safeParse(data ?? []);
+  const parsedSessions = SessionWithJoinsListSchema.safeParse(data);
   if (!parsedSessions.success) {
     return MOCK_TUTOR_SESSIONS;
   }

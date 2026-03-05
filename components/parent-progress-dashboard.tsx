@@ -6,6 +6,7 @@ import { HomeworkChart } from '@/components/charts/homework-chart';
 import { ConfidenceChart, PerformanceChart } from '@/components/charts/performance-chart';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Skeleton } from '@/components/ui/skeleton';
 import type {
   ConfidenceDataPoint,
   DateRange,
@@ -106,6 +107,27 @@ function averageHomeworkByDate(
   }
 
   return result;
+}
+
+function ChartsSkeleton() {
+  return (
+    <>
+      <div className='grid gap-4 md:grid-cols-2 lg:grid-cols-2'>
+        <div className='rounded-lg border p-6'>
+          <Skeleton className='h-6 w-24 mb-4' />
+          <Skeleton className='h-[200px] w-full' />
+        </div>
+        <div className='rounded-lg border p-6'>
+          <Skeleton className='h-6 w-24 mb-4' />
+          <Skeleton className='h-[200px] w-full' />
+        </div>
+      </div>
+      <div className='rounded-lg border p-6'>
+        <Skeleton className='h-6 w-40 mb-4' />
+        <Skeleton className='h-[200px] w-full' />
+      </div>
+    </>
+  );
 }
 
 export function ParentProgressDashboard({ students: initialStudents, defaultStudentId }: ParentProgressDashboardProps) {
@@ -231,19 +253,21 @@ export function ParentProgressDashboard({ students: initialStudents, defaultStud
         </div>
       </div>
 
-      {isPending && <div className='flex items-center justify-center py-8 text-muted-foreground'>Loading...</div>}
+      {isPending ? (
+        <ChartsSkeleton />
+      ) : (
+        selectedStudent && (
+          <>
+            <div className='grid gap-4 md:grid-cols-2 lg:grid-cols-2'>
+              <PerformanceChart data={displayPerformance} />
+              <ConfidenceChart data={displayConfidence} />
+            </div>
 
-      {!isPending && selectedStudent && (
-        <>
-          <div className='grid gap-4 md:grid-cols-2 lg:grid-cols-2'>
-            <PerformanceChart data={displayPerformance} />
-            <ConfidenceChart data={displayConfidence} />
-          </div>
-
-          <div className='grid gap-4 md:grid-cols-1'>
-            <HomeworkChart data={displayHomework} />
-          </div>
-        </>
+            <div className='grid gap-4 md:grid-cols-1'>
+              <HomeworkChart data={displayHomework} />
+            </div>
+          </>
+        )
       )}
     </div>
   );

@@ -56,8 +56,8 @@ type SessionWithMetricsDB = {
   id: number;
   scheduled_at: string;
   student_id: number;
-  session_metrics: SessionMetricsDB[];
-  subjects: SubjectDB[];
+  session_metrics: SessionMetricsDB | SessionMetricsDB[] | null;
+  subjects: SubjectDB | SubjectDB[] | null;
 };
 
 type StudentWithUserDB = {
@@ -134,8 +134,10 @@ export async function getStudentProgressData(
   const homework: HomeworkDataPoint[] = [];
 
   for (const session of sessions) {
-    const metrics = session.session_metrics?.[0];
-    const subject = session.subjects?.[0]?.category || 'Unknown';
+    const metrics = Array.isArray(session.session_metrics) ? session.session_metrics[0] : session.session_metrics;
+    const subject = Array.isArray(session.subjects)
+      ? session.subjects[0]?.category
+      : session.subjects?.category || 'Unknown';
 
     if (metrics?.session_performance !== null && metrics?.session_performance !== undefined) {
       performance.push({
@@ -301,8 +303,10 @@ export async function getStudentsWithProgress(dateRange?: DateRange): Promise<St
     const homework: HomeworkDataPoint[] = [];
 
     for (const session of sessions) {
-      const metrics = session.session_metrics?.[0];
-      const subject = session.subjects?.[0]?.category || 'Unknown';
+      const metrics = Array.isArray(session.session_metrics) ? session.session_metrics[0] : session.session_metrics;
+      const subject = Array.isArray(session.subjects)
+        ? session.subjects[0]?.category
+        : session.subjects?.category || 'Unknown';
 
       if (metrics?.session_performance !== null && metrics?.session_performance !== undefined) {
         performance.push({

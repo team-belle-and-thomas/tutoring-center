@@ -2,13 +2,14 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import type { HomeworkDataPoint } from '@/lib/data/dashboard';
-import { format } from 'date-fns';
-import { Bar, BarChart, Cell, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
+import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recharts';
 
 interface HomeworkChartProps {
   data: HomeworkDataPoint[];
   title?: string;
 }
+
+const COLORS = ['hsl(var(--chart-2))', 'hsl(var(--destructive))'];
 
 export function HomeworkChart({ data, title = 'Homework Completion' }: HomeworkChartProps) {
   if (data.length === 0) {
@@ -26,15 +27,14 @@ export function HomeworkChart({ data, title = 'Homework Completion' }: HomeworkC
     );
   }
 
-  const chartData = data.map(point => ({
-    ...point,
-    formattedDate: format(new Date(point.date), 'MMM d'),
-    value: point.completed ? 1 : 0,
-  }));
-
   const completedCount = data.filter(d => d.completed).length;
-  const totalCount = data.length;
-  const completionRate = totalCount > 0 ? (completedCount / totalCount) * 100 : 0;
+  const notCompletedCount = data.length - completedCount;
+  const completionRate = data.length > 0 ? (completedCount / data.length) * 100 : 0;
+
+  const chartData = [
+    { name: 'Completed', value: completedCount },
+    { name: 'Not Completed', value: notCompletedCount },
+  ];
 
   return (
     <Card>
@@ -43,32 +43,38 @@ export function HomeworkChart({ data, title = 'Homework Completion' }: HomeworkC
         <div className='flex items-center gap-2'>
           <span className='text-2xl font-bold'>{completionRate.toFixed(0)}%</span>
           <span className='text-sm text-muted-foreground'>
-            {completedCount}/{totalCount}
+            {completedCount}/{data.length}
           </span>
         </div>
       </CardHeader>
       <CardContent>
         <div className='h-[200px]'>
           <ResponsiveContainer width='100%' height='100%'>
-            <BarChart data={chartData}>
-              <XAxis dataKey='formattedDate' tick={{ fontSize: 12 }} tickLine={false} axisLine={false} />
-              <YAxis
-                domain={[0, 1]}
-                ticks={[0, 1]}
-                tickFormatter={value => (value === 1 ? '✓' : '✗')}
-                tick={{ fontSize: 12 }}
-                tickLine={false}
-                axisLine={false}
-              />
+            <PieChart>
+              <Pie
+                data={chartData}
+                cx='50%'
+                cy='50%'
+                innerRadius={50}
+                outerRadius={80}
+                paddingAngle={2}
+                dataKey='value'
+                label={({ name, percent }) => `${name} ${((percent ?? 0) * 100).toFixed(0)}%`}
+                labelLine={false}
+              >
+                {chartData.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                ))}
+              </Pie>
               <Tooltip
                 content={({ active, payload }) => {
                   if (active && payload && payload.length) {
-                    const data = payload[0].payload;
+                    const data = payload[0];
+                    const total = chartData.reduce((sum, item) => sum + item.value, 0);
                     return (
                       <div className='rounded-lg border bg-background px-3 py-2 shadow-md'>
-                        <p className='text-sm font-medium'>{data.formattedDate}</p>
-                        <p className='text-sm text-muted-foreground'>
-                          {data.completed ? '✓ Completed' : '✗ Not completed'}
+                        <p className='text-sm font-medium'>
+                          {data.name}: {data.value} ({total > 0 ? ((data.value / total) * 100).toFixed(0) : 0}%)
                         </p>
                       </div>
                     );
@@ -76,15 +82,7 @@ export function HomeworkChart({ data, title = 'Homework Completion' }: HomeworkC
                   return null;
                 }}
               />
-              <Bar dataKey='value' radius={[4, 4, 0, 0]}>
-                {chartData.map((entry, index) => (
-                  <Cell
-                    key={`cell-${index}`}
-                    fill={entry.completed ? 'hsl(var(--chart-3, 142 76% 36%))' : 'hsl(var(--destructive))'}
-                  />
-                ))}
-              </Bar>
-            </BarChart>
+            </PieChart>
           </ResponsiveContainer>
         </div>
       </CardContent>

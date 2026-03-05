@@ -79,9 +79,10 @@ export function MetricChart({ data, title, color, emptyMessage }: MetricChartPro
                 type='monotone'
                 dataKey='score'
                 stroke={color}
-                strokeWidth={2}
-                dot={{ fill: color, strokeWidth: 2 }}
-                activeDot={{ r: 6 }}
+                strokeWidth={3}
+                dot={{ fill: color, strokeWidth: 2, r: 4 }}
+                activeDot={{ r: 6, strokeWidth: 0 }}
+                connectNulls
               />
             </LineChart>
           </ResponsiveContainer>
@@ -107,7 +108,7 @@ export function ConfidenceChart({ data }: { data: ConfidenceDataPoint[] }) {
     <MetricChart
       data={data}
       title='Confidence'
-      color='hsl(var(--chart-2, 142 76% 36%))'
+      color='hsl(var(--chart-1))'
       emptyMessage='No confidence data available yet'
     />
   );

@@ -95,26 +95,48 @@ export function ParentProgressDashboard({ students: initialStudents, defaultStud
   return (
     <div className='space-y-6'>
       <div className='flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between'>
-        <div className='flex flex-col gap-2'>
-          <label className='text-sm font-medium'>Student</label>
-          <Select
-            value={selectedStudentId?.toString() ?? ''}
-            onValueChange={value => {
-              setSelectedStudentId(Number(value));
-              setSelectedSubject('all');
-            }}
-          >
-            <SelectTrigger className='w-[200px]'>
-              <SelectValue placeholder='Select student' />
-            </SelectTrigger>
-            <SelectContent>
-              {students.map(student => (
-                <SelectItem key={student.studentId} value={student.studentId.toString()}>
-                  {student.studentName}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+        <div className='flex gap-4'>
+          <div className='flex flex-col gap-2'>
+            <label className='text-sm font-medium'>Student</label>
+            <Select
+              value={selectedStudentId?.toString() ?? ''}
+              onValueChange={value => {
+                setSelectedStudentId(Number(value));
+                setSelectedSubject('all');
+              }}
+            >
+              <SelectTrigger className='w-[200px]'>
+                <SelectValue placeholder='Select student' />
+              </SelectTrigger>
+              <SelectContent>
+                {students.map(student => (
+                  <SelectItem key={student.studentId} value={student.studentId.toString()}>
+                    {student.studentName}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className='flex flex-col gap-2'>
+            <label className='text-sm font-medium'>Subject</label>
+            <Select
+              value={selectedSubject ?? 'all'}
+              onValueChange={value => setSelectedSubject(value === 'all' ? null : value)}
+            >
+              <SelectTrigger className='w-[180px]'>
+                <SelectValue placeholder='All subjects' />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value='all'>All subjects</SelectItem>
+                {availableSubjects.map(subject => (
+                  <SelectItem key={subject} value={subject}>
+                    {subject}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
         </div>
 
         <div className='flex flex-col gap-2'>
@@ -133,26 +155,6 @@ export function ParentProgressDashboard({ students: initialStudents, defaultStud
             ))}
           </div>
         </div>
-      </div>
-
-      <div className='flex flex-col gap-2'>
-        <label className='text-sm font-medium'>Subject</label>
-        <Select
-          value={selectedSubject ?? 'all'}
-          onValueChange={value => setSelectedSubject(value === 'all' ? null : value)}
-        >
-          <SelectTrigger className='w-[200px]'>
-            <SelectValue placeholder='All subjects' />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value='all'>All subjects</SelectItem>
-            {availableSubjects.map(subject => (
-              <SelectItem key={subject} value={subject}>
-                {subject}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
       </div>
 
       {isPending && <div className='flex items-center justify-center py-8 text-muted-foreground'>Loading...</div>}

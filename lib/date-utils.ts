@@ -19,6 +19,10 @@ export function formatDateLabel(date: Date): string {
   return date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
 }
 
+export function formatIsoDate(date: Date): string {
+  return format(date, 'yyyy-MM-dd');
+}
+
 export function formatSessionTime(date: Date): string {
   return date.toLocaleString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true, timeZone: NY_TZ });
 }

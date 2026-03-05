@@ -34,6 +34,7 @@ export function HomeworkChart({ data, title = 'Homework Completion' }: HomeworkC
 
   const completedCount = data.filter(d => d.completed).length;
   const notCompletedCount = data.length - completedCount;
+  const completionRate = data.length > 0 ? (completedCount / data.length) * 100 : 0;
 
   const chartData = [
     { name: 'Completed', value: completedCount },
@@ -42,7 +43,7 @@ export function HomeworkChart({ data, title = 'Homework Completion' }: HomeworkC
 
   return (
     <Card>
-      <CardHeader className='pb-2'>
+      <CardHeader className='flex flex-row items-center justify-between pb-2'>
         <div className='flex items-center gap-2'>
           <CardTitle>{title}</CardTitle>
           <TooltipProvider>
@@ -55,6 +56,9 @@ export function HomeworkChart({ data, title = 'Homework Completion' }: HomeworkC
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
+        </div>
+        <div className='flex items-center gap-2'>
+          <span className='text-2xl font-bold'>{completionRate.toFixed(0)}%</span>
         </div>
       </CardHeader>
       <CardContent>
@@ -69,7 +73,7 @@ export function HomeworkChart({ data, title = 'Homework Completion' }: HomeworkC
                 outerRadius={80}
                 paddingAngle={2}
                 dataKey='value'
-                label={({ name, value }) => `${value} ${name}`}
+                label={({ name, percent }) => `${name} ${((percent ?? 0) * 100).toFixed(0)}%`}
                 labelLine={false}
               >
                 {chartData.map((entry, index) => (
@@ -80,10 +84,12 @@ export function HomeworkChart({ data, title = 'Homework Completion' }: HomeworkC
                 content={({ active, payload }) => {
                   if (active && payload && payload.length) {
                     const chartData = payload[0];
+                    const total = completedCount + notCompletedCount;
+                    const pct = total > 0 ? ((chartData.value / total) * 100).toFixed(0) : 0;
                     return (
                       <div className='rounded-lg border bg-background px-3 py-2 shadow-md'>
                         <p className='text-sm font-medium'>
-                          {chartData.name}: {chartData.value}
+                          {chartData.name}: {chartData.value} ({pct}%)
                         </p>
                       </div>
                     );

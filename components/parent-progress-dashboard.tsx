@@ -135,27 +135,25 @@ export function ParentProgressDashboard({ students: initialStudents, defaultStud
         </div>
       </div>
 
-      {availableSubjects.length > 1 && (
-        <div className='flex flex-col gap-2'>
-          <label className='text-sm font-medium'>Subject</label>
-          <Select
-            value={selectedSubject ?? 'all'}
-            onValueChange={value => setSelectedSubject(value === 'all' ? null : value)}
-          >
-            <SelectTrigger className='w-[200px]'>
-              <SelectValue placeholder='All subjects' />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value='all'>All subjects</SelectItem>
-              {availableSubjects.map(subject => (
-                <SelectItem key={subject} value={subject}>
-                  {subject}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-      )}
+      <div className='flex flex-col gap-2'>
+        <label className='text-sm font-medium'>Subject</label>
+        <Select
+          value={selectedSubject ?? 'all'}
+          onValueChange={value => setSelectedSubject(value === 'all' ? null : value)}
+        >
+          <SelectTrigger className='w-[200px]'>
+            <SelectValue placeholder='All subjects' />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value='all'>All subjects</SelectItem>
+            {availableSubjects.map(subject => (
+              <SelectItem key={subject} value={subject}>
+                {subject}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
 
       {isPending && <div className='flex items-center justify-center py-8 text-muted-foreground'>Loading...</div>}
 

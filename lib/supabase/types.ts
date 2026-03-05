@@ -19,6 +19,11 @@ export const WEEKDAY_OPTIONS = Constants.public.Enums.week_day;
 
 export const DEFAULT_SESSION_STATUS: SessionStatus = 'Scheduled';
 export const CANCELED_SESSION_STATUS: SessionStatus = 'Canceled';
+export const RESCHEDULED_SESSION_STATUS: SessionStatus = 'Rescheduled';
+
+// Statuses that free up the time slot (do not block future bookings).
+export const FREE_SLOT_STATUSES = [CANCELED_SESSION_STATUS, RESCHEDULED_SESSION_STATUS] as const;
+export type FreeSlotStatus = (typeof FREE_SLOT_STATUSES)[number];
 
 // Shared select fields so I don't have to repeat it
 export const STUDENT_SELECT_WITH_JOINS = `

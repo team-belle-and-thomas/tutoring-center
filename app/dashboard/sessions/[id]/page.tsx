@@ -142,6 +142,12 @@ export default async function SingleSessionPage({ params }: { params: Promise<{ 
                     <p className='font-medium'>{session.progress.public_notes}</p>
                   </div>
                 )}
+                {(role === 'admin' || role === 'tutor') && session.progress.internal_notes && (
+                  <div className='md:col-span-3 mt-2 p-3 bg-muted rounded-md'>
+                    <p className='text-muted-foreground'>Internal Notes</p>
+                    <p className='font-medium'>{session.progress.internal_notes}</p>
+                  </div>
+                )}
               </div>
             ) : (
               <p className='text-muted-foreground text-sm'>Progress report not yet submitted</p>

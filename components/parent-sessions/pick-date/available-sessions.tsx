@@ -1,13 +1,23 @@
 import { Button } from '@/components/ui/button';
 import { formatSessionDay, formatSessionTime } from '@/lib/date-utils';
-import type { AvailableSession } from '@/lib/mock-available-sessions';
+import type { AvailableSession } from '@/lib/validators/sessions';
 
 type AvailableSessionsProps = {
   sessions: AvailableSession[];
+  isLoading?: boolean;
   onSelectSession: (session: AvailableSession) => void;
 };
 
-export function AvailableSessions({ sessions, onSelectSession }: AvailableSessionsProps) {
+export function AvailableSessions({ sessions, isLoading, onSelectSession }: AvailableSessionsProps) {
+  if (isLoading) {
+    return (
+      <div className='flex items-center gap-2 text-sm text-muted-foreground'>
+        <div className='h-4 w-4 animate-spin rounded-full border-2 border-muted-foreground border-t-transparent' />
+        Loading sessions...
+      </div>
+    );
+  }
+
   if (sessions.length === 0) {
     return <p className='text-sm text-muted-foreground'>No sessions available.</p>;
   }

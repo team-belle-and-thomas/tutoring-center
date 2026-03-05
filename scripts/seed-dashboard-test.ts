@@ -89,10 +89,31 @@ async function seedSessions() {
     startWeek -= 2;
   }
 
+  const recentSessions = [];
+  for (let si = 0; si < studentSubjects.length; si++) {
+    const ss = studentSubjects[si];
+    for (let i = 0; i < 3; i++) {
+      const daysAgo = i * 10;
+      const baseTime = new Date().getTime() - daysAgo * 24 * 60 * 60 * 1000;
+      recentSessions.push({
+        parent_id: 1,
+        student_id: ss.studentId,
+        tutor_id: 1,
+        subject_id: ss.subjectId,
+        scheduled_at: new Date(baseTime + si * 3 * 60 * 60 * 1000).toISOString(),
+        ends_at: new Date(baseTime + si * 3 * 60 * 60 * 1000 + 2 * 60 * 60 * 1000).toISOString(),
+        status: 'Completed',
+        slot_units: 2,
+      });
+    }
+  }
+
+  const allCombined = [...recentSessions, ...allSessions];
+
   const insertedSessions = [];
 
-  for (let i = 0; i < allSessions.length; i++) {
-    const session = allSessions[i];
+  for (let i = 0; i < allCombined.length; i++) {
+    const session = allCombined[i];
     const { data, error } = await supabase.from('sessions').insert(session).select().single();
 
     if (error) {

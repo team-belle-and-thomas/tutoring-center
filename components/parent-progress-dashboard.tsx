@@ -138,16 +138,10 @@ export function ParentProgressDashboard({ students: initialStudents, defaultStud
   const [students, setStudents] = React.useState<StudentProgressData[]>(initialStudents);
 
   const handleDateRangeChange = (newRange: DateRangeOption) => {
-    console.log('Changing date range to:', newRange, 'from:', getDateRange(newRange));
     setDateRange(newRange);
     const range = getDateRange(newRange);
-    console.log('Fetching with range:', range);
     startTransition(async () => {
       const data = await fetchParentDashboardData(range);
-      console.log('Got data:', data.students.length, 'students');
-      if (data.students[0]) {
-        console.log('Performance data points:', data.students[0].performance.length);
-      }
       setStudents(data.students);
     });
   };

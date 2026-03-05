@@ -109,14 +109,26 @@ export async function getSessions(kind: 'all' | 'upcoming' | 'past' = 'all') {
 
   if (role !== 'admin') {
     const userID = await getCurrentUserID();
-    const { data: parent, error: parentErr } = await supabase
-      .from('parents')
-      .select('id')
-      .eq('user_id', userID)
-      .single();
 
-    if (parentErr || !parent) notFound();
-    sessionsQuery = sessionsQuery.eq('parent_id', parent.id);
+    if (role === 'tutor') {
+      const { data: tutor, error: tutorErr } = await supabase
+        .from('tutors')
+        .select('id')
+        .eq('user_id', userID)
+        .single();
+
+      if (tutorErr || !tutor) notFound();
+      sessionsQuery = sessionsQuery.eq('tutor_id', tutor.id);
+    } else {
+      const { data: parent, error: parentErr } = await supabase
+        .from('parents')
+        .select('id')
+        .eq('user_id', userID)
+        .single();
+
+      if (parentErr || !parent) notFound();
+      sessionsQuery = sessionsQuery.eq('parent_id', parent.id);
+    }
   }
 
   const { data, error } = await sessionsQuery;
@@ -169,6 +181,7 @@ export type SessionDetailType = {
 // Extended select query for session detail with all joins
 const SESSION_DETAIL_SELECT = `
   id,
+  tutor_id,
   scheduled_at,
   ends_at,
   slot_units,
@@ -229,13 +242,22 @@ export async function getSession(id: number): Promise<SessionDetailType> {
   }
 
   const sessionParentId = (data.parent as unknown as Array<{ id: number }>)?.[0]?.id;
+  const sessionTutorId = data.tutor_id;
 
   if (role !== 'admin') {
     const userID = await getCurrentUserID();
-    const { data: parent } = await supabase.from('parents').select('id').eq('user_id', userID).single();
 
-    if (!parent || sessionParentId !== parent.id) {
-      redirect('/dashboard/sessions');
+    if (role === 'tutor') {
+      const { data: tutor } = await supabase.from('tutors').select('id').eq('user_id', userID).single();
+      if (!tutor || sessionTutorId !== tutor.id) {
+        redirect('/dashboard/sessions');
+      }
+    } else {
+      const { data: parent } = await supabase.from('parents').select('id').eq('user_id', userID).single();
+
+      if (!parent || sessionParentId !== parent.id) {
+        redirect('/dashboard/sessions');
+      }
     }
   }
 
@@ -362,9 +384,6 @@ const MOCK_TUTOR_SESSIONS: TutorAssignedSession[] = [
   },
 ];
 
-/**
- * Get sessions assigned to the current tutor that need forms filled.
- */
 export async function getTutorAssignedSessions(): Promise<TutorAssignedSession[]> {
   const role = await getUserRole();
   if (role !== 'tutor') {
@@ -381,44 +400,81 @@ export async function getTutorAssignedSessions(): Promise<TutorAssignedSession[]
     .single();
 
   if (tutorError || !tutorData) {
-    return MOCK_TUTOR_SESSIONS;
+    return [];
   }
 
   const tutorId = tutorData.id;
 
-  const { data, error } = await supabase
-    .from('sessions')
-    .select(SESSION_SELECT_WITH_JOINS)
-    .eq('tutor_id', tutorId)
-    .eq('status', 'Pending-Notes');
+  const TUTOR_SESSION_SELECT = `
+    id,
+    tutor_id,
+    student_id,
+    subject_id,
+    parent_id,
+    slot_units,
+    scheduled_at,
+    ends_at,
+    status,
+    session_progress (id),
+    session_metrics (id),
+    student:students (
+      users:user_id (
+        first_name,
+        last_name
+      )
+    ),
+    subjects (
+      category
+    )
+  ` as const;
+
+  const { data, error } = await supabase.from('sessions').select(TUTOR_SESSION_SELECT).eq('tutor_id', tutorId);
 
   if (error || !data || data.length === 0) {
-    return MOCK_TUTOR_SESSIONS;
+    return [];
   }
 
-  const parsedSessions = SessionWithJoinsListSchema.safeParse(data);
-  if (!parsedSessions.success) {
-    return MOCK_TUTOR_SESSIONS;
-  }
+  const sessionsWithStatus = data.map(
+    (session): TutorAssignedSession & { hasProgress: boolean; hasMetrics: boolean } => {
+      const progressData = session.session_progress as unknown as { id: number } | null;
+      const metricsData = session.session_metrics as unknown as { id: number } | null;
+      const hasProgress = !!progressData;
+      const hasMetrics = !!metricsData;
 
-  return parsedSessions.data.map((session): TutorAssignedSession => {
-    const student = parseStudentUser(session.student);
-    const progressData = session.session_progress as unknown as Array<unknown> | null;
-    const hasProgressReport = progressData && progressData.length > 0;
-    const metricsData = session.session_metrics as unknown as Array<unknown> | null;
-    const hasMetrics = metricsData && metricsData.length > 0;
+      const studentData = Array.isArray(session.student) ? session.student[0] : session.student;
+      const studentUser = studentData?.users
+        ? Array.isArray(studentData.users)
+          ? studentData.users[0]
+          : studentData.users
+        : null;
+      const studentName = studentUser
+        ? `${studentUser.first_name || ''} ${studentUser.last_name || ''}`.trim()
+        : 'Student';
 
-    return {
-      id: session.id,
-      student_name: student.name,
-      student_id: session.student_id,
-      tutor_id: session.tutor_id,
-      subject_name: 'Mathematics',
-      scheduled_at: session.scheduled_at,
-      ends_at: session.ends_at,
-      status: session.status,
-      needsProgressReport: !hasProgressReport,
-      needsMetrics: !hasMetrics,
-    };
-  });
+      const subjectData = Array.isArray(session.subjects) ? session.subjects[0] : session.subjects;
+      const subjectName = subjectData?.category || 'Subject';
+
+      return {
+        id: session.id,
+        student_name: studentName,
+        student_id: session.student_id,
+        tutor_id: session.tutor_id,
+        subject_name: subjectName,
+        scheduled_at: session.scheduled_at,
+        ends_at: session.ends_at,
+        status: session.status,
+        needsProgressReport: !hasProgress,
+        needsMetrics: !hasMetrics,
+        hasProgress,
+        hasMetrics,
+      };
+    }
+  );
+
+  return (
+    sessionsWithStatus
+      .filter(session => !(session.hasProgress && session.hasMetrics))
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      .map(({ hasProgress, hasMetrics, ...session }) => session)
+  );
 }

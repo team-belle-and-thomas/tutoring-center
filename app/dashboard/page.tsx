@@ -1,7 +1,9 @@
 import { DataTable } from '@/components/data-table';
+import { ParentProgressDashboard } from '@/components/parent-progress-dashboard';
 import { getCurrentUserName, getUserRole } from '@/lib/auth';
 import { getTutorAssignedSessions } from '@/lib/data/sessions';
 import type { TutorAssignedSession } from '@/lib/data/sessions';
+import { fetchParentDashboardData } from './actions';
 import { tutorSessionColumns } from './tutor-session-columns';
 
 export default async function DashboardPage() {
@@ -15,6 +17,7 @@ export default async function DashboardPage() {
       <p className='text-lg mb-8'>You are logged in as {role}</p>
 
       {role === 'tutor' && <TutorDashboardContent />}
+      {role === 'parent' && <ParentDashboardContent />}
     </main>
   );
 }
@@ -31,6 +34,17 @@ async function TutorDashboardContent() {
       ) : (
         <DataTable columns={tutorSessionColumns} data={sessions} />
       )}
+    </section>
+  );
+}
+
+async function ParentDashboardContent() {
+  const { students, defaultStudentId } = await fetchParentDashboardData();
+
+  return (
+    <section>
+      <h2 className='text-2xl font-semibold mb-4'>Progress Overview</h2>
+      <ParentProgressDashboard students={students} defaultStudentId={defaultStudentId} />
     </section>
   );
 }

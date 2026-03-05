@@ -17,7 +17,7 @@ type CreditsContextValue = {
 
 const CreditsContext = createContext<CreditsContextValue | null>(null);
 
-const STUB_BALANCE: CreditBalance = { amount_available: 1, amount_pending: 0 };
+const STUB_BALANCE: CreditBalance = { amount_available: 0, amount_pending: 0 };
 
 export function CreditsProvider({
   children,

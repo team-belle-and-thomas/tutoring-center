@@ -19,7 +19,7 @@ export const SessionCreateSchema = z
     tutor_id: id,
     student_id: id,
     subject_id: id,
-    parent_id: id,
+    parent_id: id.optional(), // parents get id through cookie
 
     slot_units: units1to100,
 

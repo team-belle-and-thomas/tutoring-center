@@ -1,6 +1,6 @@
 import 'server-only';
 import { forbidden } from 'next/navigation';
-import { isUserRole, type UserRole } from '@/lib/mock-api';
+import { isUserRole, type UserRole } from '@/lib/auth';
 import { createSupabaseServiceClient } from '@/lib/supabase/serverClient';
 import { SubjectRowListSchema, type SubjectRow } from '@/lib/validators/subjects';
 

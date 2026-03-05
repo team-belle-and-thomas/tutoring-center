@@ -1,7 +1,6 @@
 import 'server-only';
 import { notFound, redirect } from 'next/navigation';
-import type { UserRole } from '@/lib/auth';
-import { getCurrentUserID, getUserRole } from '@/lib/mock-api';
+import { getCurrentUserID, getUserRole, type UserRole } from '@/lib/auth';
 import { createSupabaseServiceClient } from '@/lib/supabase/serverClient';
 import { SESSION_SELECT_WITH_JOINS } from '@/lib/supabase/types';
 import { pickFirstEmbedded } from '@/lib/utils/normalize';

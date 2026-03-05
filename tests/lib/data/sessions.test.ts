@@ -1,9 +1,9 @@
+import { getCurrentUserID, getUserRole } from '@/lib/auth';
 import { getSession, getSessions } from '@/lib/data/sessions';
-import { getCurrentUserID, getUserRole } from '@/lib/mock-api';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 // Mock dependencies
-vi.mock('@/lib/mock-api', () => ({
+vi.mock('@/lib/auth', () => ({
   getCurrentUserID: vi.fn(),
   getUserRole: vi.fn(),
 }));

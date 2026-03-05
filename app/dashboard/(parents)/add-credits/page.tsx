@@ -1,5 +1,5 @@
 import { forbidden } from 'next/navigation';
-import { getUserRole } from '@/lib/mock-api';
+import { getUserRole } from '@/lib/auth';
 import { AddCreditsPageClient } from './add-credits-page-client';
 
 export default async function AddCreditsPage() {

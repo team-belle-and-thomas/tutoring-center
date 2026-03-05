@@ -1,8 +1,8 @@
 import Link from 'next/link';
 import { DataTable } from '@/components/data-table';
 import { Button } from '@/components/ui/button';
+import { getUserRole } from '@/lib/auth';
 import { getSessions } from '@/lib/data/sessions';
-import { getUserRole } from '@/lib/mock-api';
 import { columns } from './columns';
 
 export default async function SessionsPage({ searchParams }: { searchParams: Promise<{ kind?: string }> }) {

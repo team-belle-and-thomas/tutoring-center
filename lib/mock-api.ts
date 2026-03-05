@@ -1,11 +1,7 @@
-import { cookies } from 'next/headers';
 import { notFound, redirect, unauthorized } from 'next/navigation';
+// Import auth functions from auth.ts (Single Source of Truth)
+import { getCurrentUserID, getUserRole } from '@/lib/auth';
 import { allParents, allReports, allStudents, allTutors } from '@/lib/mock-data';
-
-export const USER_ROLE_COOKIE_NAME = 'user-role';
-export const USER_ID_COOKIE_NAME = 'user-id';
-const USER_ROLE_COOKIE_MAX_AGE = 60 * 60 * 1; // 1 hour
-const USER_ID_COOKIE_MAX_AGE = 60 * 60 * 1; // 1 hour
 
 export async function getParents() {
   const role = await getUserRole();
@@ -49,6 +45,7 @@ export async function getReport(id: number) {
   }
   return report;
 }
+
 export async function getTutors() {
   const role = await getUserRole();
   if (role !== 'admin') {
@@ -65,59 +62,4 @@ export async function getTutor(id: number) {
   }
 
   return tutor;
-}
-
-export function isUserRole(value: unknown) {
-  return value === 'admin' || value === 'parent' || value === 'tutor';
-}
-
-export async function getUserRole() {
-  const cookieStore = await cookies();
-  const role = cookieStore.get(USER_ROLE_COOKIE_NAME)?.value;
-  if (!isUserRole(role)) {
-    redirect('/login?redirect=/auth/logout');
-  }
-
-  return role;
-}
-
-export async function getCurrentUserID() {
-  const cookieStore = await cookies();
-  const id = cookieStore.get(USER_ID_COOKIE_NAME)?.value;
-  if (!id) {
-    redirect('/login?redirect=/auth/logout');
-  }
-
-  return parseInt(id, 10);
-}
-
-export type UserRole = Awaited<ReturnType<typeof getUserRole>>;
-
-export async function login(formData: FormData) {
-  'use server';
-
-  const role = formData.get('role');
-  if (!isUserRole(role)) {
-    throw new Error('Invalid role');
-  }
-
-  const cookieStore = await cookies();
-  cookieStore.set(USER_ROLE_COOKIE_NAME, role, {
-    httpOnly: true,
-    maxAge: USER_ROLE_COOKIE_MAX_AGE,
-    path: '/',
-    sameSite: 'lax',
-    secure: process.env.NODE_ENV === 'production',
-  });
-  // For now use a temp user but in production get actual userid
-  const TEMP_USER = '2';
-  cookieStore.set(USER_ID_COOKIE_NAME, TEMP_USER, {
-    httpOnly: true,
-    maxAge: USER_ID_COOKIE_MAX_AGE,
-    path: '/',
-    sameSite: 'lax',
-    secure: process.env.NODE_ENV === 'production',
-  });
-
-  redirect('/dashboard');
 }

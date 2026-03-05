@@ -1,6 +1,6 @@
 import 'server-only';
 import { forbidden, notFound } from 'next/navigation';
-import { getCurrentUserID, type UserRole } from '@/lib/mock-api';
+import { getCurrentUserID, type UserRole } from '@/lib/auth';
 import { allParents, allStudents } from '@/lib/mock-data';
 import type { Enums, Tables } from '@/lib/supabase/database.types';
 

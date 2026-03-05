@@ -1,5 +1,5 @@
+import type { UserRole } from '@/lib/auth';
 import { getStudent, getStudents } from '@/lib/data/students';
-import type { UserRole } from '@/lib/mock-api';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const { mockGetCurrentUserID, mockForbidden, mockNotFound, mockFrom, mockCreateSupabaseServiceClient } = vi.hoisted(

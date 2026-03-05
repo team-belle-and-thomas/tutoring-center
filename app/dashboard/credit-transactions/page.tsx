@@ -1,6 +1,6 @@
 import { forbidden } from 'next/navigation';
+import { getUserRole } from '@/lib/auth';
 import { getCreditTransactions } from '@/lib/data/credit-transactions';
-import { getUserRole } from '@/lib/mock-api';
 import { CreditTransactionsTable } from './columns';
 
 export default async function CreditTransactionsPage() {

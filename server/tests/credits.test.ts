@@ -35,7 +35,6 @@ describe('Credits Tests', () => {
     expect(balanceError).toBeNull();
     expect(data).toBeDefined();
 
-    console.dir(data!);
     expect(data![0].amount_available).toBe(10);
     expect(data![0].amount_pending).toBe(5);
 

@@ -24,7 +24,6 @@ export async function placeSession(
   const end_time = new Date(ends_at);
   let duration = (end_time.getTime() - start_time.getTime()) / (1000 * 60 * 60); // Get the duration in hours
   duration = Math.round(duration); // Convert to the nearest whole number of hours
-  console.log(`Calculated session duration: ${duration} hours`);
 
   const { data, error } = await client
     .from('sessions')

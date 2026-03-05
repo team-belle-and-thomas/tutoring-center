@@ -6,7 +6,13 @@ import { HomeworkChart } from '@/components/charts/homework-chart';
 import { ConfidenceChart, PerformanceChart } from '@/components/charts/performance-chart';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import type { DateRange, StudentProgressData } from '@/lib/data/dashboard';
+import type {
+  ConfidenceDataPoint,
+  DateRange,
+  HomeworkDataPoint,
+  PerformanceDataPoint,
+  StudentProgressData,
+} from '@/lib/data/dashboard';
 import { subDays, subMonths } from 'date-fns';
 
 interface ParentProgressDashboardProps {
@@ -37,10 +43,27 @@ function getDateRange(option: DateRangeOption): DateRange {
   }
 }
 
+function getUniqueSubjects(data: StudentProgressData): string[] {
+  const subjects = new Set<string>();
+  data.performance.forEach(p => subjects.add(p.subject));
+  data.confidence.forEach(c => subjects.add(c.subject));
+  data.homework.forEach(h => subjects.add(h.subject));
+  return Array.from(subjects).sort();
+}
+
+function filterBySubject<T extends PerformanceDataPoint | ConfidenceDataPoint | HomeworkDataPoint>(
+  data: T[],
+  subject: string | null
+): T[] {
+  if (!subject || subject === 'all') return data;
+  return data.filter(point => point.subject === subject);
+}
+
 export function ParentProgressDashboard({ students: initialStudents, defaultStudentId }: ParentProgressDashboardProps) {
   const [isPending, startTransition] = useTransition();
   const [selectedStudentId, setSelectedStudentId] = React.useState<number | null>(defaultStudentId);
   const [dateRange, setDateRange] = React.useState<DateRangeOption>('all');
+  const [selectedSubject, setSelectedSubject] = React.useState<string | null>('all');
   const [students, setStudents] = React.useState<StudentProgressData[]>(initialStudents);
 
   const handleDateRangeChange = (newRange: DateRangeOption) => {
@@ -53,6 +76,11 @@ export function ParentProgressDashboard({ students: initialStudents, defaultStud
   };
 
   const selectedStudent = students.find(s => s.studentId === selectedStudentId);
+  const availableSubjects = selectedStudent ? getUniqueSubjects(selectedStudent) : [];
+
+  const filteredPerformance = selectedStudent ? filterBySubject(selectedStudent.performance, selectedSubject) : [];
+  const filteredConfidence = selectedStudent ? filterBySubject(selectedStudent.confidence, selectedSubject) : [];
+  const filteredHomework = selectedStudent ? filterBySubject(selectedStudent.homework, selectedSubject) : [];
 
   if (students.length === 0) {
     return (
@@ -71,7 +99,10 @@ export function ParentProgressDashboard({ students: initialStudents, defaultStud
           <label className='text-sm font-medium'>Student</label>
           <Select
             value={selectedStudentId?.toString() ?? ''}
-            onValueChange={value => setSelectedStudentId(Number(value))}
+            onValueChange={value => {
+              setSelectedStudentId(Number(value));
+              setSelectedSubject('all');
+            }}
           >
             <SelectTrigger className='w-[200px]'>
               <SelectValue placeholder='Select student' />
@@ -104,17 +135,39 @@ export function ParentProgressDashboard({ students: initialStudents, defaultStud
         </div>
       </div>
 
+      {availableSubjects.length > 1 && (
+        <div className='flex flex-col gap-2'>
+          <label className='text-sm font-medium'>Subject</label>
+          <Select
+            value={selectedSubject ?? 'all'}
+            onValueChange={value => setSelectedSubject(value === 'all' ? null : value)}
+          >
+            <SelectTrigger className='w-[200px]'>
+              <SelectValue placeholder='All subjects' />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value='all'>All subjects</SelectItem>
+              {availableSubjects.map(subject => (
+                <SelectItem key={subject} value={subject}>
+                  {subject}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      )}
+
       {isPending && <div className='flex items-center justify-center py-8 text-muted-foreground'>Loading...</div>}
 
       {!isPending && selectedStudent && (
         <>
           <div className='grid gap-4 md:grid-cols-2 lg:grid-cols-2'>
-            <PerformanceChart data={selectedStudent.performance} />
-            <ConfidenceChart data={selectedStudent.confidence} />
+            <PerformanceChart data={filteredPerformance} />
+            <ConfidenceChart data={filteredConfidence} />
           </div>
 
           <div className='grid gap-4 md:grid-cols-1'>
-            <HomeworkChart data={selectedStudent.homework} />
+            <HomeworkChart data={filteredHomework} />
           </div>
         </>
       )}

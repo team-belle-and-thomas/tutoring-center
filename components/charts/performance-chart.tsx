@@ -9,7 +9,7 @@ type MetricDataPoint = PerformanceDataPoint | ConfidenceDataPoint;
 
 const CHART_COLORS = {
   performance: '#4f86f7',
-  confidence: '#2eb88d',
+  confidence: '#8b5cf6',
 };
 
 interface MetricChartProps {

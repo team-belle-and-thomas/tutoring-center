@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import { createClient } from '@supabase/supabase-js';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://xxxxx.supabase.co';
@@ -164,27 +165,27 @@ async function seedSessionMetrics(sessions: { id: number; scheduled_at: string }
 
   const metricsData = [
     {
-      session_performance: 2.5,
+      session_performance: 2,
       confidence_score: 2,
       homework_completed: false,
       topics: 'Introduction to algebra basics',
     },
-    { session_performance: 2.5, confidence_score: 2.5, homework_completed: true, topics: 'Linear equations practice' },
+    { session_performance: 2, confidence_score: 2, homework_completed: true, topics: 'Linear equations practice' },
     { session_performance: 3, confidence_score: 3, homework_completed: true, topics: 'Introduction to variables' },
-    { session_performance: 3, confidence_score: 3.5, homework_completed: false, topics: 'Solving simple equations' },
-    { session_performance: 3.5, confidence_score: 3.5, homework_completed: true, topics: 'Algebraic expressions' },
-    { session_performance: 3.5, confidence_score: 4, homework_completed: true, topics: 'Multi-step equations' },
+    { session_performance: 3, confidence_score: 3, homework_completed: false, topics: 'Solving simple equations' },
+    { session_performance: 3, confidence_score: 3, homework_completed: true, topics: 'Algebraic expressions' },
+    { session_performance: 3, confidence_score: 4, homework_completed: true, topics: 'Multi-step equations' },
     { session_performance: 4, confidence_score: 4, homework_completed: true, topics: 'Graphing linear equations' },
-    { session_performance: 4, confidence_score: 4.5, homework_completed: true, topics: 'Slope and intercept practice' },
+    { session_performance: 4, confidence_score: 4, homework_completed: true, topics: 'Slope and intercept practice' },
     {
-      session_performance: 4.5,
-      confidence_score: 4.5,
+      session_performance: 4,
+      confidence_score: 4,
       homework_completed: true,
       topics: 'Systems of equations introduction',
     },
-    { session_performance: 4.5, confidence_score: 4.5, homework_completed: false, topics: 'Word problems practice' },
-    { session_performance: 4.5, confidence_score: 4, homework_completed: true, topics: 'Quadratic equations basics' },
-    { session_performance: 4.5, confidence_score: 4.5, homework_completed: true, topics: 'Factoring polynomials' },
+    { session_performance: 4, confidence_score: 4, homework_completed: false, topics: 'Word problems practice' },
+    { session_performance: 4, confidence_score: 4, homework_completed: true, topics: 'Quadratic equations basics' },
+    { session_performance: 4, confidence_score: 4, homework_completed: true, topics: 'Factoring polynomials' },
     { session_performance: 5, confidence_score: 5, homework_completed: true, topics: 'Review and practice test' },
     { session_performance: 5, confidence_score: 5, homework_completed: true, topics: 'Advanced word problems' },
   ];

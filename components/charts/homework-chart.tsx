@@ -9,7 +9,7 @@ interface HomeworkChartProps {
   title?: string;
 }
 
-const COLORS = ['hsl(var(--chart-2))', 'hsl(var(--destructive))'];
+const COLORS = ['#2eb88d', '#ef4444'];
 
 export function HomeworkChart({ data, title = 'Homework Completion' }: HomeworkChartProps) {
   if (data.length === 0) {

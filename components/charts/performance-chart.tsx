@@ -7,6 +7,11 @@ import { Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'rec
 
 type MetricDataPoint = PerformanceDataPoint | ConfidenceDataPoint;
 
+const CHART_COLORS = {
+  performance: '#4f86f7',
+  confidence: '#2eb88d',
+};
+
 interface MetricChartProps {
   data: MetricDataPoint[];
   title: string;
@@ -97,7 +102,7 @@ export function PerformanceChart({ data }: { data: PerformanceDataPoint[] }) {
     <MetricChart
       data={data}
       title='Performance'
-      color='hsl(var(--primary))'
+      color={CHART_COLORS.performance}
       emptyMessage='No performance data available yet'
     />
   );
@@ -108,7 +113,7 @@ export function ConfidenceChart({ data }: { data: ConfidenceDataPoint[] }) {
     <MetricChart
       data={data}
       title='Confidence'
-      color='hsl(var(--chart-1))'
+      color={CHART_COLORS.confidence}
       emptyMessage='No confidence data available yet'
     />
   );

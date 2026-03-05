@@ -9,7 +9,7 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { formatSessionDateTime } from '@/lib/date-utils';
-import type { AvailableSession } from '@/lib/mock-available-sessions';
+import type { AvailableSession } from '@/lib/validators/sessions';
 import { CalendarIcon, UserRoundIcon } from 'lucide-react';
 
 type ReservationDialogProps = {

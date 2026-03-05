@@ -1,8 +1,10 @@
 'use client';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import type { HomeworkDataPoint } from '@/lib/data/dashboard';
-import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recharts';
+import { HelpCircle } from 'lucide-react';
+import { Cell, Pie, PieChart, Tooltip as RechartsTooltip, ResponsiveContainer } from 'recharts';
 
 interface HomeworkChartProps {
   data: HomeworkDataPoint[];
@@ -10,6 +12,9 @@ interface HomeworkChartProps {
 }
 
 const COLORS = ['#2eb88d', '#ef4444'];
+
+const HOMEWORK_DESCRIPTION =
+  'Homework completion rate. Shows the percentage of assigned homework that was completed before the next session.';
 
 export function HomeworkChart({ data, title = 'Homework Completion' }: HomeworkChartProps) {
   if (data.length === 0) {
@@ -39,7 +44,19 @@ export function HomeworkChart({ data, title = 'Homework Completion' }: HomeworkC
   return (
     <Card>
       <CardHeader className='flex flex-row items-center justify-between pb-2'>
-        <CardTitle>{title}</CardTitle>
+        <div className='flex items-center gap-2'>
+          <CardTitle>{title}</CardTitle>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger>
+                <HelpCircle className='h-4 w-4 text-muted-foreground' />
+              </TooltipTrigger>
+              <TooltipContent className='max-w-xs'>
+                <p>{HOMEWORK_DESCRIPTION}</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        </div>
         <div className='flex items-center gap-2'>
           <span className='text-2xl font-bold'>{completionRate.toFixed(0)}%</span>
           <span className='text-sm text-muted-foreground'>
@@ -66,15 +83,15 @@ export function HomeworkChart({ data, title = 'Homework Completion' }: HomeworkC
                   <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                 ))}
               </Pie>
-              <Tooltip
+              <RechartsTooltip
                 content={({ active, payload }) => {
                   if (active && payload && payload.length) {
-                    const data = payload[0];
-                    const total = chartData.reduce((sum, item) => sum + item.value, 0);
+                    const chartData = payload[0];
+                    const total = chartData.value + chartData.value;
                     return (
                       <div className='rounded-lg border bg-background px-3 py-2 shadow-md'>
                         <p className='text-sm font-medium'>
-                          {data.name}: {data.value} ({total > 0 ? ((data.value / total) * 100).toFixed(0) : 0}%)
+                          {chartData.name}: {chartData.value}
                         </p>
                       </div>
                     );

@@ -1,9 +1,11 @@
 'use client';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import type { ConfidenceDataPoint, PerformanceDataPoint } from '@/lib/data/dashboard';
 import { format } from 'date-fns';
-import { Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
+import { HelpCircle } from 'lucide-react';
+import { Line, LineChart, Tooltip as RechartsTooltip, ResponsiveContainer, XAxis, YAxis } from 'recharts';
 
 type MetricDataPoint = PerformanceDataPoint | ConfidenceDataPoint;
 
@@ -17,9 +19,10 @@ interface MetricChartProps {
   title: string;
   color: string;
   emptyMessage: string;
+  description?: string;
 }
 
-export function MetricChart({ data, title, color, emptyMessage }: MetricChartProps) {
+export function MetricChart({ data, title, color, emptyMessage, description }: MetricChartProps) {
   if (data.length === 0) {
     return (
       <Card>
@@ -45,7 +48,21 @@ export function MetricChart({ data, title, color, emptyMessage }: MetricChartPro
   return (
     <Card>
       <CardHeader className='flex flex-row items-center justify-between pb-2'>
-        <CardTitle>{title}</CardTitle>
+        <div className='flex items-center gap-2'>
+          <CardTitle>{title}</CardTitle>
+          {description && (
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger>
+                  <HelpCircle className='h-4 w-4 text-muted-foreground' />
+                </TooltipTrigger>
+                <TooltipContent className='max-w-xs'>
+                  <p>{description}</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          )}
+        </div>
         <div className='flex items-center gap-2'>
           <span className='text-2xl font-bold'>{latestScore.toFixed(1)}</span>
           <span className={`text-sm ${trend >= 0 ? 'text-green-600' : 'text-red-600'}`}>
@@ -65,15 +82,15 @@ export function MetricChart({ data, title, color, emptyMessage }: MetricChartPro
                 tickLine={false}
                 axisLine={false}
               />
-              <Tooltip
+              <RechartsTooltip
                 content={({ active, payload }) => {
                   if (active && payload && payload.length) {
-                    const data = payload[0].payload;
+                    const chartData = payload[0].payload;
                     return (
                       <div className='rounded-lg border bg-background px-3 py-2 shadow-md'>
-                        <p className='text-sm font-medium'>{data.formattedDate}</p>
-                        <p className='text-sm text-muted-foreground'>Score: {data.score.toFixed(1)}/5</p>
-                        {data.subject && <p className='text-xs text-muted-foreground'>{data.subject}</p>}
+                        <p className='text-sm font-medium'>{chartData.formattedDate}</p>
+                        <p className='text-sm text-muted-foreground'>Score: {chartData.score.toFixed(1)}/5</p>
+                        {chartData.subject && <p className='text-xs text-muted-foreground'>{chartData.subject}</p>}
                       </div>
                     );
                   }
@@ -104,6 +121,7 @@ export function PerformanceChart({ data }: { data: PerformanceDataPoint[] }) {
       title='Performance'
       color={CHART_COLORS.performance}
       emptyMessage='No performance data available yet'
+      description="How well the student understood and completed the session material. Rated 1-5 based on tutor's assessment of mastery."
     />
   );
 }
@@ -115,6 +133,7 @@ export function ConfidenceChart({ data }: { data: ConfidenceDataPoint[] }) {
       title='Confidence'
       color={CHART_COLORS.confidence}
       emptyMessage='No confidence data available yet'
+      description='How confident the student felt during the session. Rated 1-5 based on self-reported confidence level.'
     />
   );
 }

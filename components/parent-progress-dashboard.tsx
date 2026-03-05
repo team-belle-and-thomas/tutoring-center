@@ -130,9 +130,10 @@ export function ParentProgressDashboard({ students: initialStudents, defaultStud
   let filteredPerformance: PerformanceDataPoint[] = [];
   let filteredConfidence: ConfidenceDataPoint[] = [];
   let filteredHomework: HomeworkDataPoint[] = [];
+  const isAllSubjects = !selectedSubject || selectedSubject === 'all' || selectedSubject === null;
 
   if (selectedStudent) {
-    if (selectedSubject === 'all' || !selectedSubject) {
+    if (isAllSubjects) {
       filteredPerformance = selectedStudent.performance.map(p => ({ ...p }));
       filteredConfidence = selectedStudent.confidence.map(c => ({ ...c }));
       filteredHomework = selectedStudent.homework.map(h => ({ ...h }));
@@ -143,14 +144,17 @@ export function ParentProgressDashboard({ students: initialStudents, defaultStud
     }
   }
 
-  const displayPerformance =
-    selectedSubject === 'all' ? (averageByDate(filteredPerformance) as PerformanceDataPoint[]) : filteredPerformance;
+  const displayPerformance = isAllSubjects
+    ? (averageByDate(filteredPerformance) as PerformanceDataPoint[])
+    : filteredPerformance;
 
-  const displayConfidence =
-    selectedSubject === 'all' ? (averageByDate(filteredConfidence) as ConfidenceDataPoint[]) : filteredConfidence;
+  const displayConfidence = isAllSubjects
+    ? (averageByDate(filteredConfidence) as ConfidenceDataPoint[])
+    : filteredConfidence;
 
-  const displayHomework =
-    selectedSubject === 'all' ? (averageHomeworkByDate(filteredHomework) as HomeworkDataPoint[]) : filteredHomework;
+  const displayHomework = isAllSubjects
+    ? (averageHomeworkByDate(filteredHomework) as HomeworkDataPoint[])
+    : filteredHomework;
 
   if (students.length === 0) {
     return (

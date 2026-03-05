@@ -1,27 +1,26 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { type SelectedSubject, type SubjectTutorAssignment } from '@/lib/data/subjects';
 import { ChevronLeft } from 'lucide-react';
 
 export type TutorOption = {
   id: number;
   user_id: number;
-  firstName: string;
-  lastName: string;
+  name: string;
   education: string | null;
   years_experience: number | null;
+  typicalAvailability: string | null;
 };
 
 type PickTutorProps = {
-  subject: {
-    id: number;
-    category: string;
-  };
+  subject: SelectedSubject;
+  assignments: SubjectTutorAssignment[];
   tutors: TutorOption[];
-  onSelect: (tutor: TutorOption) => void;
+  onSelect: (selection: { tutor: TutorOption; subjectId: number }) => void;
   onBack: () => void;
 };
 
-export function PickTutor({ subject, tutors, onSelect, onBack }: PickTutorProps) {
+export function PickTutor({ subject, assignments, tutors, onSelect, onBack }: PickTutorProps) {
   return (
     <main className='mx-auto w-full max-w-3xl space-y-6 p-6'>
       <Card className='w-full'>
@@ -37,17 +36,34 @@ export function PickTutor({ subject, tutors, onSelect, onBack }: PickTutorProps)
             <p className='text-sm text-muted-foreground'>No tutors found for this subject.</p>
           ) : null}
           {tutors.map(tutor => (
-            <button
+            <Button
               key={tutor.id}
-              className='w-full rounded-2xl border bg-muted p-4 text-left transition-colors hover:bg-muted/80'
-              onClick={() => onSelect(tutor)}
+              variant='outline'
+              className='h-auto w-full justify-between rounded-2xl bg-muted p-4 text-left hover:border-primary/50 hover:bg-muted/60 hover:ring-2 hover:ring-primary/10'
+              onClick={() => {
+                const subjectId = assignments.find(assignment => assignment.tutorId === tutor.id)?.subjectId;
+                if (!subjectId) return;
+                onSelect({ tutor, subjectId });
+              }}
               type='button'
             >
-              <p className='font-semibold'>
-                {tutor.firstName} {tutor.lastName}
-              </p>
-              {tutor.education ? <p className='text-sm text-muted-foreground'>{tutor.education}</p> : null}
-            </button>
+              <div className='space-y-1'>
+                <p className='text-primary font-semibold'>{tutor.name}</p>
+                {tutor.education || tutor.years_experience !== null ? (
+                  <div className='flex items-center justify-between gap-3 text-sm text-muted-foreground'>
+                    <span className='truncate'>{tutor.education ?? 'Education not listed'}</span>
+                    <span className='shrink-0'>
+                      {tutor.years_experience !== null
+                        ? `${tutor.years_experience} ${tutor.years_experience === 1 ? 'year' : 'years'}`
+                        : 'Experience n/a'}
+                    </span>
+                  </div>
+                ) : null}
+                {tutor.typicalAvailability ? (
+                  <p className='text-xs text-muted-foreground'>Typical availability: {tutor.typicalAvailability}</p>
+                ) : null}
+              </div>
+            </Button>
           ))}
         </CardContent>
       </Card>

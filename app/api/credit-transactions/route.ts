@@ -98,4 +98,31 @@ export async function GET(req: Request) {
   });
 }
 
-// TODO: POST for creating transactions,
+export async function POST(req: Request) {
+  const supabase = createSupabaseServiceClient();
+  const body = await req.json().catch(() => null);
+
+  const parsed = TransactionCreateSchema.safeParse(body);
+  if (!parsed.success) {
+    return NextResponse.json({ error: 'Invalid request body', issues: parsed.error.flatten() }, { status: 400 });
+  }
+
+  const { parent_id, session_id, student_id, amount, balance_after, type } = parsed.data;
+
+  const { data, error } = await supabase
+    .from('credit_transactions')
+    .insert({
+      parent_id,
+      session_id,
+      student_id,
+      amount,
+      balance_after,
+      type,
+    })
+    .select('*')
+    .single();
+
+  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+
+  return NextResponse.json({ data });
+}

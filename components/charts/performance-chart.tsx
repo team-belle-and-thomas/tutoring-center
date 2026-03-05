@@ -72,8 +72,8 @@ export function MetricChart({ data, title, color, emptyMessage }: MetricChartPro
                     return (
                       <div className='rounded-lg border bg-background px-3 py-2 shadow-md'>
                         <p className='text-sm font-medium'>{data.formattedDate}</p>
-                        <p className='text-sm text-muted-foreground'>Score: {data.score}/5</p>
-                        <p className='text-xs text-muted-foreground'>{data.subject}</p>
+                        <p className='text-sm text-muted-foreground'>Score: {data.score.toFixed(1)}/5</p>
+                        {data.subject && <p className='text-xs text-muted-foreground'>{data.subject}</p>}
                       </div>
                     );
                   }

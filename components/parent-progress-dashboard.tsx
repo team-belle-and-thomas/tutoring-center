@@ -51,8 +51,10 @@ function getUniqueSubjects(data: StudentProgressData): string[] {
   return Array.from(subjects).sort();
 }
 
-function averageByDate(items: { date: string; score: number }[]): { date: string; score: number }[] {
-  const byDate = new Map<string, { scores: number[]; original: { date: string; score: number }[] }>();
+function averageByDate(
+  items: { date: string; score: number; subject: string }[]
+): { date: string; score: number; subject: string }[] {
+  const byDate = new Map<string, { scores: number[]; original: { date: string; score: number; subject: string }[] }>();
 
   for (const item of items) {
     const dateKey = item.date.split('T')[0];
@@ -64,20 +66,25 @@ function averageByDate(items: { date: string; score: number }[]): { date: string
     entry.original.push(item);
   }
 
-  const result: { date: string; score: number }[] = [];
+  const result: { date: string; score: number; subject: string }[] = [];
   const sortedDates = Array.from(byDate.keys()).sort();
 
   for (const dateKey of sortedDates) {
     const entry = byDate.get(dateKey)!;
     const avg = entry.scores.reduce((a, b) => a + b, 0) / entry.scores.length;
-    result.push({ date: entry.original[0].date, score: avg });
+    result.push({ date: entry.original[0].date, score: avg, subject: '' });
   }
 
   return result;
 }
 
-function averageHomeworkByDate(items: { date: string; completed: boolean }[]): { date: string; completed: boolean }[] {
-  const byDate = new Map<string, { completed: number[]; original: { date: string; completed: boolean }[] }>();
+function averageHomeworkByDate(
+  items: { date: string; completed: boolean; subject: string }[]
+): { date: string; completed: boolean; subject: string }[] {
+  const byDate = new Map<
+    string,
+    { completed: number[]; original: { date: string; completed: boolean; subject: string }[] }
+  >();
 
   for (const item of items) {
     const dateKey = item.date.split('T')[0];
@@ -89,13 +96,13 @@ function averageHomeworkByDate(items: { date: string; completed: boolean }[]): {
     entry.original.push(item);
   }
 
-  const result: { date: string; completed: boolean }[] = [];
+  const result: { date: string; completed: boolean; subject: string }[] = [];
   const sortedDates = Array.from(byDate.keys()).sort();
 
   for (const dateKey of sortedDates) {
     const entry = byDate.get(dateKey)!;
     const avg = entry.completed.reduce((a, b) => a + b, 0) / entry.completed.length;
-    result.push({ date: entry.original[0].date, completed: avg >= 0.5 });
+    result.push({ date: entry.original[0].date, completed: avg >= 0.5, subject: '' });
   }
 
   return result;

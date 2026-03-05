@@ -51,12 +51,54 @@ function getUniqueSubjects(data: StudentProgressData): string[] {
   return Array.from(subjects).sort();
 }
 
-function filterBySubject<T extends PerformanceDataPoint | ConfidenceDataPoint | HomeworkDataPoint>(
-  data: T[],
-  subject: string | null
-): T[] {
-  if (!subject || subject === 'all') return data;
-  return data.filter(point => point.subject === subject);
+function averageByDate(items: { date: string; score: number }[]): { date: string; score: number }[] {
+  const byDate = new Map<string, { scores: number[]; original: { date: string; score: number }[] }>();
+
+  for (const item of items) {
+    const dateKey = item.date.split('T')[0];
+    if (!byDate.has(dateKey)) {
+      byDate.set(dateKey, { scores: [], original: [] });
+    }
+    const entry = byDate.get(dateKey)!;
+    entry.scores.push(item.score);
+    entry.original.push(item);
+  }
+
+  const result: { date: string; score: number }[] = [];
+  const sortedDates = Array.from(byDate.keys()).sort();
+
+  for (const dateKey of sortedDates) {
+    const entry = byDate.get(dateKey)!;
+    const avg = entry.scores.reduce((a, b) => a + b, 0) / entry.scores.length;
+    result.push({ date: entry.original[0].date, score: avg });
+  }
+
+  return result;
+}
+
+function averageHomeworkByDate(items: { date: string; completed: boolean }[]): { date: string; completed: boolean }[] {
+  const byDate = new Map<string, { completed: number[]; original: { date: string; completed: boolean }[] }>();
+
+  for (const item of items) {
+    const dateKey = item.date.split('T')[0];
+    if (!byDate.has(dateKey)) {
+      byDate.set(dateKey, { completed: [], original: [] });
+    }
+    const entry = byDate.get(dateKey)!;
+    entry.completed.push(item.completed ? 1 : 0);
+    entry.original.push(item);
+  }
+
+  const result: { date: string; completed: boolean }[] = [];
+  const sortedDates = Array.from(byDate.keys()).sort();
+
+  for (const dateKey of sortedDates) {
+    const entry = byDate.get(dateKey)!;
+    const avg = entry.completed.reduce((a, b) => a + b, 0) / entry.completed.length;
+    result.push({ date: entry.original[0].date, completed: avg >= 0.5 });
+  }
+
+  return result;
 }
 
 export function ParentProgressDashboard({ students: initialStudents, defaultStudentId }: ParentProgressDashboardProps) {
@@ -78,9 +120,30 @@ export function ParentProgressDashboard({ students: initialStudents, defaultStud
   const selectedStudent = students.find(s => s.studentId === selectedStudentId);
   const availableSubjects = selectedStudent ? getUniqueSubjects(selectedStudent) : [];
 
-  const filteredPerformance = selectedStudent ? filterBySubject(selectedStudent.performance, selectedSubject) : [];
-  const filteredConfidence = selectedStudent ? filterBySubject(selectedStudent.confidence, selectedSubject) : [];
-  const filteredHomework = selectedStudent ? filterBySubject(selectedStudent.homework, selectedSubject) : [];
+  let filteredPerformance: PerformanceDataPoint[] = [];
+  let filteredConfidence: ConfidenceDataPoint[] = [];
+  let filteredHomework: HomeworkDataPoint[] = [];
+
+  if (selectedStudent) {
+    if (selectedSubject === 'all' || !selectedSubject) {
+      filteredPerformance = selectedStudent.performance.map(p => ({ ...p }));
+      filteredConfidence = selectedStudent.confidence.map(c => ({ ...c }));
+      filteredHomework = selectedStudent.homework.map(h => ({ ...h }));
+    } else {
+      filteredPerformance = selectedStudent.performance.filter(p => p.subject === selectedSubject);
+      filteredConfidence = selectedStudent.confidence.filter(c => c.subject === selectedSubject);
+      filteredHomework = selectedStudent.homework.filter(h => h.subject === selectedSubject);
+    }
+  }
+
+  const displayPerformance =
+    selectedSubject === 'all' ? (averageByDate(filteredPerformance) as PerformanceDataPoint[]) : filteredPerformance;
+
+  const displayConfidence =
+    selectedSubject === 'all' ? (averageByDate(filteredConfidence) as ConfidenceDataPoint[]) : filteredConfidence;
+
+  const displayHomework =
+    selectedSubject === 'all' ? (averageHomeworkByDate(filteredHomework) as HomeworkDataPoint[]) : filteredHomework;
 
   if (students.length === 0) {
     return (
@@ -128,7 +191,7 @@ export function ParentProgressDashboard({ students: initialStudents, defaultStud
                 <SelectValue placeholder='All subjects' />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value='all'>All subjects</SelectItem>
+                <SelectItem value='all'>All subjects (avg)</SelectItem>
                 {availableSubjects.map(subject => (
                   <SelectItem key={subject} value={subject}>
                     {subject}
@@ -162,12 +225,12 @@ export function ParentProgressDashboard({ students: initialStudents, defaultStud
       {!isPending && selectedStudent && (
         <>
           <div className='grid gap-4 md:grid-cols-2 lg:grid-cols-2'>
-            <PerformanceChart data={filteredPerformance} />
-            <ConfidenceChart data={filteredConfidence} />
+            <PerformanceChart data={displayPerformance} />
+            <ConfidenceChart data={displayConfidence} />
           </div>
 
           <div className='grid gap-4 md:grid-cols-1'>
-            <HomeworkChart data={filteredHomework} />
+            <HomeworkChart data={displayHomework} />
           </div>
         </>
       )}

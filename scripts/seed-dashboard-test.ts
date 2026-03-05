@@ -35,11 +35,11 @@ const subjects = [
 ];
 
 const studentSubjects = [
-  { studentId: 1, subjectId: 1 },
-  { studentId: 1, subjectId: 2 },
-  { studentId: 1, subjectId: 3 },
-  { studentId: 2, subjectId: 1 },
-  { studentId: 2, subjectId: 2 },
+  { studentId: 1, subjectId: 1, type: 'happy' },
+  { studentId: 1, subjectId: 2, type: 'happy' },
+  { studentId: 1, subjectId: 3, type: 'happy' },
+  { studentId: 2, subjectId: 1, type: 'struggling' },
+  { studentId: 2, subjectId: 2, type: 'struggling' },
 ];
 
 function generateSessionsForStudent(studentId: number, subjectId: number, offset: number, hourOffset: number) {
@@ -105,19 +105,32 @@ async function seedSessions() {
   return insertedSessions;
 }
 
+function getMetricsForStudent(sessionIndex: number, studentType: 'happy' | 'struggling') {
+  if (studentType === 'happy') {
+    const happyPath = [
+      { performance: 1, confidence: 1, completed: false },
+      { performance: 2, confidence: 2, completed: true },
+      { performance: 3, confidence: 3, completed: true },
+      { performance: 4, confidence: 4, completed: true },
+      { performance: 5, confidence: 5, completed: true },
+    ];
+    return happyPath[sessionIndex % happyPath.length];
+  } else {
+    const struggling = [
+      { performance: 1, confidence: 1, completed: false },
+      { performance: 1, confidence: 1, completed: false },
+      { performance: 2, confidence: 2, completed: true },
+      { performance: 2, confidence: 1, completed: false },
+      { performance: 3, confidence: 2, completed: true },
+    ];
+    return struggling[sessionIndex % struggling.length];
+  }
+}
+
 async function seedSessionMetrics(
   sessions: { id: number; subject_id: number; student_id: number; scheduled_at: string }[]
 ) {
   console.log('📊 Seeding session metrics...');
-
-  const metricsTemplates = [
-    { performance: 2, confidence: 2, completed: false },
-    { performance: 2, confidence: 2, completed: true },
-    { performance: 3, confidence: 3, completed: true },
-    { performance: 3, confidence: 3, completed: false },
-    { performance: 3, confidence: 3, completed: true },
-    { performance: 4, confidence: 4, completed: true },
-  ];
 
   for (let i = 0; i < sessions.length; i++) {
     const session = sessions[i];
@@ -127,7 +140,8 @@ async function seedSessionMetrics(
       continue;
     }
 
-    const metrics = metricsTemplates[i % metricsTemplates.length];
+    const studentType: 'happy' | 'struggling' = session.student_id === 1 ? 'happy' : 'struggling';
+    const metrics = getMetricsForStudent(i, studentType);
     const subject = subjects.find(s => s.id === session.subject_id);
 
     const { error } = await supabase.from('session_metrics').insert({
@@ -136,7 +150,10 @@ async function seedSessionMetrics(
       session_performance: metrics.performance,
       confidence_score: metrics.confidence,
       homework_completed: metrics.completed,
-      tutor_comments: `Great progress in ${subject?.name}!`,
+      tutor_comments:
+        studentType === 'happy'
+          ? `Excellent progress in ${subject?.name}! Keep up the great work.`
+          : `Working on improving in ${subject?.name}. Needs more practice between sessions.`,
       recorded_at: session.scheduled_at,
       updated_at: new Date().toISOString(),
     });
@@ -146,7 +163,9 @@ async function seedSessionMetrics(
       continue;
     }
 
-    console.log(`✅ Added metrics for session ${session.id}: ${subject?.name} - Perf ${metrics.performance}`);
+    console.log(
+      `✅ Added metrics for session ${session.id}: ${subject?.name} - Perf ${metrics.performance}, Conf ${metrics.confidence}`
+    );
   }
 }
 
@@ -181,8 +200,8 @@ async function seedSessionProgress(sessions: { id: number; subject_id: number; s
       session_id: session.id,
       topics: `${subject?.name}: ${topic}`,
       homework_assigned: `Practice ${topic.toLowerCase()}`,
-      public_notes: `Covered ${topic} in ${subject?.name}. Student showed good understanding.`,
-      internal_notes: 'Student is making progress. Continue with current curriculum.',
+      public_notes: `Covered ${topic} in ${subject?.name}.`,
+      internal_notes: 'Regular session.',
       created_at: session.scheduled_at,
       updated_at: new Date().toISOString(),
     });
@@ -210,10 +229,11 @@ async function main() {
 
   console.log('\n✅ Seed complete!');
   console.log('\n📋 Summary:');
-  console.log(`- Created ${sessions.length} sessions`);
-  console.log(`- For 2 students (Luke Skywalker, Ben Solo)`);
-  console.log(`- 3 subjects: Math, Reading, Science`);
-  console.log(`- 5 completed + 1 scheduled per subject per student = 30 sessions total`);
+  console.log('- Created sessions for 2 students:');
+  console.log('  - Luke Skywalker (Student 1): Happy path - consistent improvement 1→5');
+  console.log('  - Ben Solo (Student 2): Struggling - inconsistent, off days');
+  console.log('- 3 subjects: Math, Reading, Science');
+  console.log('- Each student has 5 completed + 1 scheduled per subject');
 }
 
 main().catch(console.error);

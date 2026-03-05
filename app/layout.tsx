@@ -1,4 +1,5 @@
 import { DM_Sans, Playfair_Display } from 'next/font/google';
+import { Toaster } from '@/components/ui/sonner';
 import type { Metadata } from 'next';
 import './globals.css';
 
@@ -25,7 +26,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang='en'>
-      <body className={`${dmSans.variable} ${playfair.variable}`}>{children}</body>
+      <body className={`${dmSans.variable} ${playfair.variable}`}>
+        {children}
+        <Toaster />
+      </body>
     </html>
   );
 }

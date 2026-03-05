@@ -34,7 +34,6 @@ export function HomeworkChart({ data, title = 'Homework Completion' }: HomeworkC
 
   const completedCount = data.filter(d => d.completed).length;
   const notCompletedCount = data.length - completedCount;
-  const completionRate = data.length > 0 ? (completedCount / data.length) * 100 : 0;
 
   const chartData = [
     { name: 'Completed', value: completedCount },
@@ -43,7 +42,7 @@ export function HomeworkChart({ data, title = 'Homework Completion' }: HomeworkC
 
   return (
     <Card>
-      <CardHeader className='flex flex-row items-center justify-between pb-2'>
+      <CardHeader className='pb-2'>
         <div className='flex items-center gap-2'>
           <CardTitle>{title}</CardTitle>
           <TooltipProvider>
@@ -56,12 +55,6 @@ export function HomeworkChart({ data, title = 'Homework Completion' }: HomeworkC
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
-        </div>
-        <div className='flex items-center gap-2'>
-          <span className='text-2xl font-bold'>{completionRate.toFixed(0)}%</span>
-          <span className='text-sm text-muted-foreground'>
-            {completedCount}/{data.length}
-          </span>
         </div>
       </CardHeader>
       <CardContent>
@@ -76,7 +69,7 @@ export function HomeworkChart({ data, title = 'Homework Completion' }: HomeworkC
                 outerRadius={80}
                 paddingAngle={2}
                 dataKey='value'
-                label={({ name, percent }) => `${name} ${((percent ?? 0) * 100).toFixed(0)}%`}
+                label={({ name, value }) => `${value} ${name}`}
                 labelLine={false}
               >
                 {chartData.map((entry, index) => (
@@ -87,7 +80,6 @@ export function HomeworkChart({ data, title = 'Homework Completion' }: HomeworkC
                 content={({ active, payload }) => {
                   if (active && payload && payload.length) {
                     const chartData = payload[0];
-                    const total = chartData.value + chartData.value;
                     return (
                       <div className='rounded-lg border bg-background px-3 py-2 shadow-md'>
                         <p className='text-sm font-medium'>

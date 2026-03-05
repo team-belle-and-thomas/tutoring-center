@@ -229,7 +229,6 @@ export async function getStudentsWithProgress(dateRange?: DateRange): Promise<St
   }
 
   if (!studentsData || studentsData.length === 0) {
-    console.log('[getStudentsWithProgress] No students found for parent:', parentId);
     return [];
   }
 

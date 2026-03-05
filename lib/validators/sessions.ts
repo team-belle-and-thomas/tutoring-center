@@ -84,3 +84,21 @@ export const SessionWithJoinsSchema = z.object({
 
 export const SessionWithJoinsListSchema = z.array(SessionWithJoinsSchema);
 export type SessionWithJoins = z.infer<typeof SessionWithJoinsSchema>;
+
+const isoDate = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Must be YYYY-MM-DD');
+
+export const AvailableSessionsQuerySchema = z
+  .object({
+    subject_id: id,
+    from: isoDate,
+    to: isoDate,
+  })
+  .refine(v => v.from < v.to, { message: 'from must be before to', path: ['to'] });
+
+export const AvailableSessionSchema = z.object({
+  scheduled_at: z.string().datetime(),
+  ends_at: z.string().datetime(),
+});
+
+export type AvailableSessionsQuery = z.infer<typeof AvailableSessionsQuerySchema>;
+export type AvailableSession = z.infer<typeof AvailableSessionSchema>;

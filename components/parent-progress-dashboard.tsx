@@ -216,22 +216,27 @@ export function ParentProgressDashboard({ students: initialStudents, defaultStud
 
           <div className='flex flex-col gap-2'>
             <label className='text-sm font-medium'>Subject</label>
-            <Select
-              value={selectedSubject ?? 'all'}
-              onValueChange={value => setSelectedSubject(value === 'all' ? null : value)}
-            >
-              <SelectTrigger className='w-[180px]'>
-                <SelectValue placeholder='All subjects' />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value='all'>All subjects (avg)</SelectItem>
-                {availableSubjects.map(subject => (
-                  <SelectItem key={subject} value={subject}>
-                    {subject}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <div className='flex items-center gap-2'>
+              <Select
+                value={selectedSubject ?? 'all'}
+                onValueChange={value => setSelectedSubject(value === 'all' ? null : value)}
+              >
+                <SelectTrigger className='w-[180px]'>
+                  <SelectValue placeholder='All subjects' />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value='all'>All subjects (avg)</SelectItem>
+                  {availableSubjects.map(subject => (
+                    <SelectItem key={subject} value={subject}>
+                      {subject}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {selectedStudent && (
+                <span className='text-sm text-muted-foreground'>{filteredPerformance.length} sessions</span>
+              )}
+            </div>
           </div>
         </div>
 

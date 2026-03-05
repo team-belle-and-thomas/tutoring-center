@@ -1,9 +1,10 @@
 import { notFound } from 'next/navigation';
-import { BookingScreen } from '@/components/parents-sessions/booking-screen';
+import { BookingScreen } from '@/components/parent-sessions/booking-screen';
 import { getUserRole } from '@/lib/auth';
-import { getWeekStart } from '@/lib/date-utils';
-import { mockAvailableSessions } from '@/lib/mock-available-sessions';
-import { addDays, startOfDay } from 'date-fns';
+import { getStudents } from '@/lib/data/students';
+import { getSubjects } from '@/lib/data/subjects';
+import { getTutorOptionsByIds } from '@/lib/data/tutor-options';
+import { startOfDay } from 'date-fns';
 
 export default async function NewSessionPage() {
   const role = await getUserRole();
@@ -12,19 +13,22 @@ export default async function NewSessionPage() {
     notFound();
   }
 
+  const [students, subjects] = await Promise.all([getStudents(role), getSubjects(role)]);
+  const tutorIds = subjects.flatMap(subject => subject.assignments.map(assignment => assignment.tutorId));
+  const tutors = await getTutorOptionsByIds(role, tutorIds);
+
   const today = startOfDay(new Date());
-  const thisWeekStart = getWeekStart(today);
-  const initialSessions = mockAvailableSessions.filter(s => {
-    const d = new Date(s.scheduled_at);
-    return d >= today && d < addDays(thisWeekStart, 7);
-  });
 
   return (
     <BookingScreen
-      subject={{ id: 1, category: 'Math' }}
-      tutor={{ id: 1, name: 'Obi-Wan Kenobi' }}
+      students={students.map(student => ({
+        id: student.id,
+        name: student.name || '—',
+        grade: student.grade,
+      }))}
+      subjects={subjects}
+      tutors={tutors}
       todayStartMs={today.getTime()}
-      initialSessions={initialSessions}
     />
   );
 }

@@ -1,6 +1,6 @@
 import { GET } from '@/app/api/tutors/[id]/available-sessions/route';
+import { USER_ROLE_COOKIE_NAME } from '@/lib/auth';
 import { AVAILABLE_SLOTS_ERROR_MESSAGES } from '@/lib/data/available-sessions';
-import { USER_ROLE_COOKIE_NAME } from '@/lib/mock-api';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 const { mockGetAvailableSlots, mockCookies } = vi.hoisted(() => ({
@@ -22,6 +22,10 @@ vi.mock('@/lib/data/available-sessions', async () => {
 
 function makeRequest(url: string) {
   return new Request(url, { method: 'GET' });
+}
+
+function makeContext(id: string) {
+  return { params: Promise.resolve({ id }) };
 }
 
 function setRoleCookie(role?: string) {
@@ -47,7 +51,7 @@ describe('GET /api/tutors/:id/available-sessions', () => {
 
     const response = await GET(
       makeRequest('https://example.test/api/tutors/7/available-sessions?subject_id=3&from=2026-03-02&to=2026-03-03'),
-      { params: { id: '7' } }
+      makeContext('7')
     );
     const body = await response.json();
 
@@ -61,7 +65,7 @@ describe('GET /api/tutors/:id/available-sessions', () => {
 
     const response = await GET(
       makeRequest('https://example.test/api/tutors/7/available-sessions?subject_id=3&from=2026-03-02&to=2026-03-03'),
-      { params: { id: '7' } }
+      makeContext('7')
     );
     const body = await response.json();
 
@@ -75,7 +79,7 @@ describe('GET /api/tutors/:id/available-sessions', () => {
       makeRequest(
         'https://example.test/api/tutors/not-a-number/available-sessions?subject_id=1&from=2026-03-02&to=2026-03-03'
       ),
-      { params: { id: 'not-a-number' } }
+      makeContext('not-a-number')
     );
     const body = await response.json();
 
@@ -87,7 +91,7 @@ describe('GET /api/tutors/:id/available-sessions', () => {
   it('returns 400 when query params are invalid', async () => {
     const response = await GET(
       makeRequest('https://example.test/api/tutors/7/available-sessions?subject_id=3&from=2026-03-03&to=2026-03-02'),
-      { params: { id: '7' } }
+      makeContext('7')
     );
     const body = await response.json();
 
@@ -103,7 +107,7 @@ describe('GET /api/tutors/:id/available-sessions', () => {
 
     const response = await GET(
       makeRequest('https://example.test/api/tutors/7/available-sessions?subject_id=3&from=2026-03-02&to=2026-03-03'),
-      { params: { id: '7' } }
+      makeContext('7')
     );
     const body = await response.json();
 
@@ -117,7 +121,7 @@ describe('GET /api/tutors/:id/available-sessions', () => {
 
     const response = await GET(
       makeRequest('https://example.test/api/tutors/7/available-sessions?subject_id=3&from=2026-03-02&to=2026-03-03'),
-      { params: { id: '7' } }
+      makeContext('7')
     );
     const body = await response.json();
 
@@ -130,7 +134,7 @@ describe('GET /api/tutors/:id/available-sessions', () => {
 
     const response = await GET(
       makeRequest('https://example.test/api/tutors/7/available-sessions?subject_id=3&from=2026-03-02&to=2026-03-03'),
-      { params: { id: '7' } }
+      makeContext('7')
     );
     const body = await response.json();
 

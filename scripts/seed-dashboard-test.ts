@@ -42,12 +42,13 @@ const studentSubjects = [
   { studentId: 2, subjectId: 2, type: 'struggling' },
 ];
 
-function generateSessionsForStudent(studentId: number, subjectId: number, offset: number, hourOffset: number) {
+function generateSessionsForStudent(studentId: number, subjectId: number, startWeek: number, hourOffset: number) {
   const sessions = [];
   const now = new Date();
 
-  for (let i = 0; i < 5; i++) {
-    const baseTime = now.getTime() - (offset + i * 7) * 24 * 60 * 60 * 1000;
+  for (let i = 0; i < 7; i++) {
+    const daysAgo = startWeek * 7 + i * 14;
+    const baseTime = now.getTime() - daysAgo * 24 * 60 * 60 * 1000;
     sessions.push({
       parent_id: 1,
       student_id: studentId,
@@ -59,6 +60,7 @@ function generateSessionsForStudent(studentId: number, subjectId: number, offset
       slot_units: 2,
     });
   }
+
   const futureTime = now.getTime() + 7 * 24 * 60 * 60 * 1000;
   sessions.push({
     parent_id: 1,
@@ -70,6 +72,7 @@ function generateSessionsForStudent(studentId: number, subjectId: number, offset
     status: 'Scheduled',
     slot_units: 2,
   });
+
   return sessions;
 }
 
@@ -77,13 +80,13 @@ async function seedSessions() {
   console.log('🌱 Seeding sessions...');
 
   const allSessions = [];
-  let offset = 180;
+  let startWeek = 26;
 
   for (let si = 0; si < studentSubjects.length; si++) {
     const ss = studentSubjects[si];
-    const sessions = generateSessionsForStudent(ss.studentId, ss.subjectId, offset, si * 3);
+    const sessions = generateSessionsForStudent(ss.studentId, ss.subjectId, startWeek, si * 3);
     allSessions.push(...sessions);
-    offset -= 7;
+    startWeek -= 2;
   }
 
   const insertedSessions = [];
@@ -110,14 +113,18 @@ function getMetricsForStudent(sessionIndex: number, studentType: 'happy' | 'stru
     const happyPath = [
       { performance: 1, confidence: 1, completed: false },
       { performance: 2, confidence: 2, completed: true },
+      { performance: 2, confidence: 3, completed: true },
       { performance: 3, confidence: 3, completed: true },
       { performance: 4, confidence: 4, completed: true },
+      { performance: 4, confidence: 4, completed: false },
       { performance: 5, confidence: 5, completed: true },
     ];
     return happyPath[sessionIndex % happyPath.length];
   } else {
     const struggling = [
       { performance: 1, confidence: 1, completed: false },
+      { performance: 1, confidence: 1, completed: false },
+      { performance: 2, confidence: 2, completed: true },
       { performance: 1, confidence: 1, completed: false },
       { performance: 2, confidence: 2, completed: true },
       { performance: 2, confidence: 1, completed: false },
@@ -132,40 +139,56 @@ async function seedSessionMetrics(
 ) {
   console.log('📊 Seeding session metrics...');
 
-  for (let i = 0; i < sessions.length; i++) {
-    const session = sessions[i];
-
-    if (session.scheduled_at && new Date(session.scheduled_at) > new Date()) {
-      console.log(`⏭️  Skipping future session ${session.id}`);
-      continue;
+  const sessionsByStudent = new Map<number, typeof sessions>();
+  for (const session of sessions) {
+    if (!sessionsByStudent.has(session.student_id)) {
+      sessionsByStudent.set(session.student_id, []);
     }
+    sessionsByStudent.get(session.student_id)!.push(session);
+  }
 
-    const studentType: 'happy' | 'struggling' = session.student_id === 1 ? 'happy' : 'struggling';
-    const metrics = getMetricsForStudent(i, studentType);
-    const subject = subjects.find(s => s.id === session.subject_id);
+  for (const [studentId, studentSessions] of sessionsByStudent) {
+    const completedSessions = studentSessions
+      .filter(s => s.scheduled_at && new Date(s.scheduled_at) < new Date())
+      .sort((a, b) => new Date(a.scheduled_at).getTime() - new Date(b.scheduled_at).getTime());
 
-    const { error } = await supabase.from('session_metrics').insert({
-      session_id: session.id,
-      student_id: session.student_id,
-      session_performance: metrics.performance,
-      confidence_score: metrics.confidence,
-      homework_completed: metrics.completed,
-      tutor_comments:
-        studentType === 'happy'
-          ? `Excellent progress in ${subject?.name}! Keep up the great work.`
-          : `Working on improving in ${subject?.name}. Needs more practice between sessions.`,
-      recorded_at: session.scheduled_at,
-      updated_at: new Date().toISOString(),
-    });
-
-    if (error) {
-      console.error(`Error inserting metrics for session ${session.id}:`, error);
-      continue;
-    }
+    const sessionsToFill = completedSessions.slice(0, -2);
+    const sessionsToSkip = completedSessions.slice(-2);
 
     console.log(
-      `✅ Added metrics for session ${session.id}: ${subject?.name} - Perf ${metrics.performance}, Conf ${metrics.confidence}`
+      `  Student ${studentId}: filling ${sessionsToFill.length}, skipping ${sessionsToSkip.length} (no data yet)`
     );
+
+    for (let i = 0; i < sessionsToFill.length; i++) {
+      const session = sessionsToFill[i];
+      const studentType: 'happy' | 'struggling' = studentId === 1 ? 'happy' : 'struggling';
+      const metrics = getMetricsForStudent(i, studentType);
+      const subject = subjects.find(s => s.id === session.subject_id);
+
+      const { error } = await supabase.from('session_metrics').insert({
+        session_id: session.id,
+        student_id: session.student_id,
+        session_performance: metrics.performance,
+        confidence_score: metrics.confidence,
+        homework_completed: metrics.completed,
+        tutor_comments:
+          studentType === 'happy' ? `Great progress in ${subject?.name}!` : `Working on improving in ${subject?.name}.`,
+        recorded_at: session.scheduled_at,
+        updated_at: new Date().toISOString(),
+      });
+
+      if (error) {
+        console.error(`Error inserting metrics for session ${session.id}:`, error);
+        continue;
+      }
+
+      console.log(`  ✅ Session ${session.id} (${subject?.name}): Perf ${metrics.performance}`);
+    }
+
+    for (const session of sessionsToSkip) {
+      const subject = subjects.find(s => s.id === session.subject_id);
+      console.log(`  ⏭️  Session ${session.id} (${subject?.name}): NO METRICS YET`);
+    }
   }
 }
 
@@ -173,8 +196,16 @@ async function seedSessionProgress(sessions: { id: number; subject_id: number; s
   console.log('📝 Seeding session progress...');
 
   const topicsBySubject: Record<number, string[]> = {
-    1: ['Algebra basics', 'Linear equations', 'Variables', 'Solving equations', 'Graphing', 'Review'],
-    2: ['Reading comprehension', 'Vocabulary', 'Phonics', 'Story structure', 'Main idea', 'Literary analysis'],
+    1: ['Algebra basics', 'Linear equations', 'Variables', 'Solving equations', 'Graphing', 'Quadratics', 'Review'],
+    2: [
+      'Reading comprehension',
+      'Vocabulary',
+      'Phonics',
+      'Story structure',
+      'Main idea',
+      'Literary analysis',
+      'Analysis',
+    ],
     3: [
       'Scientific method',
       'Physics basics',
@@ -182,11 +213,14 @@ async function seedSessionProgress(sessions: { id: number; subject_id: number; s
       'Chemistry fundamentals',
       'Earth science',
       'Lab skills',
+      'Review',
     ],
   };
 
-  for (let i = 0; i < sessions.length; i++) {
-    const session = sessions[i];
+  const sessionsWithMetrics = sessions.slice(0, -10);
+
+  for (let i = 0; i < sessionsWithMetrics.length; i++) {
+    const session = sessionsWithMetrics[i];
 
     if (session.scheduled_at && new Date(session.scheduled_at) > new Date()) {
       continue;
@@ -211,7 +245,7 @@ async function seedSessionProgress(sessions: { id: number; subject_id: number; s
       continue;
     }
 
-    console.log(`✅ Added progress for session ${session.id}: ${subject?.name} - ${topic}`);
+    console.log(`✅ Progress: Session ${session.id} - ${subject?.name}`);
   }
 }
 
@@ -229,11 +263,12 @@ async function main() {
 
   console.log('\n✅ Seed complete!');
   console.log('\n📋 Summary:');
-  console.log('- Created sessions for 2 students:');
-  console.log('  - Luke Skywalker (Student 1): Happy path - consistent improvement 1→5');
-  console.log('  - Ben Solo (Student 2): Struggling - inconsistent, off days');
-  console.log('- 3 subjects: Math, Reading, Science');
-  console.log('- Each student has 5 completed + 1 scheduled per subject');
+  console.log('- 2 students spread over 6 months:');
+  console.log('  - Luke Skywalker: Happy path - improvement 1→5 over time');
+  console.log('  - Ben Solo: Struggling - inconsistent');
+  console.log('- 3 subjects each: Math, Reading, Science');
+  console.log('- 7 completed + 1 scheduled per subject');
+  console.log('- Last 2 sessions per student have NO metrics (for E2E testing)');
 }
 
 main().catch(console.error);

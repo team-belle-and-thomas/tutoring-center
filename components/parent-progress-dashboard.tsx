@@ -38,12 +38,18 @@ interface ParentProgressDashboardProps {
 function ChartSkeletonItem({ children }: { children?: React.ReactNode }) {
   return (
     <div className='rounded-lg border'>
-      <div className='px-6 pt-6 pb-2'>
-        <Skeleton className='h-6 w-32' />
-      </div>
-      <div className='px-6 pb-6'>
-        <Skeleton className='h-[200px] w-full' />
-      </div>
+      {children ? (
+        <div className='px-6 pt-6 pb-6'>{children}</div>
+      ) : (
+        <>
+          <div className='px-6 pt-6 pb-2'>
+            <Skeleton className='h-6 w-32' />
+          </div>
+          <div className='px-6 pb-6'>
+            <Skeleton className='h-[200px] w-full' />
+          </div>
+        </>
+      )}
     </div>
   );
 }

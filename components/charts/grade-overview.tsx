@@ -182,7 +182,7 @@ export function GradeChart({ data, subject, title = 'Grades', description }: Gra
                 tickLine={false}
                 axisLine={false}
                 tickFormatter={numberToLetterGrade}
-                width={30}
+                width={40}
               />
               <RechartsTooltip
                 content={({ active, payload }) => {

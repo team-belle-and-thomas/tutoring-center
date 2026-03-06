@@ -81,7 +81,7 @@ export function MetricChart({ data, title, color, emptyMessage, description }: M
                 tick={{ fontSize: 12 }}
                 tickLine={false}
                 axisLine={false}
-                width={30}
+                width={40}
               />
               <RechartsTooltip
                 content={({ active, payload }) => {

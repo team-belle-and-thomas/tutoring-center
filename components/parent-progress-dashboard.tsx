@@ -9,6 +9,12 @@ import { ConfidenceChart, PerformanceChart } from '@/components/charts/performan
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
+import {
+  averageConfidenceByDate,
+  averageHomeworkByDate,
+  averagePerformanceByDate,
+  getUniqueSubjectsFromStudentData,
+} from '@/lib/dashboard-utils';
 import type {
   ConfidenceDataPoint,
   DateRange,
@@ -49,77 +55,6 @@ function getDateRange(option: DateRangeOption): DateRange {
     default:
       return { from: undefined, to: undefined };
   }
-}
-
-function getUniqueSubjects(data: StudentProgressData): string[] {
-  const subjects = new Set<string>();
-  data.performance.forEach(p => {
-    if (p.subject && p.subject !== 'Unknown') subjects.add(p.subject);
-  });
-  data.confidence.forEach(c => {
-    if (c.subject && c.subject !== 'Unknown') subjects.add(c.subject);
-  });
-  data.homework.forEach(h => {
-    if (h.subject && h.subject !== 'Unknown') subjects.add(h.subject);
-  });
-  return Array.from(subjects).sort();
-}
-
-function averageByDate(
-  items: { date: string; score: number; subject: string }[]
-): { date: string; score: number; subject: string }[] {
-  const byDate = new Map<string, { scores: number[]; original: { date: string; score: number; subject: string }[] }>();
-
-  for (const item of items) {
-    const dateKey = item.date.split('T')[0];
-    if (!byDate.has(dateKey)) {
-      byDate.set(dateKey, { scores: [], original: [] });
-    }
-    const entry = byDate.get(dateKey)!;
-    entry.scores.push(item.score);
-    entry.original.push(item);
-  }
-
-  const result: { date: string; score: number; subject: string }[] = [];
-  const sortedDates = Array.from(byDate.keys()).sort();
-
-  for (const dateKey of sortedDates) {
-    const entry = byDate.get(dateKey)!;
-    const avg = entry.scores.reduce((a, b) => a + b, 0) / entry.scores.length;
-    result.push({ date: entry.original[0].date, score: avg, subject: '' });
-  }
-
-  return result;
-}
-
-function averageHomeworkByDate(
-  items: { date: string; completed: boolean; subject: string }[]
-): { date: string; completed: boolean; subject: string }[] {
-  const byDate = new Map<
-    string,
-    { completed: number[]; original: { date: string; completed: boolean; subject: string }[] }
-  >();
-
-  for (const item of items) {
-    const dateKey = item.date.split('T')[0];
-    if (!byDate.has(dateKey)) {
-      byDate.set(dateKey, { completed: [], original: [] });
-    }
-    const entry = byDate.get(dateKey)!;
-    entry.completed.push(item.completed ? 1 : 0);
-    entry.original.push(item);
-  }
-
-  const result: { date: string; completed: boolean; subject: string }[] = [];
-  const sortedDates = Array.from(byDate.keys()).sort();
-
-  for (const dateKey of sortedDates) {
-    const entry = byDate.get(dateKey)!;
-    const avg = entry.completed.reduce((a, b) => a + b, 0) / entry.completed.length;
-    result.push({ date: entry.original[0].date, completed: avg >= 0.5, subject: '' });
-  }
-
-  return result;
 }
 
 function ChartsSkeleton() {
@@ -225,7 +160,7 @@ export function ParentProgressDashboard({
   };
 
   const selectedStudent = students.find(s => s.studentId === selectedStudentId);
-  const availableSubjects = selectedStudent ? getUniqueSubjects(selectedStudent) : [];
+  const availableSubjects = selectedStudent ? getUniqueSubjectsFromStudentData(selectedStudent) : [];
 
   let filteredPerformance: PerformanceDataPoint[] = [];
   let filteredConfidence: ConfidenceDataPoint[] = [];
@@ -245,11 +180,11 @@ export function ParentProgressDashboard({
   }
 
   const displayPerformance = isAllSubjects
-    ? (averageByDate(filteredPerformance) as PerformanceDataPoint[])
+    ? (averagePerformanceByDate(filteredPerformance) as PerformanceDataPoint[])
     : filteredPerformance;
 
   const displayConfidence = isAllSubjects
-    ? (averageByDate(filteredConfidence) as ConfidenceDataPoint[])
+    ? (averageConfidenceByDate(filteredConfidence) as ConfidenceDataPoint[])
     : filteredConfidence;
 
   const displayHomework = isAllSubjects

@@ -61,7 +61,7 @@ async function ParentDashboardContent({
 }: ParentDashboardContentProps) {
   const dateRange = parseDateRange(initialDateRange || 'all');
 
-  const { students, defaultStudentId } = await getParentDashboardData(dateRange, initialSubject);
+  const { students, defaultStudentId } = await getParentDashboardData(dateRange);
 
   const selectedStudentId = initialStudentId || defaultStudentId;
   let grades: GradeDataPoint[] = [];

@@ -13,17 +13,18 @@ import {
   averageConfidenceByDate,
   averageHomeworkByDate,
   averagePerformanceByDate,
+  DATE_RANGE_OPTIONS,
+  getDateRange,
   getUniqueSubjectsFromStudentData,
+  type DateRangeOption,
 } from '@/lib/dashboard-utils';
 import type {
   ConfidenceDataPoint,
-  DateRange,
   GradeDataPoint,
   HomeworkDataPoint,
   PerformanceDataPoint,
   StudentProgressData,
 } from '@/lib/data/dashboard';
-import { subDays, subMonths } from 'date-fns';
 
 interface ParentProgressDashboardProps {
   students: StudentProgressData[];
@@ -34,51 +35,23 @@ interface ParentProgressDashboardProps {
   grades?: GradeDataPoint[];
 }
 
-type DateRangeOption = 'all' | '30d' | '3m' | '6m';
-
-const DATE_RANGE_OPTIONS: { value: DateRangeOption; label: string }[] = [
-  { value: 'all', label: 'All time' },
-  { value: '30d', label: 'Last 30 days' },
-  { value: '3m', label: 'Last 3 months' },
-  { value: '6m', label: 'Last 6 months' },
-];
-
-function getDateRange(option: DateRangeOption): DateRange {
-  const now = new Date();
-  switch (option) {
-    case '30d':
-      return { from: subDays(now, 30).toISOString(), to: undefined };
-    case '3m':
-      return { from: subMonths(now, 3).toISOString(), to: undefined };
-    case '6m':
-      return { from: subMonths(now, 6).toISOString(), to: undefined };
-    default:
-      return { from: undefined, to: undefined };
-  }
+function ChartSkeletonItem() {
+  return (
+    <div className='rounded-lg border p-6'>
+      <Skeleton className='h-6 w-24 mb-4' />
+      <Skeleton className='h-[200px] w-full' />
+    </div>
+  );
 }
 
 function ChartsSkeleton() {
   return (
-    <>
-      <div className='grid gap-4 md:grid-cols-2 lg:grid-cols-2'>
-        <div className='rounded-lg border p-6'>
-          <Skeleton className='h-6 w-24 mb-4' />
-          <Skeleton className='h-[200px] w-full' />
-        </div>
-        <div className='rounded-lg border p-6'>
-          <Skeleton className='h-6 w-24 mb-4' />
-          <Skeleton className='h-[200px] w-full' />
-        </div>
-        <div className='rounded-lg border p-6'>
-          <Skeleton className='h-6 w-24 mb-4' />
-          <Skeleton className='h-[200px] w-full' />
-        </div>
-        <div className='rounded-lg border p-6'>
-          <Skeleton className='h-6 w-24 mb-4' />
-          <Skeleton className='h-[200px] w-full' />
-        </div>
-      </div>
-    </>
+    <div className='grid gap-4 md:grid-cols-2 lg:grid-cols-2'>
+      <ChartSkeletonItem />
+      <ChartSkeletonItem />
+      <ChartSkeletonItem />
+      <ChartSkeletonItem />
+    </div>
   );
 }
 
@@ -128,9 +101,8 @@ export function ParentProgressDashboard({
       }
     }
 
-    const newURL = params.toString() ? `?${params.toString()}` : '/dashboard';
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    router.push(newURL as any);
+    const newURL = (params.toString() ? `?${params.toString()}` : '/dashboard') as Parameters<typeof router.push>[0];
+    router.push(newURL);
   };
 
   const handleStudentChange = (studentId: number) => {

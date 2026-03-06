@@ -1,9 +1,34 @@
 import type {
   ConfidenceDataPoint,
+  DateRange,
   HomeworkDataPoint,
   PerformanceDataPoint,
   StudentProgressData,
 } from '@/lib/data/dashboard';
+import { subDays, subMonths } from 'date-fns';
+
+export type DateRangeOption = 'all' | '30d' | '3m' | '6m';
+
+export const DATE_RANGE_OPTIONS: { value: DateRangeOption; label: string }[] = [
+  { value: 'all', label: 'All time' },
+  { value: '30d', label: 'Last 30 days' },
+  { value: '3m', label: 'Last 3 months' },
+  { value: '6m', label: 'Last 6 months' },
+];
+
+export function getDateRange(option: DateRangeOption): DateRange {
+  const now = new Date();
+  switch (option) {
+    case '30d':
+      return { from: subDays(now, 30).toISOString(), to: undefined };
+    case '3m':
+      return { from: subMonths(now, 3).toISOString(), to: undefined };
+    case '6m':
+      return { from: subMonths(now, 6).toISOString(), to: undefined };
+    default:
+      return { from: undefined, to: undefined };
+  }
+}
 
 export function getUniqueSubjectsFromStudentData(data: StudentProgressData): string[] {
   const subjects = new Set<string>();

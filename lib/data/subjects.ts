@@ -1,4 +1,3 @@
-import 'server-only';
 import { forbidden } from 'next/navigation';
 import { isUserRole, type UserRole } from '@/lib/auth';
 import { createSupabaseServiceClient } from '@/lib/supabase/serverClient';
@@ -108,4 +107,28 @@ export async function getSubjects(role: UserRole) {
   }
 
   return groupSubjectsByCategory(parsedSubjects.data);
+}
+
+export type SubjectForGradeForm = {
+  id: number;
+  category: string;
+};
+
+export async function getSubjectsForGradeForm() {
+  const supabase = createSupabaseServiceClient();
+
+  const { data, error } = await supabase.from('subjects').select('id,category').order('category');
+
+  if (error) {
+    throw new Error('Subjects are temporarily unavailable. Please try again.');
+  }
+
+  const uniqueSubjects = new Map<string, SubjectForGradeForm>();
+  for (const subject of data ?? []) {
+    if (!uniqueSubjects.has(subject.category)) {
+      uniqueSubjects.set(subject.category, { id: subject.id, category: subject.category });
+    }
+  }
+
+  return Array.from(uniqueSubjects.values());
 }

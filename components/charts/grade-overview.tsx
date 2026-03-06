@@ -10,6 +10,7 @@ import { Line, LineChart, Tooltip as RechartsTooltip, ResponsiveContainer, XAxis
 
 interface GradeChartProps {
   data: GradeDataPoint[];
+  subject?: string | null;
   title?: string;
   description?: string;
 }
@@ -34,7 +35,84 @@ function getGradeColor(grade: string): string {
   return GRADE_COLORS[grade] || '#6b7280';
 }
 
-export function GradeChart({ data, title = 'Grades', description }: GradeChartProps) {
+function averageGrades(grades: GradeDataPoint[]): GradeDataPoint {
+  const numericSum = grades.reduce((sum, g) => sum + letterGradeToNumber(g.grade), 0);
+  const avgNumeric = Math.round(numericSum / grades.length);
+  const avgLetter = numberToLetterGrade(avgNumeric);
+
+  return {
+    id: 0,
+    subject: 'Average',
+    grade: avgLetter,
+    createdAt: grades[grades.length - 1]?.createdAt || new Date().toISOString(),
+  };
+}
+
+function processGradesData(
+  data: GradeDataPoint[],
+  subject?: string | null
+): {
+  chartData: Array<{ date: string; numericGrade: number; grade: string; formattedDate: string }>;
+  latestGrade: string;
+  trend: string;
+} {
+  let filteredData = data;
+
+  if (subject && subject !== 'all') {
+    filteredData = data.filter(g => g.subject.toLowerCase() === subject.toLowerCase());
+  }
+
+  if (filteredData.length === 0) {
+    return { chartData: [], latestGrade: '-', trend: 'stable' };
+  }
+
+  let chartData: Array<{ date: string; numericGrade: number; grade: string; formattedDate: string }>;
+
+  if (!subject || subject === 'all') {
+    const byDate = new Map<string, GradeDataPoint[]>();
+
+    for (const grade of filteredData) {
+      const dateKey = grade.createdAt.split('T')[0];
+      if (!byDate.has(dateKey)) {
+        byDate.set(dateKey, []);
+      }
+      byDate.get(dateKey)!.push(grade);
+    }
+
+    chartData = Array.from(byDate.entries())
+      .sort(([a], [b]) => a.localeCompare(b))
+      .map(([dateKey, dayGrades]) => {
+        const avg = averageGrades(dayGrades);
+        return {
+          date: dateKey,
+          numericGrade: letterGradeToNumber(avg.grade),
+          grade: avg.grade,
+          formattedDate: format(new Date(dateKey), 'MMM d'),
+        };
+      });
+  } else {
+    chartData = filteredData.map(grade => ({
+      date: grade.createdAt,
+      numericGrade: letterGradeToNumber(grade.grade),
+      grade: grade.grade,
+      formattedDate: format(new Date(grade.createdAt), 'MMM d'),
+    }));
+  }
+
+  const latestGrade = chartData[chartData.length - 1]?.grade ?? '-';
+
+  let trend = 'stable';
+  if (chartData.length >= 2) {
+    const prev = chartData[chartData.length - 2].numericGrade;
+    const curr = chartData[chartData.length - 1].numericGrade;
+    if (curr > prev) trend = 'improving';
+    else if (curr < prev) trend = 'declining';
+  }
+
+  return { chartData, latestGrade, trend };
+}
+
+export function GradeChart({ data, subject, title = 'Grades', description }: GradeChartProps) {
   if (data.length === 0) {
     return (
       <Card>
@@ -48,23 +126,21 @@ export function GradeChart({ data, title = 'Grades', description }: GradeChartPr
     );
   }
 
-  const chartData = data.map(grade => ({
-    ...grade,
-    numericGrade: letterGradeToNumber(grade.grade),
-    formattedDate: format(new Date(grade.createdAt), 'MMM d'),
-  }));
+  const { chartData, latestGrade, trend } = processGradesData(data, subject);
 
-  const latestGrade = data[data.length - 1]?.grade ?? '-';
-  const latestNumeric = letterGradeToNumber(latestGrade);
-
-  let trend = 'stable';
-  let trendValue = 0;
-
-  if (data.length >= 2) {
-    const prevNumeric = letterGradeToNumber(data[data.length - 2].grade);
-    trendValue = latestNumeric - prevNumeric;
-    if (trendValue > 0) trend = 'improving';
-    else if (trendValue < 0) trend = 'declining';
+  if (chartData.length === 0) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>{title}</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className='flex h-[200px] items-center justify-center text-muted-foreground'>
+            No grades found for {subject}
+          </div>
+        </CardContent>
+      </Card>
+    );
   }
 
   return (
@@ -102,7 +178,7 @@ export function GradeChart({ data, title = 'Grades', description }: GradeChartPr
               <YAxis
                 domain={[50, 100]}
                 ticks={[50, 60, 70, 80, 90, 100]}
-                tick={{ fontSize: 12 }}
+                tick={{ fontSize: 12, textAnchor: 'middle' }}
                 tickLine={false}
                 axisLine={false}
                 tickFormatter={numberToLetterGrade}
@@ -117,7 +193,6 @@ export function GradeChart({ data, title = 'Grades', description }: GradeChartPr
                         <p className='text-sm text-muted-foreground'>
                           Grade: <span style={{ color: getGradeColor(item.grade) }}>{item.grade}</span>
                         </p>
-                        <p className='text-xs text-muted-foreground'>{item.subject}</p>
                       </div>
                     );
                   }

@@ -134,10 +134,14 @@ function ChartsSkeleton() {
           <Skeleton className='h-6 w-24 mb-4' />
           <Skeleton className='h-[200px] w-full' />
         </div>
-      </div>
-      <div className='rounded-lg border p-6'>
-        <Skeleton className='h-6 w-40 mb-4' />
-        <Skeleton className='h-[200px] w-full' />
+        <div className='rounded-lg border p-6'>
+          <Skeleton className='h-6 w-24 mb-4' />
+          <Skeleton className='h-[200px] w-full' />
+        </div>
+        <div className='rounded-lg border p-6'>
+          <Skeleton className='h-6 w-24 mb-4' />
+          <Skeleton className='h-[200px] w-full' />
+        </div>
       </div>
     </>
   );
@@ -335,7 +339,7 @@ export function ParentProgressDashboard({
         <>
           <div className='grid gap-4 md:grid-cols-2 lg:grid-cols-2'>
             {grades.length > 0 ? (
-              <GradeChart data={grades} />
+              <GradeChart data={grades} subject={selectedSubject} />
             ) : (
               <div className='rounded-lg border p-6'>
                 <p className='text-muted-foreground text-sm'>No grades recorded yet</p>

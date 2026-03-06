@@ -17,7 +17,7 @@ export const TransactionCreateSchema = z.object({
   session_id: id.optional(),
   student_id: id,
   amount: z.number().int(),
-  balance_after: z.number().positive().int(),
+  balance_after: z.number().nonnegative().int(),
   type: z.enum(['Purchase', 'Session Debit', 'Cancellation Fee', 'Refund', 'Adjustment']),
 });
 

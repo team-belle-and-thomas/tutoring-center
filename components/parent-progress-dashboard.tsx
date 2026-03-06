@@ -37,13 +37,13 @@ interface ParentProgressDashboardProps {
 
 function ChartSkeletonItem({ children }: { children?: React.ReactNode }) {
   return (
-    <div className='rounded-lg border p-6'>
-      {children || (
-        <>
-          <Skeleton className='h-6 w-24 mb-4' />
-          <Skeleton className='h-[200px] w-full' />
-        </>
-      )}
+    <div className='rounded-lg border'>
+      <div className='px-6 pt-6 pb-2'>
+        <Skeleton className='h-6 w-32' />
+      </div>
+      <div className='px-6 pb-6'>
+        <Skeleton className='h-[200px] w-full' />
+      </div>
     </div>
   );
 }
@@ -185,7 +185,7 @@ export function ParentProgressDashboard({
               <SelectTrigger className='w-[200px]'>
                 <SelectValue placeholder='Select student' />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent side='bottom'>
                 {students.map(student => (
                   <SelectItem key={student.studentId} value={student.studentId.toString()}>
                     {student.studentName}
@@ -205,7 +205,7 @@ export function ParentProgressDashboard({
                 <SelectTrigger className='w-[180px]'>
                   <SelectValue placeholder='All subjects' />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent side='bottom'>
                   <SelectItem value='all'>All subjects (avg)</SelectItem>
                   {availableSubjects.map(subject => (
                     <SelectItem key={subject} value={subject}>

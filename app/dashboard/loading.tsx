@@ -39,14 +39,24 @@ export default function DashboardLoadingSkeleton() {
         </Card>
       </div>
 
-      <Card>
-        <CardHeader>
-          <Skeleton className='h-6 w-44' />
-        </CardHeader>
-        <CardContent>
-          <Skeleton className='h-[200px] w-full' />
-        </CardContent>
-      </Card>
+      <div className='grid gap-4 md:grid-cols-2'>
+        <Card>
+          <CardHeader>
+            <Skeleton className='h-6 w-32' />
+          </CardHeader>
+          <CardContent>
+            <Skeleton className='h-[200px] w-full' />
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <Skeleton className='h-6 w-28' />
+          </CardHeader>
+          <CardContent>
+            <Skeleton className='h-[200px] w-full' />
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }

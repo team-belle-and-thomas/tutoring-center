@@ -142,11 +142,6 @@ export function ParentProgressDashboard({
   const handleSubjectChange = (subject: string | null) => {
     setSelectedSubject(subject);
     updateURL({ subject: subject === 'all' ? null : subject });
-    const range = getDateRange(dateRange);
-    startTransition(async () => {
-      const data = await fetchParentDashboardData(range, subject ?? undefined);
-      setStudents(data.students);
-    });
   };
 
   const handleDateRangeChange = (newRange: DateRangeOption) => {
@@ -274,15 +269,28 @@ export function ParentProgressDashboard({
         <>
           <div className='grid gap-4 md:grid-cols-2 lg:grid-cols-2'>
             {grades.length > 0 ? (
-              <GradeChart data={grades} subject={selectedSubject} />
+              <GradeChart
+                data={grades}
+                subject={selectedSubject}
+                description='Academic grades over time. Shows letter grade trends by subject or overall average across all subjects.'
+              />
             ) : (
               <div className='rounded-lg border p-6'>
                 <p className='text-muted-foreground text-sm'>No grades recorded yet</p>
               </div>
             )}
-            <HomeworkChart data={displayHomework} />
-            <PerformanceChart data={displayPerformance} />
-            <ConfidenceChart data={displayConfidence} />
+            <HomeworkChart
+              data={displayHomework}
+              description='Homework completion rate. Shows the percentage of assigned homework that was completed before the next session.'
+            />
+            <PerformanceChart
+              data={displayPerformance}
+              description='Performance rating based on session evaluations. Tracks improvement in understanding and mastery of subject material.'
+            />
+            <ConfidenceChart
+              data={displayConfidence}
+              description='Confidence score based on tutor observations. Tracks how confident the student feels about the material.'
+            />
           </div>
         </>
       ) : null}

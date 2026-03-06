@@ -114,26 +114,26 @@ export function MetricChart({ data, title, color, emptyMessage, description }: M
   );
 }
 
-export function PerformanceChart({ data }: { data: PerformanceDataPoint[] }) {
+export function PerformanceChart({ data, description }: { data: PerformanceDataPoint[]; description?: string }) {
   return (
     <MetricChart
       data={data}
       title='Performance'
       color={CHART_COLORS.performance}
       emptyMessage='No performance data available yet'
-      description="How well the student understood and completed the session material. Rated 1-5 based on tutor's assessment of mastery."
+      description={description}
     />
   );
 }
 
-export function ConfidenceChart({ data }: { data: ConfidenceDataPoint[] }) {
+export function ConfidenceChart({ data, description }: { data: ConfidenceDataPoint[]; description?: string }) {
   return (
     <MetricChart
       data={data}
       title='Confidence'
       color={CHART_COLORS.confidence}
       emptyMessage='No confidence data available yet'
-      description='How confident the student felt during the session. Rated 1-5 based on self-reported confidence level.'
+      description={description}
     />
   );
 }

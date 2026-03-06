@@ -9,14 +9,12 @@ import { Cell, Pie, PieChart, Tooltip as RechartsTooltip, ResponsiveContainer } 
 interface HomeworkChartProps {
   data: HomeworkDataPoint[];
   title?: string;
+  description?: string;
 }
 
 const COLORS = ['#2eb88d', '#ef4444'];
 
-const HOMEWORK_DESCRIPTION =
-  'Homework completion rate. Shows the percentage of assigned homework that was completed before the next session.';
-
-export function HomeworkChart({ data, title = 'Homework Completion' }: HomeworkChartProps) {
+export function HomeworkChart({ data, title = 'Homework Completion', description }: HomeworkChartProps) {
   if (data.length === 0) {
     return (
       <Card>
@@ -46,16 +44,18 @@ export function HomeworkChart({ data, title = 'Homework Completion' }: HomeworkC
       <CardHeader className='flex flex-row items-center justify-between pb-2'>
         <div className='flex items-center gap-2'>
           <CardTitle>{title}</CardTitle>
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger>
-                <HelpCircle className='h-4 w-4 text-muted-foreground' />
-              </TooltipTrigger>
-              <TooltipContent className='max-w-xs'>
-                <p>{HOMEWORK_DESCRIPTION}</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+          {description && (
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger>
+                  <HelpCircle className='h-4 w-4 text-muted-foreground' />
+                </TooltipTrigger>
+                <TooltipContent className='max-w-xs'>
+                  <p>{description}</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          )}
         </div>
         <div className='flex items-center gap-2'>
           <span className='text-2xl font-bold'>{completionRate.toFixed(0)}%</span>

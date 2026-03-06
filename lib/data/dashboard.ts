@@ -388,6 +388,19 @@ export async function getStudentGrades(studentId: number): Promise<GradeDataPoin
   }));
 }
 
+export async function getAllSubjects(): Promise<string[]> {
+  const supabase = createSupabaseServiceClient();
+
+  const { data, error } = await supabase.from('subjects').select('category').order('category', { ascending: true });
+
+  if (error) {
+    console.error('[getAllSubjects] Database error:', error.message);
+    return [];
+  }
+
+  return (data ?? []).map(row => row.category).filter(Boolean);
+}
+
 export type SubjectWithData = {
   subject: string;
   hasData: boolean;

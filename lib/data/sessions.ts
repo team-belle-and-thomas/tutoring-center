@@ -169,6 +169,7 @@ export type SessionDetailType = {
     topics: string | null;
     homework_assigned: string | null;
     public_notes: string | null;
+    internal_notes: string | null;
   } | null;
   metrics: {
     confidence_score: number | null;
@@ -221,7 +222,8 @@ const SESSION_DETAIL_SELECT = `
   session_progress (
     topics,
     homework_assigned,
-    public_notes
+    public_notes,
+    internal_notes
   ),
   session_metrics (
     confidence_score,
@@ -241,7 +243,8 @@ export async function getSession(id: number): Promise<SessionDetailType> {
     notFound();
   }
 
-  const sessionParentId = (data.parent as unknown as Array<{ id: number }>)?.[0]?.id;
+  const sessionParentData = data.parent as unknown as { id: number } | Array<{ id: number }> | null;
+  const sessionParentId = Array.isArray(sessionParentData) ? sessionParentData[0]?.id : sessionParentData?.id;
   const sessionTutorId = data.tutor_id;
 
   if (role !== 'admin') {
@@ -275,35 +278,67 @@ export async function getSession(id: number): Promise<SessionDetailType> {
 
   const subjectData = Array.isArray(data.subjects) ? data.subjects[0] : data.subjects;
 
-  const progressRaw = data.session_progress as unknown as Array<{
-    topics: string | null;
-    homework_assigned: string | null;
-    public_notes: string | null;
-  }> | null;
+  const progressRaw = data.session_progress as
+    | {
+        topics: string | null;
+        homework_assigned: string | null;
+        public_notes: string | null;
+        internal_notes: string | null;
+      }
+    | Array<{
+        topics: string | null;
+        homework_assigned: string | null;
+        public_notes: string | null;
+        internal_notes: string | null;
+      }>
+    | null;
   const progress =
-    progressRaw && progressRaw.length > 0
+    progressRaw && typeof progressRaw === 'object' && !Array.isArray(progressRaw)
       ? {
-          topics: progressRaw[0].topics,
-          homework_assigned: progressRaw[0].homework_assigned,
-          public_notes: progressRaw[0].public_notes,
+          topics: progressRaw.topics,
+          homework_assigned: progressRaw.homework_assigned,
+          public_notes: progressRaw.public_notes,
+          internal_notes: progressRaw.internal_notes,
         }
-      : null;
+      : Array.isArray(progressRaw) && progressRaw.length > 0
+        ? {
+            topics: progressRaw[0].topics,
+            homework_assigned: progressRaw[0].homework_assigned,
+            public_notes: progressRaw[0].public_notes,
+            internal_notes: progressRaw[0].internal_notes,
+          }
+        : null;
 
-  const metricsRaw = data.session_metrics as unknown as Array<{
-    confidence_score: number | null;
-    session_performance: number | null;
-    homework_completed: boolean;
-    tutor_comments: string | null;
-  }> | null;
+  const metricsRaw = data.session_metrics as
+    | {
+        confidence_score: number | null;
+        session_performance: number | null;
+        homework_completed: boolean;
+        tutor_comments: string | null;
+      }
+    | Array<{
+        confidence_score: number | null;
+        session_performance: number | null;
+        homework_completed: boolean;
+        tutor_comments: string | null;
+      }>
+    | null;
   const metrics =
-    metricsRaw && metricsRaw.length > 0
+    metricsRaw && typeof metricsRaw === 'object' && !Array.isArray(metricsRaw)
       ? {
-          confidence_score: metricsRaw[0].confidence_score,
-          session_performance: metricsRaw[0].session_performance,
-          homework_completed: metricsRaw[0].homework_completed,
-          tutor_comments: metricsRaw[0].tutor_comments,
+          confidence_score: metricsRaw.confidence_score,
+          session_performance: metricsRaw.session_performance,
+          homework_completed: metricsRaw.homework_completed,
+          tutor_comments: metricsRaw.tutor_comments,
         }
-      : null;
+      : Array.isArray(metricsRaw) && metricsRaw.length > 0
+        ? {
+            confidence_score: metricsRaw[0].confidence_score,
+            session_performance: metricsRaw[0].session_performance,
+            homework_completed: metricsRaw[0].homework_completed,
+            tutor_comments: metricsRaw[0].tutor_comments,
+          }
+        : null;
 
   return {
     id: data.id,

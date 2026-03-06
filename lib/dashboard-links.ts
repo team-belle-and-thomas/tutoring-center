@@ -32,7 +32,6 @@ const adminLinks: SidebarLink[] = [
     href: '/dashboard/credit-transactions',
     text: 'Credit Transactions',
   },
-  { id: 7, href: '/dashboard/progress-reports', text: 'Progress Reports' },
 ];
 
 const parentLinks: SidebarLink[] = [
@@ -44,7 +43,11 @@ const parentLinks: SidebarLink[] = [
     href: '/dashboard/credit-transactions',
     text: 'Credit Transactions',
   },
-  { id: 5, href: '/dashboard/progress-reports', text: 'Progress Reports' },
+  {
+    id: 5,
+    href: '/dashboard/grades',
+    text: 'Grades',
+  },
 ];
 
 const tutorLinks: SidebarLink[] = [

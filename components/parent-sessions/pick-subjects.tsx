@@ -8,6 +8,7 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 type PickSubjectProps = {
   subjects: SubjectOption[];
+  studentFirstName?: string;
   onSelectAction: (selection: SubjectSelection) => void;
   onBackAction: () => void;
 };
@@ -16,7 +17,9 @@ const backButtonClassName = 'w-fit rounded-2xl hover:border-primary/50 hover:rin
 const subjectButtonClassName =
   'h-auto w-full justify-between rounded-2xl bg-muted p-4 text-left hover:border-primary/50 hover:bg-muted/60 hover:ring-2 hover:ring-primary/10';
 
-export function PickSubject({ subjects, onSelectAction, onBackAction }: PickSubjectProps) {
+export function PickSubject({ subjects, studentFirstName, onSelectAction, onBackAction }: PickSubjectProps) {
+  const titleName = studentFirstName?.trim() || 'your child';
+
   return (
     <main className='mx-auto w-full max-w-3xl space-y-6 p-6'>
       <Card className='w-full'>
@@ -25,7 +28,7 @@ export function PickSubject({ subjects, onSelectAction, onBackAction }: PickSubj
             <ChevronLeft className='size-4' />
             Back
           </Button>
-          <CardTitle className='text-2xl font-bold'>What subject does your child need help with?</CardTitle>
+          <CardTitle className='text-2xl font-bold'>What subject does {titleName} need help with?</CardTitle>
           <CardDescription>Select one to get started.</CardDescription>
         </CardHeader>
         <CardContent className='space-y-3'>

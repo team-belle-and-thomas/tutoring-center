@@ -1,5 +1,7 @@
 // app/api/sessions/route.ts
+import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
+import { isValidRole, USER_ID_COOKIE_NAME, USER_ROLE_COOKIE_NAME } from '@/lib/auth';
 import { createSupabaseServiceClient } from '@/lib/supabase/serverClient';
 import {
   CANCELED_SESSION_STATUS,
@@ -140,6 +142,40 @@ export async function POST(req: Request) {
   }
 
   const s = parsed.data;
+  const cookieStore = await cookies();
+  const role = cookieStore.get(USER_ROLE_COOKIE_NAME)?.value;
+  const userIdRaw = cookieStore.get(USER_ID_COOKIE_NAME)?.value;
+
+  if (!isValidRole(role)) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  if (role === 'tutor') {
+    return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+  }
+
+  let parentId = s.parent_id;
+  if (role === 'parent') {
+    const userId = Number.parseInt(userIdRaw ?? '', 10);
+    if (!Number.isInteger(userId) || userId <= 0) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const { data: parent, error: parentErr } = await supabase
+      .from('parents')
+      .select('id')
+      .eq('user_id', userId)
+      .single();
+    if (parentErr || !parent) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    }
+
+    parentId = parent.id;
+  }
+
+  if (!parentId) {
+    return NextResponse.json({ error: 'parent_id is required' }, { status: 400 });
+  }
 
   // Overlap protection: existing.start < new.end AND existing.end > new.start
   // Ignore canceled sessions
@@ -164,7 +200,7 @@ export async function POST(req: Request) {
       tutor_id: s.tutor_id,
       student_id: s.student_id,
       subject_id: s.subject_id,
-      parent_id: s.parent_id,
+      parent_id: parentId,
       slot_units: s.slot_units,
       scheduled_at: s.scheduled_at,
       ends_at: s.ends_at,

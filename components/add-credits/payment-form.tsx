@@ -23,10 +23,11 @@ const EMPTY_PAYMENT: PaymentForm = {
 type Props = {
   pkg: Package;
   buttonLabel?: string;
-  onPurchase: () => void;
+  onPurchase: () => Promise<void> | void;
+  onBackAction?: () => void;
 };
 
-export function PaymentForm({ pkg, buttonLabel = 'Add Credits', onPurchase }: Props) {
+export function PaymentForm({ pkg, buttonLabel = 'Add Credits', onPurchase, onBackAction }: Props) {
   const [form, setForm] = useState<PaymentForm>(EMPTY_PAYMENT);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -45,7 +46,7 @@ export function PaymentForm({ pkg, buttonLabel = 'Add Credits', onPurchase }: Pr
       // one DB transaction
       // 1) POST /api/credit-transactions (type: 'Purchase')
       // 2) PUT /api/credit-balances (increment amount_available)
-      onPurchase();
+      await onPurchase();
     } finally {
       setIsSubmitting(false);
     }
@@ -127,10 +128,26 @@ export function PaymentForm({ pkg, buttonLabel = 'Add Credits', onPurchase }: Pr
         />
       </div>
 
-      <div className='pt-2'>
-        <Button type='submit' size='lg' className='w-full sm:w-fit text-md sm:text-lg sm:py-6 font-semibold'>
+      <div className='pt-2 flex flex-col gap-2 sm:flex-row sm:items-center'>
+        <Button
+          type='submit'
+          size='lg'
+          className='w-full sm:w-fit text-md sm:text-lg sm:py-6 font-semibold'
+          disabled={isSubmitting}
+        >
           {isSubmitting ? 'Processing...' : buttonLabel}
         </Button>
+        {onBackAction ? (
+          <Button
+            type='button'
+            variant='ghost'
+            size='lg'
+            className='w-full sm:w-fit text-md sm:text-lg sm:py-6'
+            onClick={onBackAction}
+          >
+            Back
+          </Button>
+        ) : null}
       </div>
     </form>
   );

@@ -73,8 +73,7 @@ export function HomeworkChart({ data, title = 'Homework Completion' }: HomeworkC
                 outerRadius={80}
                 paddingAngle={2}
                 dataKey='value'
-                label={({ name, percent }) => `${name} ${((percent ?? 0) * 100).toFixed(0)}%`}
-                labelLine={false}
+                labelLine={true}
               >
                 {chartData.map((entry, index) => (
                   <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
@@ -99,6 +98,16 @@ export function HomeworkChart({ data, title = 'Homework Completion' }: HomeworkC
               />
             </PieChart>
           </ResponsiveContainer>
+        </div>
+        <div className='flex justify-center gap-6 mt-2'>
+          {chartData.map((entry, index) => (
+            <div key={entry.name} className='flex items-center gap-2'>
+              <div className='h-3 w-3 rounded-full' style={{ backgroundColor: COLORS[index % COLORS.length] }} />
+              <span className='text-sm'>
+                {entry.name}: {entry.value}
+              </span>
+            </div>
+          ))}
         </div>
       </CardContent>
     </Card>

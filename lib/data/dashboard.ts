@@ -84,7 +84,7 @@ export async function getStudentProgressData(
         confidence_score,
         homework_completed
       ),
-      subjects (
+      subjects:subject_id (
         category
       )
     `
@@ -176,7 +176,7 @@ export async function getStudentProgressData(
   };
 }
 
-export async function getStudentsWithProgress(dateRange?: DateRange): Promise<StudentProgressData[]> {
+export async function getStudentsWithProgress(dateRange?: DateRange, subject?: string): Promise<StudentProgressData[]> {
   const role = await getUserRole();
   if (role !== 'parent') {
     console.warn('[getStudentsWithProgress] Non-parent user attempted access');
@@ -253,7 +253,7 @@ export async function getStudentsWithProgress(dateRange?: DateRange): Promise<St
         confidence_score,
         homework_completed
       ),
-      subjects (
+      subjects:subject_id (
         category
       )
     `
@@ -268,6 +268,9 @@ export async function getStudentsWithProgress(dateRange?: DateRange): Promise<St
   }
   if (dateRange?.to) {
     sessionsQuery = sessionsQuery.lte('scheduled_at', dateRange.to);
+  }
+  if (subject) {
+    sessionsQuery = sessionsQuery.eq('subjects.category', subject);
   }
 
   const { data: sessionsData, error: sessionsError } = await sessionsQuery;
@@ -347,11 +350,40 @@ export async function getStudentsWithProgress(dateRange?: DateRange): Promise<St
   return studentsWithProgress;
 }
 
-export async function getParentDashboardData(dateRange?: DateRange) {
-  const studentsWithProgress = await getStudentsWithProgress(dateRange);
+export async function getParentDashboardData(dateRange?: DateRange, subject?: string, _studentId?: number) {
+  const studentsWithProgress = await getStudentsWithProgress(dateRange, subject);
 
   return {
     students: studentsWithProgress,
     defaultStudentId: studentsWithProgress[0]?.studentId ?? null,
   };
+}
+
+export type GradeDataPoint = {
+  id: number;
+  subject: string;
+  grade: string;
+  createdAt: string;
+};
+
+export async function getStudentGrades(studentId: number): Promise<GradeDataPoint[]> {
+  const supabase = createSupabaseServiceClient();
+
+  const { data, error } = await supabase
+    .from('student_grades')
+    .select('id, subject, grade, created_at')
+    .eq('student_id', studentId)
+    .order('created_at', { ascending: true });
+
+  if (error) {
+    console.error('[getStudentGrades] Database error:', { studentId, error: error.message });
+    return [];
+  }
+
+  return (data ?? []).map(row => ({
+    id: row.id,
+    subject: row.subject,
+    grade: row.grade,
+    createdAt: row.created_at,
+  }));
 }

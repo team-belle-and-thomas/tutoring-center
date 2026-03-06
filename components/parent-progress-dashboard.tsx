@@ -1,7 +1,9 @@
 'use client';
 
+import { useRouter, useSearchParams } from 'next/navigation';
 import React, { useTransition } from 'react';
 import { fetchParentDashboardData } from '@/app/dashboard/actions';
+import { GradeChart } from '@/components/charts/grade-overview';
 import { HomeworkChart } from '@/components/charts/homework-chart';
 import { ConfidenceChart, PerformanceChart } from '@/components/charts/performance-chart';
 import { Button } from '@/components/ui/button';
@@ -10,6 +12,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import type {
   ConfidenceDataPoint,
   DateRange,
+  GradeDataPoint,
   HomeworkDataPoint,
   PerformanceDataPoint,
   StudentProgressData,
@@ -19,6 +22,10 @@ import { subDays, subMonths } from 'date-fns';
 interface ParentProgressDashboardProps {
   students: StudentProgressData[];
   defaultStudentId: number | null;
+  selectedStudentId?: number | null;
+  selectedSubject?: string;
+  selectedDateRange?: string;
+  grades?: GradeDataPoint[];
 }
 
 type DateRangeOption = 'all' | '30d' | '3m' | '6m';
@@ -46,9 +53,15 @@ function getDateRange(option: DateRangeOption): DateRange {
 
 function getUniqueSubjects(data: StudentProgressData): string[] {
   const subjects = new Set<string>();
-  data.performance.forEach(p => subjects.add(p.subject));
-  data.confidence.forEach(c => subjects.add(c.subject));
-  data.homework.forEach(h => subjects.add(h.subject));
+  data.performance.forEach(p => {
+    if (p.subject && p.subject !== 'Unknown') subjects.add(p.subject);
+  });
+  data.confidence.forEach(c => {
+    if (c.subject && c.subject !== 'Unknown') subjects.add(c.subject);
+  });
+  data.homework.forEach(h => {
+    if (h.subject && h.subject !== 'Unknown') subjects.add(h.subject);
+  });
   return Array.from(subjects).sort();
 }
 
@@ -130,18 +143,79 @@ function ChartsSkeleton() {
   );
 }
 
-export function ParentProgressDashboard({ students: initialStudents, defaultStudentId }: ParentProgressDashboardProps) {
+export function ParentProgressDashboard({
+  students: initialStudents,
+  defaultStudentId,
+  selectedStudentId: initialSelectedStudentId,
+  selectedSubject: initialSelectedSubject,
+  selectedDateRange: initialDateRange = 'all',
+  grades: initialGrades = [],
+}: ParentProgressDashboardProps) {
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const [isPending, startTransition] = useTransition();
-  const [selectedStudentId, setSelectedStudentId] = React.useState<number | null>(defaultStudentId);
-  const [dateRange, setDateRange] = React.useState<DateRangeOption>('all');
-  const [selectedSubject, setSelectedSubject] = React.useState<string | null>('all');
+  const [selectedStudentId, setSelectedStudentId] = React.useState<number | null>(
+    initialSelectedStudentId ?? defaultStudentId
+  );
+  const [dateRange, setDateRange] = React.useState<DateRangeOption>(initialDateRange as DateRangeOption);
+  const [selectedSubject, setSelectedSubject] = React.useState<string | null>(initialSelectedSubject || 'all');
   const [students, setStudents] = React.useState<StudentProgressData[]>(initialStudents);
+  const grades = initialGrades;
+
+  const updateURL = (updates: { student?: number | null; subject?: string | null; range?: string }) => {
+    const params = new URLSearchParams(searchParams.toString());
+
+    if (updates.student !== undefined) {
+      if (updates.student) {
+        params.set('student', updates.student.toString());
+      } else {
+        params.delete('student');
+      }
+    }
+
+    if (updates.subject !== undefined) {
+      if (updates.subject && updates.subject !== 'all') {
+        params.set('subject', updates.subject);
+      } else {
+        params.delete('subject');
+      }
+    }
+
+    if (updates.range !== undefined) {
+      if (updates.range && updates.range !== 'all') {
+        params.set('range', updates.range);
+      } else {
+        params.delete('range');
+      }
+    }
+
+    const newURL = params.toString() ? `?${params.toString()}` : '/dashboard';
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    router.push(newURL as any);
+  };
+
+  const handleStudentChange = (studentId: number) => {
+    setSelectedStudentId(studentId);
+    setSelectedSubject('all');
+    updateURL({ student: studentId, subject: 'all', range: dateRange });
+  };
+
+  const handleSubjectChange = (subject: string | null) => {
+    setSelectedSubject(subject);
+    updateURL({ subject: subject === 'all' ? null : subject });
+    const range = getDateRange(dateRange);
+    startTransition(async () => {
+      const data = await fetchParentDashboardData(range, subject ?? undefined);
+      setStudents(data.students);
+    });
+  };
 
   const handleDateRangeChange = (newRange: DateRangeOption) => {
     setDateRange(newRange);
+    updateURL({ range: newRange });
     const range = getDateRange(newRange);
     startTransition(async () => {
-      const data = await fetchParentDashboardData(range);
+      const data = await fetchParentDashboardData(range, selectedSubject ?? undefined);
       setStudents(data.students);
     });
   };
@@ -196,10 +270,7 @@ export function ParentProgressDashboard({ students: initialStudents, defaultStud
             <label className='text-sm font-medium'>Student</label>
             <Select
               value={selectedStudentId?.toString() ?? ''}
-              onValueChange={value => {
-                setSelectedStudentId(Number(value));
-                setSelectedSubject('all');
-              }}
+              onValueChange={value => handleStudentChange(Number(value))}
             >
               <SelectTrigger className='w-[200px]'>
                 <SelectValue placeholder='Select student' />
@@ -219,7 +290,7 @@ export function ParentProgressDashboard({ students: initialStudents, defaultStud
             <div className='flex items-center gap-2'>
               <Select
                 value={selectedSubject ?? 'all'}
-                onValueChange={value => setSelectedSubject(value === 'all' ? null : value)}
+                onValueChange={value => handleSubjectChange(value === 'all' ? null : value)}
               >
                 <SelectTrigger className='w-[180px]'>
                   <SelectValue placeholder='All subjects' />
@@ -260,20 +331,22 @@ export function ParentProgressDashboard({ students: initialStudents, defaultStud
 
       {isPending ? (
         <ChartsSkeleton />
-      ) : (
-        selectedStudent && (
-          <>
-            <div className='grid gap-4 md:grid-cols-2 lg:grid-cols-2'>
-              <PerformanceChart data={displayPerformance} />
-              <ConfidenceChart data={displayConfidence} />
-            </div>
-
-            <div className='grid gap-4 md:grid-cols-1'>
-              <HomeworkChart data={displayHomework} />
-            </div>
-          </>
-        )
-      )}
+      ) : selectedStudent ? (
+        <>
+          <div className='grid gap-4 md:grid-cols-2 lg:grid-cols-2'>
+            {grades.length > 0 ? (
+              <GradeChart data={grades} />
+            ) : (
+              <div className='rounded-lg border p-6'>
+                <p className='text-muted-foreground text-sm'>No grades recorded yet</p>
+              </div>
+            )}
+            <HomeworkChart data={displayHomework} />
+            <PerformanceChart data={displayPerformance} />
+            <ConfidenceChart data={displayConfidence} />
+          </div>
+        </>
+      ) : null}
     </div>
   );
 }

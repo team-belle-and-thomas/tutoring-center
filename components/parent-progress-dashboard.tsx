@@ -130,15 +130,15 @@ export function ParentProgressDashboard({
 
   return (
     <div className='space-y-6'>
-      <div className='flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between'>
-        <div className='flex gap-4'>
+      <div className='flex flex-col gap-4'>
+        <div className='flex flex-col gap-4 sm:flex-row'>
           <div className='flex flex-col gap-2'>
             <label className='text-sm font-medium'>Student</label>
             <Select
               value={selectedStudentId?.toString() ?? ''}
               onValueChange={(value: string) => handleStudentChange(Number(value))}
             >
-              <SelectTrigger className='w-[200px]'>
+              <SelectTrigger className='w-full sm:w-[200px]'>
                 <SelectValue placeholder='Select student' />
               </SelectTrigger>
               <SelectContent side='bottom'>
@@ -155,7 +155,7 @@ export function ParentProgressDashboard({
             <label className='text-sm font-medium'>Subject</label>
             <div className='flex items-center gap-2'>
               <Select value={selectedSubject} onValueChange={handleSubjectChange}>
-                <SelectTrigger className='w-[180px]'>
+                <SelectTrigger className='w-full sm:w-[180px]'>
                   <SelectValue placeholder='All subjects' />
                 </SelectTrigger>
                 <SelectContent side='bottom'>
@@ -176,7 +176,7 @@ export function ParentProgressDashboard({
 
         <div className='flex flex-col gap-2'>
           <label className='text-sm font-medium'>Date Range</label>
-          <div className='flex gap-1'>
+          <div className='flex flex-wrap gap-1'>
             {DATE_RANGE_OPTIONS.map((option: { value: DateRangeOption; label: string }) => (
               <Button
                 key={option.value}
@@ -192,7 +192,7 @@ export function ParentProgressDashboard({
       </div>
 
       {selectedStudent && (
-        <div className='grid gap-4 md:grid-cols-2 lg:grid-cols-2'>
+        <div className='grid grid-cols-1 gap-4 md:grid-cols-2'>
           {filteredData.grades.length > 0 ? (
             <GradeChart
               data={filteredData.grades}

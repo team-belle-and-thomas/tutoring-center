@@ -52,8 +52,6 @@ export async function submitProgressReport(formData: ProgressReportFormData) {
   );
 
   if (progressError) {
-    // eslint-disable-next-line no-console
-    console.error('Progress error:', progressError);
     throw new Error(progressError.message || 'Failed to submit progress report');
   }
 

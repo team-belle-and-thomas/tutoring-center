@@ -71,9 +71,9 @@ export function MetricChart({ data, title, color, emptyMessage, description }: M
         </div>
       </CardHeader>
       <CardContent>
-        <div className='h-[200px]'>
+        <div className='h-[200px] w-full'>
           <ResponsiveContainer width='100%' height='100%'>
-            <LineChart data={chartData}>
+            <LineChart data={chartData} margin={{ top: 5, right: 5, bottom: 5, left: -20 }}>
               <XAxis dataKey='formattedDate' tick={{ fontSize: 12 }} tickLine={false} axisLine={false} />
               <YAxis
                 domain={[0, 5]}
@@ -81,6 +81,7 @@ export function MetricChart({ data, title, color, emptyMessage, description }: M
                 tick={{ fontSize: 12 }}
                 tickLine={false}
                 axisLine={false}
+                width={30}
               />
               <RechartsTooltip
                 content={({ active, payload }) => {

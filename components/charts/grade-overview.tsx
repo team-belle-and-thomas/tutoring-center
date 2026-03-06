@@ -171,9 +171,9 @@ export function GradeChart({ data, subject, title = 'Grades', description }: Gra
         </div>
       </CardHeader>
       <CardContent>
-        <div className='h-[200px]'>
+        <div className='h-[200px] w-full'>
           <ResponsiveContainer width='100%' height='100%'>
-            <LineChart data={chartData}>
+            <LineChart data={chartData} margin={{ top: 5, right: 5, bottom: 5, left: -20 }}>
               <XAxis dataKey='formattedDate' tick={{ fontSize: 12 }} tickLine={false} axisLine={false} />
               <YAxis
                 domain={[50, 100]}
@@ -182,6 +182,7 @@ export function GradeChart({ data, subject, title = 'Grades', description }: Gra
                 tickLine={false}
                 axisLine={false}
                 tickFormatter={numberToLetterGrade}
+                width={30}
               />
               <RechartsTooltip
                 content={({ active, payload }) => {

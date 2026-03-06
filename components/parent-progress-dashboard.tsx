@@ -11,7 +11,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Skeleton } from '@/components/ui/skeleton';
 import {
   averageConfidenceByDate,
-  averageHomeworkByDate,
   averagePerformanceByDate,
   DATE_RANGE_OPTIONS,
   getDateRange,
@@ -164,9 +163,7 @@ export function ParentProgressDashboard({
     ? (averageConfidenceByDate(filteredConfidence) as ConfidenceDataPoint[])
     : filteredConfidence;
 
-  const displayHomework = isAllSubjects
-    ? (averageHomeworkByDate(filteredHomework) as HomeworkDataPoint[])
-    : filteredHomework;
+  const displayHomework = filteredHomework;
 
   if (students.length === 0) {
     return (

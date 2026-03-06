@@ -1,22 +1,14 @@
 import { DataTable } from '@/components/data-table';
 import { ParentProgressDashboard } from '@/components/parent-progress-dashboard';
 import { getCurrentUserName, getUserRole } from '@/lib/auth';
-import { parseDateRange } from '@/lib/dashboard-utils';
 import { getParentDashboardData, getStudentGrades, type GradeDataPoint } from '@/lib/data/dashboard';
 import { getTutorAssignedSessions } from '@/lib/data/sessions';
 import type { TutorAssignedSession } from '@/lib/data/sessions';
 import { tutorSessionColumns } from './tutor-session-columns';
 
-type SearchParams = Promise<{ student?: string; subject?: string; range?: string }>;
-
-export default async function DashboardPage(props: { searchParams: SearchParams }) {
-  const searchParams = await props.searchParams;
+export default async function DashboardPage() {
   const role = await getUserRole();
   const userName = await getCurrentUserName();
-
-  const studentId = searchParams.student ? parseInt(searchParams.student, 10) : undefined;
-  const subject = searchParams.subject || undefined;
-  const dateRange = searchParams.range || 'all';
 
   return (
     <main className='container mx-auto py-8'>
@@ -25,9 +17,7 @@ export default async function DashboardPage(props: { searchParams: SearchParams 
       <p className='text-lg mb-8'>You are logged in as {role}</p>
 
       {role === 'tutor' && <TutorDashboardContent />}
-      {role === 'parent' && (
-        <ParentDashboardContent initialStudentId={studentId} initialSubject={subject} initialDateRange={dateRange} />
-      )}
+      {role === 'parent' && <ParentDashboardContent />}
     </main>
   );
 }
@@ -48,39 +38,18 @@ async function TutorDashboardContent() {
   );
 }
 
-interface ParentDashboardContentProps {
-  initialStudentId?: number;
-  initialSubject?: string;
-  initialDateRange?: string;
-}
+async function ParentDashboardContent() {
+  const { students, defaultStudentId } = await getParentDashboardData();
 
-async function ParentDashboardContent({
-  initialStudentId,
-  initialSubject,
-  initialDateRange,
-}: ParentDashboardContentProps) {
-  const dateRange = parseDateRange(initialDateRange || 'all');
-
-  const { students, defaultStudentId } = await getParentDashboardData(dateRange);
-
-  const selectedStudentId = initialStudentId || defaultStudentId;
   let grades: GradeDataPoint[] = [];
-
-  if (selectedStudentId) {
-    grades = await getStudentGrades(selectedStudentId);
+  if (defaultStudentId) {
+    grades = await getStudentGrades(defaultStudentId);
   }
 
   return (
     <section>
       <h2 className='text-2xl font-semibold mb-4'>Progress Overview</h2>
-      <ParentProgressDashboard
-        students={students}
-        defaultStudentId={defaultStudentId}
-        selectedStudentId={selectedStudentId}
-        selectedSubject={initialSubject}
-        selectedDateRange={initialDateRange || 'all'}
-        grades={grades}
-      />
+      <ParentProgressDashboard students={students} defaultStudentId={defaultStudentId} grades={grades} />
     </section>
   );
 }

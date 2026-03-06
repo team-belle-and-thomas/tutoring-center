@@ -380,44 +380,44 @@ export type TutorAssignedSession = {
 };
 
 // Mock data for development/testing
-const MOCK_TUTOR_SESSIONS: TutorAssignedSession[] = [
-  {
-    id: 1,
-    student_name: 'Sofia Santos',
-    student_id: 1,
-    tutor_id: 1,
-    subject_name: 'Mathematics',
-    scheduled_at: '2026-03-01T14:00:00Z',
-    ends_at: '2026-03-01T15:00:00Z',
-    status: 'Pending-Notes',
-    needsProgressReport: true,
-    needsMetrics: false,
-  },
-  {
-    id: 2,
-    student_name: 'Miguel Santos',
-    student_id: 2,
-    tutor_id: 1,
-    subject_name: 'Science',
-    scheduled_at: '2026-03-01T16:00:00Z',
-    ends_at: '2026-03-01T17:00:00Z',
-    status: 'Pending-Notes',
-    needsProgressReport: true,
-    needsMetrics: true,
-  },
-  {
-    id: 3,
-    student_name: 'Tyler Thompson',
-    student_id: 3,
-    tutor_id: 1,
-    subject_name: 'English',
-    scheduled_at: '2026-03-02T10:00:00Z',
-    ends_at: '2026-03-02T11:00:00Z',
-    status: 'Pending-Notes',
-    needsProgressReport: false,
-    needsMetrics: true,
-  },
-];
+// const MOCK_TUTOR_SESSIONS: TutorAssignedSession[] = [
+//   {
+//     id: 1,
+//     student_name: 'Sofia Santos',
+//     student_id: 1,
+//     tutor_id: 1,
+//     subject_name: 'Mathematics',
+//     scheduled_at: '2026-03-01T14:00:00Z',
+//     ends_at: '2026-03-01T15:00:00Z',
+//     status: 'Pending-Notes',
+//     needsProgressReport: true,
+//     needsMetrics: false,
+//   },
+//   {
+//     id: 2,
+//     student_name: 'Miguel Santos',
+//     student_id: 2,
+//     tutor_id: 1,
+//     subject_name: 'Science',
+//     scheduled_at: '2026-03-01T16:00:00Z',
+//     ends_at: '2026-03-01T17:00:00Z',
+//     status: 'Pending-Notes',
+//     needsProgressReport: true,
+//     needsMetrics: true,
+//   },
+//   {
+//     id: 3,
+//     student_name: 'Tyler Thompson',
+//     student_id: 3,
+//     tutor_id: 1,
+//     subject_name: 'English',
+//     scheduled_at: '2026-03-02T10:00:00Z',
+//     ends_at: '2026-03-02T11:00:00Z',
+//     status: 'Pending-Notes',
+//     needsProgressReport: false,
+//     needsMetrics: true,
+//   },
+// ];
 
 export async function getTutorAssignedSessions(): Promise<TutorAssignedSession[]> {
   const role = await getUserRole();

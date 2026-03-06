@@ -73,7 +73,25 @@ export function HomeworkChart({ data, title = 'Homework Completion', description
                 outerRadius={80}
                 paddingAngle={2}
                 dataKey='value'
-                labelLine={true}
+                labelLine={false}
+                label={({ cx, cy, midAngle, innerRadius, outerRadius, percent }) => {
+                  const RADIAN = Math.PI / 180;
+                  const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
+                  const x = cx + radius * Math.cos(-(midAngle ?? 0) * RADIAN);
+                  const y = cy + radius * Math.sin(-(midAngle ?? 0) * RADIAN);
+                  return (
+                    <text
+                      x={x}
+                      y={y}
+                      fill='white'
+                      textAnchor='middle'
+                      dominantBaseline='central'
+                      className='text-sm font-bold'
+                    >
+                      {`${((percent ?? 0) * 100).toFixed(0)}%`}
+                    </text>
+                  );
+                }}
               >
                 {chartData.map((entry, index) => (
                   <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />

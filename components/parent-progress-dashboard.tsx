@@ -35,11 +35,15 @@ interface ParentProgressDashboardProps {
   grades?: GradeDataPoint[];
 }
 
-function ChartSkeletonItem() {
+function ChartSkeletonItem({ children }: { children?: React.ReactNode }) {
   return (
     <div className='rounded-lg border p-6'>
-      <Skeleton className='h-6 w-24 mb-4' />
-      <Skeleton className='h-[200px] w-full' />
+      {children || (
+        <>
+          <Skeleton className='h-6 w-24 mb-4' />
+          <Skeleton className='h-[200px] w-full' />
+        </>
+      )}
     </div>
   );
 }
@@ -247,9 +251,9 @@ export function ParentProgressDashboard({
                 description='Academic grades over time. Shows letter grade trends by subject or overall average across all subjects.'
               />
             ) : (
-              <div className='rounded-lg border p-6'>
+              <ChartSkeletonItem>
                 <p className='text-muted-foreground text-sm'>No grades recorded yet</p>
-              </div>
+              </ChartSkeletonItem>
             )}
             <HomeworkChart
               data={displayHomework}

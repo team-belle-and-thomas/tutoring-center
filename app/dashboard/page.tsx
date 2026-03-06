@@ -1,10 +1,10 @@
 import { DataTable } from '@/components/data-table';
 import { ParentProgressDashboard } from '@/components/parent-progress-dashboard';
 import { getCurrentUserName, getUserRole } from '@/lib/auth';
+import { parseDateRange } from '@/lib/dashboard-utils';
 import { getParentDashboardData, getStudentGrades, type GradeDataPoint } from '@/lib/data/dashboard';
 import { getTutorAssignedSessions } from '@/lib/data/sessions';
 import type { TutorAssignedSession } from '@/lib/data/sessions';
-import { subDays, subMonths } from 'date-fns';
 import { tutorSessionColumns } from './tutor-session-columns';
 
 type SearchParams = Promise<{ student?: string; subject?: string; range?: string }>;
@@ -83,28 +83,4 @@ async function ParentDashboardContent({
       />
     </section>
   );
-}
-
-function parseDateRange(range: string): { from: string | undefined; to: string | undefined } {
-  const now = new Date();
-
-  switch (range) {
-    case '30d':
-      return {
-        from: subDays(now, 30).toISOString(),
-        to: undefined,
-      };
-    case '3m':
-      return {
-        from: subMonths(now, 3).toISOString(),
-        to: undefined,
-      };
-    case '6m':
-      return {
-        from: subMonths(now, 6).toISOString(),
-        to: undefined,
-      };
-    default:
-      return { from: undefined, to: undefined };
-  }
 }

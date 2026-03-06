@@ -30,6 +30,10 @@ export function getDateRange(option: DateRangeOption): DateRange {
   }
 }
 
+export function parseDateRange(range: string): DateRange {
+  return getDateRange(range as DateRangeOption);
+}
+
 export function getUniqueSubjectsFromStudentData(data: StudentProgressData): string[] {
   const subjects = new Set<string>();
 

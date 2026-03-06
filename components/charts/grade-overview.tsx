@@ -3,7 +3,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import type { GradeDataPoint } from '@/lib/data/dashboard';
-import { letterGradeToNumber } from '@/lib/grade-utils';
+import { letterGradeToNumber, numberToLetterGrade } from '@/lib/grade-utils';
 import { format } from 'date-fns';
 import { HelpCircle, Minus, TrendingDown, TrendingUp } from 'lucide-react';
 import { Line, LineChart, Tooltip as RechartsTooltip, ResponsiveContainer, XAxis, YAxis } from 'recharts';
@@ -89,7 +89,6 @@ export function GradeChart({ data, title = 'Grades', description }: GradeChartPr
           <span className='text-2xl font-bold' style={{ color: getGradeColor(latestGrade) }}>
             {latestGrade}
           </span>
-          <span className='text-sm text-muted-foreground'>({latestNumeric}%)</span>
           {trend === 'improving' && <TrendingUp className='h-4 w-4 text-green-600' />}
           {trend === 'declining' && <TrendingDown className='h-4 w-4 text-red-600' />}
           {trend === 'stable' && <Minus className='h-4 w-4 text-muted-foreground' />}
@@ -106,6 +105,7 @@ export function GradeChart({ data, title = 'Grades', description }: GradeChartPr
                 tick={{ fontSize: 12 }}
                 tickLine={false}
                 axisLine={false}
+                tickFormatter={numberToLetterGrade}
               />
               <RechartsTooltip
                 content={({ active, payload }) => {
@@ -115,8 +115,7 @@ export function GradeChart({ data, title = 'Grades', description }: GradeChartPr
                       <div className='rounded-lg border bg-background px-3 py-2 shadow-md'>
                         <p className='text-sm font-medium'>{item.formattedDate}</p>
                         <p className='text-sm text-muted-foreground'>
-                          Grade: <span style={{ color: getGradeColor(item.grade) }}>{item.grade}</span> (
-                          {item.numericGrade}%)
+                          Grade: <span style={{ color: getGradeColor(item.grade) }}>{item.grade}</span>
                         </p>
                         <p className='text-xs text-muted-foreground'>{item.subject}</p>
                       </div>

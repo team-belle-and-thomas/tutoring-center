@@ -8,7 +8,6 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import {
   averageConfidenceByDate,
-  averageHomeworkByDate,
   averagePerformanceByDate,
   DATE_RANGE_OPTIONS,
   getUniqueSubjectsFromStudentData,
@@ -102,7 +101,7 @@ export function ParentProgressDashboard({
     return {
       performance: isAllSubjects ? averagePerformanceByDate(performance) : performance,
       confidence: isAllSubjects ? averageConfidenceByDate(confidence) : confidence,
-      homework: isAllSubjects ? averageHomeworkByDate(homework) : homework,
+      homework: homework,
       grades: filteredGrades,
       sessionCount: performance.length,
     };

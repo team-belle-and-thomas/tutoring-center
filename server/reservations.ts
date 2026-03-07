@@ -22,6 +22,10 @@ export async function placeSession(
   // Calculate the cost of credits of the session
   const start_time = new Date(scheduled_at);
   const end_time = new Date(ends_at);
+  if (end_time <= start_time) {
+    return { data: null, error: new Error('End time must be after start time') };
+  }
+
   let duration = (end_time.getTime() - start_time.getTime()) / (1000 * 60 * 60); // Get the duration in hours
   duration = Math.round(duration); // Convert to the nearest whole number of hours
 

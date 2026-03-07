@@ -1,12 +1,16 @@
-import client from './client';
+import { createSupabaseServerClient } from '@/lib/supabase/serverClient';
+import type { Database } from '@/lib/supabase/types';
+import type { SupabaseClient } from '@supabase/supabase-js';
 
 /**
  * Gets the credit balance for a parent
  * @param parent_id: the id of the parent whose balance to retrieve
+ * @param supabase: optional Supabase client (defaults to server client)
  * @returns the amount available and amount pending for the parent, or an error if the query fails
  */
-export async function getBalance(parent_id: number) {
-  const { data, error } = await client
+export async function getBalance(parent_id: number, supabase?: SupabaseClient<Database>) {
+  const db = supabase || (await createSupabaseServerClient());
+  const { data, error } = await db
     .from('credit_balances')
     .select('amount_available, amount_pending')
     .eq('parent_id', parent_id);
@@ -17,10 +21,12 @@ export async function getBalance(parent_id: number) {
  * Deduct credits from a parent's balance and add them to the pending amount
  * @param parent_id: The id of the parent whose balance to deduct credits from
  * @param amount: The amount of credits to deduct from the parent's balance
+ * @param supabase: optional Supabase client (defaults to server client)
  * @returns The updated balance for the parent, or an error if the query fails or if the parent has insufficient credits
  */
-export async function deductCredits(parent_id: number, amount: number) {
-  const { data, error } = await getBalance(parent_id);
+export async function deductCredits(parent_id: number, amount: number, supabase?: SupabaseClient<Database>) {
+  const db = supabase || (await createSupabaseServerClient());
+  const { data, error } = await getBalance(parent_id, db);
   if (error) {
     return { data: null, error };
   }
@@ -35,7 +41,7 @@ export async function deductCredits(parent_id: number, amount: number) {
     return { data: null, error: new InsufficientCreditsError('Insufficient credits') };
   }
 
-  const { data: updateData, error: updateError } = await client
+  const { data: updateData, error: updateError } = await db
     .from('credit_balances')
     .update({
       amount_available: amount_available - amount,

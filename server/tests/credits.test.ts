@@ -1,8 +1,10 @@
+import 'dotenv/config';
+import { createSupabaseTestClient } from '@/tests/helpers/supabaseTestClient';
 import { afterEach, describe, expect, it } from 'vitest';
-import client from '../client';
 import { deductCredits, getBalance } from '../credits';
 import { placeSession } from '../reservations';
 
+const client = createSupabaseTestClient();
 const TEST_PARENT_ID = 1010;
 const TEST_TUTOR_ID = 1011;
 const TEST_STUDENT_ID = 1012;
@@ -30,7 +32,7 @@ describe('Credits Tests', () => {
     expect(test_id).toBeDefined();
 
     // Get the balance for the parent
-    const { data, error: balanceError } = await getBalance(1010);
+    const { data, error: balanceError } = await getBalance(1010, client);
 
     expect(balanceError).toBeNull();
     expect(data).toBeDefined();
@@ -58,7 +60,7 @@ describe('Credits Tests', () => {
     expect(test_id).toBeDefined();
 
     // Deduct credits from the parent's balance
-    const { data, error: deductError } = await deductCredits(1010, 3);
+    const { data, error: deductError } = await deductCredits(1010, 3, client);
 
     expect(deductError).toBeNull();
     expect(data).toBeDefined();
@@ -82,7 +84,7 @@ describe('Credits Tests', () => {
     expect(test_id).toBeDefined();
 
     // Attempt to deduct more credits than the parent has available
-    const { data, error: deductError } = await deductCredits(1010, 3);
+    const { data, error: deductError } = await deductCredits(1010, 3, client);
 
     expect(data).toBeNull();
     expect(deductError).toBeInstanceOf(Error);
@@ -91,7 +93,7 @@ describe('Credits Tests', () => {
 
   it('deductCredits returns an error if the parent has no credit balance', async () => {
     // Attempt to deduct credits for a parent with no credit balance
-    const { data, error: deductError } = await deductCredits(9999, 3);
+    const { data, error: deductError } = await deductCredits(9999, 3, client);
 
     expect(data).toBeNull();
     expect(deductError).toBeInstanceOf(Error);
@@ -120,7 +122,8 @@ describe('Credits Tests', () => {
       TEST_TUTOR_ID,
       1, // subject_id
       new Date().toISOString(),
-      new Date(Date.now() + 60 * 60 * 1000).toISOString() // Ends in 1 Hour
+      new Date(Date.now() + 60 * 60 * 1000).toISOString(), // Ends in 1 Hour
+      client
     );
 
     expect(session_error).toBeNull();
@@ -134,7 +137,7 @@ describe('Credits Tests', () => {
     expect(session_data!.status).toBe('Scheduled');
 
     // Check that the parent's balance was updated correctly
-    const { data: balance_data, error: balance_error } = await getBalance(TEST_PARENT_ID);
+    const { data: balance_data, error: balance_error } = await getBalance(TEST_PARENT_ID, client);
     expect(balance_error).toBeNull();
     expect(balance_data).toBeDefined();
     expect(balance_data![0].amount_available).toBe(9);
@@ -163,7 +166,8 @@ describe('Credits Tests', () => {
       TEST_TUTOR_ID,
       1, // subject_id
       new Date().toISOString(),
-      new Date(Date.now() + 60 * 60 * 1000).toISOString() // Ends in 1 Hour
+      new Date(Date.now() + 60 * 60 * 1000).toISOString(), // Ends in 1 Hour
+      client
     );
 
     expect(session_data).toBeNull();

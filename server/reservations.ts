@@ -1,4 +1,6 @@
-import client from './client';
+import { createSupabaseServerClient } from '@/lib/supabase/serverClient';
+import type { Database } from '@/lib/supabase/types';
+import type { SupabaseClient } from '@supabase/supabase-js';
 import { deductCredits } from './credits';
 
 /**
@@ -9,6 +11,7 @@ import { deductCredits } from './credits';
  * @param subject_id: The id of the subject for which the session is being scheduled
  * @param scheduled_at: The scheduled start time of the session in ISO 8601 format
  * @param ends_at: The scheduled end time of the session in ISO 8601 format
+ * @param supabase: optional Supabase client (defaults to server client)
  * @returns The scheduled session or an error if the query fails
  */
 export async function placeSession(
@@ -17,8 +20,10 @@ export async function placeSession(
   tutor_id: number,
   subject_id: number,
   scheduled_at: string,
-  ends_at: string
+  ends_at: string,
+  supabase?: SupabaseClient<Database>
 ) {
+  const db = supabase || (await createSupabaseServerClient());
   // Calculate the cost of credits of the session
   const start_time = new Date(scheduled_at);
   const end_time = new Date(ends_at);
@@ -29,7 +34,7 @@ export async function placeSession(
   let duration = (end_time.getTime() - start_time.getTime()) / (1000 * 60 * 60); // Get the duration in hours
   duration = Math.round(duration); // Convert to the nearest whole number of hours
 
-  const { data, error } = await client
+  const { data, error } = await db
     .from('sessions')
     .insert({
       parent_id,
@@ -48,10 +53,10 @@ export async function placeSession(
   }
 
   // Check if the parent has enough credits and deduct them after placing the session
-  const { error: balanceError } = await deductCredits(parent_id, duration);
+  const { error: balanceError } = await deductCredits(parent_id, duration, db);
   if (balanceError) {
     // If there's an error deducting credits, delete the session that was just created
-    await client.from('sessions').delete().eq('id', data.id);
+    await db.from('sessions').delete().eq('id', data.id);
     return { data: null, error: balanceError };
   }
   return { data, error: null };

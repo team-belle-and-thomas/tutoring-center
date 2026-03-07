@@ -1,4 +1,4 @@
-import { createSupabaseServerClient } from '@/lib/supabase/serverClient';
+import { createSupabaseServiceClient } from '@/lib/supabase/serverClient';
 import type { Database } from '@/lib/supabase/types';
 import type { SupabaseClient } from '@supabase/supabase-js';
 
@@ -9,7 +9,7 @@ import type { SupabaseClient } from '@supabase/supabase-js';
  * @returns the amount available and amount pending for the parent, or an error if the query fails
  */
 export async function getBalance(parent_id: number, supabase?: SupabaseClient<Database>) {
-  const db = supabase || (await createSupabaseServerClient());
+  const db = supabase || createSupabaseServiceClient();
   const { data, error } = await db
     .from('credit_balances')
     .select('amount_available, amount_pending')
@@ -25,7 +25,7 @@ export async function getBalance(parent_id: number, supabase?: SupabaseClient<Da
  * @returns The updated balance for the parent, or an error if the query fails or if the parent has insufficient credits
  */
 export async function deductCredits(parent_id: number, amount: number, supabase?: SupabaseClient<Database>) {
-  const db = supabase || (await createSupabaseServerClient());
+  const db = supabase || createSupabaseServiceClient();
   const { data, error } = await getBalance(parent_id, db);
   if (error) {
     return { data: null, error };

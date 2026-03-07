@@ -1,4 +1,4 @@
-import { createSupabaseServerClient } from '@/lib/supabase/serverClient';
+import { createSupabaseServiceClient } from '@/lib/supabase/serverClient';
 import type { Database } from '@/lib/supabase/types';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { deductCredits } from './credits';
@@ -23,7 +23,7 @@ export async function placeSession(
   ends_at: string,
   supabase?: SupabaseClient<Database>
 ) {
-  const db = supabase || (await createSupabaseServerClient());
+  const db = supabase || createSupabaseServiceClient();
   // Calculate the cost of credits of the session
   const start_time = new Date(scheduled_at);
   const end_time = new Date(ends_at);

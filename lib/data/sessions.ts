@@ -97,7 +97,10 @@ export async function getSessions(kind: 'all' | 'upcoming' | 'past' = 'all') {
 
   const supabase = createSupabaseServiceClient();
 
-  let sessionsQuery = supabase.from('sessions').select(SESSION_SELECT_WITH_JOINS);
+  let sessionsQuery = supabase
+    .from('sessions')
+    .select(SESSION_SELECT_WITH_JOINS)
+    .order('scheduled_at', { ascending: false });
 
   if (kind === 'upcoming') {
     const now = new Date().toISOString();
@@ -423,7 +426,11 @@ export async function getTutorAssignedSessions(): Promise<TutorAssignedSession[]
     )
   ` as const;
 
-  const { data, error } = await supabase.from('sessions').select(TUTOR_SESSION_SELECT).eq('tutor_id', tutorId);
+  const { data, error } = await supabase
+    .from('sessions')
+    .select(TUTOR_SESSION_SELECT)
+    .eq('tutor_id', tutorId)
+    .order('scheduled_at', { ascending: false });
 
   if (error || !data || data.length === 0) {
     return [];

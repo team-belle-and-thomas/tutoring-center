@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import {
   Field,
   FieldContent,
-  FieldDescription,
+  // FieldDescription,
   FieldGroup,
   FieldLabel,
   FieldLegend,
@@ -17,20 +17,22 @@ import { GraduationCap, UserRound, UserRoundCog } from 'lucide-react';
 const playfair = Playfair_Display({ style: 'italic', subsets: ['latin'] });
 export default function LoginPage() {
   return (
-    <main>
-      <h3 className={`${playfair.className} text-2xl uppercase text-primary mb-5 tracking-widest font-extrabold`}>
-        Momentum Learning
-      </h3>
+    <main className={'pl-6 md:pl-20 pt-10 select-none'}>
+      <div className={'header mb-20 border-b border-b-gray-400'}>
+        <h3 className={`${playfair.className} text-2xl uppercase text-primary mb-5 tracking-widest font-extrabold`}>
+          Momentum Learning
+        </h3>
+      </div>
       <form action={login} className='text-primary text-center'>
         <FieldGroup>
           <FieldSet className='flex flex-col items-center justify-center w-full text-center gap-y-6'>
             <FieldLegend className='!text-4xl flex mx-auto mb-4 text-center border-b-2 border-primary'>
-              Login
+              Login in to your Momentum Learning account.
             </FieldLegend>
 
-            <FieldDescription className='text-lg text-center'>
+            {/* <FieldDescription className='text-lg text-center'>
               Login in to your Momentum Learning account.
-            </FieldDescription>
+            </FieldDescription> */}
 
             <RoleField />
           </FieldSet>
@@ -47,9 +49,9 @@ function RoleField() {
     <FieldGroup className='w-full max-w-xs'>
       <FieldSet>
         <FieldLegend className='!text-2xl flex mx-auto text-center' variant='label'>
-          Role
+          Select your role.
         </FieldLegend>
-        <FieldDescription className='text-lg text-center'>Select your role.</FieldDescription>
+
         <RadioGroup
           name='role'
           required={true}

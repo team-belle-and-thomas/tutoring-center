@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { DataTable } from '@/components/data-table';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { getUserRole } from '@/lib/auth';
 import { getSessions } from '@/lib/data/sessions';
@@ -11,12 +12,20 @@ export default async function SessionsPage({ searchParams }: { searchParams: Pro
   const kind = params.kind as 'all' | 'upcoming' | 'past' | undefined;
   const sessions = await getSessions(kind);
 
+  const description = role === 'admin' ? 'All tutors' : 'Your assigned tutors';
+  const data = await getSessions(kind);
+
   return (
     <main>
       <div className='flex flex-col gap-4'>
         <div className='flex items-center justify-between'>
-          <div>
-            <h1 className='text-2xl font-bold'>Sessions</h1>
+          <div className='p-2 md:p-8'>
+            <div className='flex items-center gap-2'>
+              <h1 className='font-serif text-3xl text-primary'>Sessions</h1>
+              <Badge variant='secondary'>{data.length}</Badge>
+            </div>
+            <p className='text-muted-foreground mt-1 text-sm'>{description}</p>
+
             <p className='text-muted-foreground'>You are logged in as {role}</p>
           </div>
           {role === 'parent' && (
@@ -26,7 +35,7 @@ export default async function SessionsPage({ searchParams }: { searchParams: Pro
           )}
         </div>
 
-        <div className='flex gap-2'>
+        <div className='flex px-2 md:px-8 gap-2'>
           <Button variant={!kind || kind === 'all' ? 'default' : 'outline'} size='sm' asChild>
             <Link href='/dashboard/sessions?kind=all'>All Sessions</Link>
           </Button>

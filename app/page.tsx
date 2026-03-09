@@ -8,7 +8,7 @@ const dm_sans = DM_Sans({ subsets: ['latin'] });
 
 export default function Home() {
   return (
-    <main className='pl-6 md:pl-20 pt-10 select-none'>
+    <main className={'pl-6 md:pl-20 pt-10 select-none'}>
       <div className={'header mb-20 border-b border-b-gray-400'}>
         <h3 className={`${playfair.className} text-2xl uppercase text-primary mb-5 tracking-widest font-extrabold`}>
           Momentum Learning

@@ -1,5 +1,6 @@
 'use client';
 
+import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 
 export function TutorListSkeleton() {
@@ -28,8 +29,14 @@ export function TutorListSkeleton() {
 export default function LoadingTutorsPage() {
   return (
     <main className='p-2 md:p-8'>
-      <h1 className='text-2xl font-bold mb-4'>Tutors Page</h1>
-      <p className='mb-4'>Loading tutors data...</p>
+      <div className=''>
+        <div className='flex items-center gap-2'>
+          <h1 className='font-serif text-3xl text-primary'>Tutors</h1>
+          <Badge variant='secondary'>Loading...</Badge>
+        </div>
+        <p className='text-muted-foreground mt-1 text-sm'>Loading tutors data...</p>
+      </div>
+
       <TutorListSkeleton />
     </main>
   );

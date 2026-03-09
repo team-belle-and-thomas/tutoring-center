@@ -21,7 +21,7 @@ export default function LoginPage() {
   return (
     <main className='min-h-screen flex'>
       <div className='hidden lg:block lg:w-1/2 relative'>
-        <Image src='/images/login-people.jpg' alt='Students learning together' fill className='object-cover' priority />
+        <Image src='/images/login.jpg' alt='Students learning together' fill className='object-cover' priority />
         <div className='absolute inset-0 bg-primary/30' />
       </div>
 

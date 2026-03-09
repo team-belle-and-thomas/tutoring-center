@@ -20,7 +20,7 @@ export function SiteHeader() {
         </Button>
         <Separator orientation='vertical' className='mr-2 h-4' />
         <Link
-          href='/dashboard'
+          href='/'
           className={`${playfair.className} text-lg uppercase tracking-widest font-extrabold text-primary hover:opacity-80 transition-opacity`}
         >
           Momentum Learning

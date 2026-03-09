@@ -13,6 +13,9 @@ export type SessionRow = Database['public']['Tables']['sessions']['Row'];
 export type SessionInsert = Database['public']['Tables']['sessions']['Insert'];
 export type SessionUpdate = Database['public']['Tables']['sessions']['Update'];
 
+export type GradeRow = Database['public']['Tables']['student_grades']['Row'];
+export type GradeInsert = Database['public']['Tables']['student_grades']['Insert'];
+
 export const SESSION_STATUS_OPTIONS = Constants.public.Enums.session_status;
 export const TRANSACTION_TYPE_OPTIONS = Constants.public.Enums.transaction_type;
 export const WEEKDAY_OPTIONS = Constants.public.Enums.week_day;
@@ -87,6 +90,8 @@ export const TUTOR_SELECT_WITH_JOINS = `
 ` as const;
 export const SESSION_SELECT_FIELDS =
   'id,tutor_id,student_id,subject_id,parent_id,slot_units,scheduled_at,ends_at,status' as const;
+
+export const GRADE_SELECT_FIELDS = 'id,student_id,subject,grade,created_at' as const;
 
 export const CREDIT_TRANSACTION_SELECT_WITH_JOINS = `
   id,

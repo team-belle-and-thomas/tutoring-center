@@ -43,6 +43,11 @@ const parentLinks: SidebarLink[] = [
     href: '/dashboard/credit-transactions',
     text: 'Credit Transactions',
   },
+  {
+    id: 5,
+    href: '/dashboard/grades',
+    text: 'Grades',
+  },
 ];
 
 const tutorLinks: SidebarLink[] = [

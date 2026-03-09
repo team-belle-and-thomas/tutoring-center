@@ -28,7 +28,7 @@ export const columns: ColumnDef<Student>[] = [
     header: () => <div className='text-left'>Actions</div>,
     cell: ({ row }) => (
       <Button asChild variant='default' size='sm'>
-        <Link href={`/dashboard/students/${row.original.user_id}`}>View</Link>
+        <Link href={`/dashboard/students/${row.original.id}`}>View</Link>
       </Button>
     ),
   },

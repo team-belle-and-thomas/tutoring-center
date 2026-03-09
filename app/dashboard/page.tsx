@@ -11,7 +11,7 @@ export default async function DashboardPage() {
   const userName = await getCurrentUserName();
 
   return (
-    <main className='container mx-auto py-2'>
+    <main className='container mx-auto px-6 py-2'>
       <div className='flex items-center p-2 md:p-8 gap-2'>
         <h1 className='font-serif text-3xl text-primary'>Dashboard</h1>
       </div>

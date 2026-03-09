@@ -6,6 +6,8 @@ import { SESSION_SELECT_WITH_JOINS } from '@/lib/supabase/types';
 import { pickFirstEmbedded } from '@/lib/utils/normalize';
 import { SessionWithJoinsListSchema, type SessionWithJoins } from '@/lib/validators/sessions';
 
+export { getCurrentUserID, getUserRole, type UserRole } from '@/lib/auth';
+
 export type SessionRow = {
   id: number;
   student_name: string;

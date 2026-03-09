@@ -1,9 +1,11 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { getUserRole } from '@/lib/auth';
-import { getSession } from '@/lib/data/sessions';
+import { getSession, getStudentRecentProgress, type StudentProgressHistory } from '@/lib/data/sessions';
 import { format, parseISO } from 'date-fns';
 import { CircleCheck, CircleX, Star } from 'lucide-react';
 
@@ -19,6 +21,12 @@ export default async function SingleSessionPage({ params }: { params: Promise<{ 
   const session = await getSession(sessionId);
   const showParentInfo = role === 'admin';
   const metrics = session.metrics;
+  const isUpcomingSession = session.status !== 'Completed' && session.status !== 'Canceled';
+  const canViewProgressHistory = role === 'tutor' && isUpcomingSession;
+
+  const progressHistory: StudentProgressHistory[] = canViewProgressHistory
+    ? await getStudentRecentProgress(session.student.id, session.id, 5)
+    : [];
 
   return (
     <main>
@@ -216,6 +224,41 @@ export default async function SingleSessionPage({ params }: { params: Promise<{ 
                   </div>
                 )}
               </div>
+            </section>
+          )}
+
+          {canViewProgressHistory && (
+            <section>
+              <h3 className='text-lg font-semibold mb-3'>Student Progress History</h3>
+              {progressHistory.length > 0 ? (
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Date</TableHead>
+                      <TableHead>Tutor</TableHead>
+                      <TableHead className='text-right'>Action</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {progressHistory.map(item => (
+                      <TableRow key={item.sessionId}>
+                        <TableCell>{format(parseISO(item.date), 'MMMM d, yyyy')}</TableCell>
+                        <TableCell>{item.tutorName}</TableCell>
+                        <TableCell className='text-right'>
+                          <Button variant='link' asChild>
+                            <Link href={`/dashboard/sessions/${item.sessionId}`}>View</Link>
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              ) : (
+                <div className='text-center py-8'>
+                  <p className='text-xl font-semibold'>No progress history</p>
+                  <p className='text-gray-600'>There are no previous progress reports for this student.</p>
+                </div>
+              )}
             </section>
           )}
         </CardContent>

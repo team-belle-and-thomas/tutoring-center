@@ -3,6 +3,8 @@ import { createClient } from '@supabase/supabase-js';
 
 const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SECRET_KEY!);
 
+const TUTOR_IDS = [1, 2]; // Obi-Wan, Ahsoka
+
 async function deleteOldSeedData() {
   console.log('🗑️  Deleting old seed data...');
 
@@ -49,10 +51,11 @@ function generateSessionsForStudent(studentId: number, subjectId: number, startW
   for (let i = 0; i < 7; i++) {
     const daysAgo = startWeek * 7 + i * 14;
     const baseTime = now.getTime() - daysAgo * 24 * 60 * 60 * 1000;
+    const tutorId = TUTOR_IDS[i % TUTOR_IDS.length]; // Rotate through tutors
     sessions.push({
       parent_id: 1,
       student_id: studentId,
-      tutor_id: 1,
+      tutor_id: tutorId,
       subject_id: subjectId,
       scheduled_at: new Date(baseTime + hourOffset * 60 * 60 * 1000).toISOString(),
       ends_at: new Date(baseTime + hourOffset * 60 * 60 * 1000 + 2 * 60 * 60 * 1000).toISOString(),
@@ -65,7 +68,7 @@ function generateSessionsForStudent(studentId: number, subjectId: number, startW
   sessions.push({
     parent_id: 1,
     student_id: studentId,
-    tutor_id: 1,
+    tutor_id: TUTOR_IDS[0], // Upcoming session with first tutor
     subject_id: subjectId,
     scheduled_at: new Date(futureTime + hourOffset * 60 * 60 * 1000).toISOString(),
     ends_at: new Date(futureTime + hourOffset * 60 * 60 * 1000 + 2 * 60 * 60 * 1000).toISOString(),
@@ -95,10 +98,11 @@ async function seedSessions() {
     for (let i = 0; i < 3; i++) {
       const daysAgo = i * 10;
       const baseTime = new Date().getTime() - daysAgo * 24 * 60 * 60 * 1000;
+      const tutorId = TUTOR_IDS[i % TUTOR_IDS.length];
       recentSessions.push({
         parent_id: 1,
         student_id: ss.studentId,
-        tutor_id: 1,
+        tutor_id: tutorId,
         subject_id: ss.subjectId,
         scheduled_at: new Date(baseTime + si * 3 * 60 * 60 * 1000).toISOString(),
         ends_at: new Date(baseTime + si * 3 * 60 * 60 * 1000 + 2 * 60 * 60 * 1000).toISOString(),

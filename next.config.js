@@ -4,6 +4,14 @@ module.exports = {
     ignoreDuringBuilds: true,
   },
   typedRoutes: true,
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'images.unsplash.com',
+      },
+    ],
+  },
   experimental: {
     authInterrupts: true,
   },

@@ -16,8 +16,8 @@ export default async function SessionsPage({ searchParams }: { searchParams: Pro
       <div className='flex flex-col gap-4'>
         <div className='flex items-center justify-between'>
           <div>
-            <h1 className='text-2xl font-bold'>Sessions</h1>
-            <p className='text-muted-foreground'>You are logged in as {role}</p>
+            <h1 className='font-serif text-3xl text-primary'>Sessions</h1>
+            <p className='text-muted-foreground mt-1 text-sm'>You are logged in as {role}</p>
           </div>
           {role === 'parent' && (
             <Button asChild>

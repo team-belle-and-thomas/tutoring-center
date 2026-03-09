@@ -9,29 +9,29 @@ import { CircleCheck, CircleX } from 'lucide-react';
 export const columns: ColumnDef<TutorRow>[] = [
   {
     accessorKey: 'name',
-    header: () => <div>Name</div>,
+    header: () => <div className='bg-muted/50 p-2 rounded'>Name</div>,
   },
   {
     accessorKey: 'email',
-    header: () => <div>Email</div>,
+    header: () => <div className='bg-muted/50 p-2 rounded'>Email</div>,
     cell: ({ row }) => <div className='w-fit'>{row.getValue('email')}</div>,
   },
   {
     accessorKey: 'phone',
-    header: () => <div>Phone</div>,
+    header: () => <div className='bg-muted/50 p-2 rounded'>Phone</div>,
   },
   {
     accessorKey: 'education',
-    header: () => <div>Education</div>,
+    header: () => <div className='bg-muted/50 p-2 rounded'>Education</div>,
   },
   {
     accessorKey: 'years_experience',
-    header: () => <div>Years of Exp.</div>,
+    header: () => <div className='bg-muted/50 p-2 rounded'>Years of Exp.</div>,
     cell: ({ row }) => <div>{row.getValue('years_experience')}</div>,
   },
   {
     accessorKey: 'verified',
-    header: () => <div>Verified</div>,
+    header: () => <div className='bg-muted/50 p-2 rounded'>Verified</div>,
     cell: ({ row }) => (
       <div>
         {row.getValue('verified') ? <CircleCheck className='text-green-600' /> : <CircleX className='text-red-600' />}
@@ -40,7 +40,7 @@ export const columns: ColumnDef<TutorRow>[] = [
   },
   {
     id: 'actions',
-    header: () => <div>Actions</div>,
+    header: () => <div className='bg-muted/50 p-2 rounded'>Actions</div>,
     cell: ({ row }) => (
       <Button asChild variant='default' size='sm'>
         <Link href={`/dashboard/tutors/${row.original.user_id}`}>View</Link>

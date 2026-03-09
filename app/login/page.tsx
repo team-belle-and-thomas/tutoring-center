@@ -1,4 +1,6 @@
 import { Playfair_Display } from 'next/font/google';
+import Image from 'next/image';
+import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import {
   Field,
@@ -12,33 +14,52 @@ import {
 } from '@/components/ui/field';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { login } from '@/lib/auth';
-import { GraduationCap, UserRound, UserRoundCog } from 'lucide-react';
+import { ArrowLeft, GraduationCap, UserRound, UserRoundCog } from 'lucide-react';
 
 const playfair = Playfair_Display({ style: 'italic', subsets: ['latin'] });
 export default function LoginPage() {
   return (
-    <main>
-      <h3 className={`${playfair.className} text-2xl uppercase text-primary mb-5 tracking-widest font-extrabold`}>
-        Momentum Learning
-      </h3>
-      <form action={login} className='text-primary text-center'>
-        <FieldGroup>
-          <FieldSet className='flex flex-col items-center justify-center w-full text-center gap-y-6'>
-            <FieldLegend className='!text-4xl flex mx-auto mb-4 text-center border-b-2 border-primary'>
-              Login
-            </FieldLegend>
+    <main className='min-h-screen flex'>
+      <div className='hidden lg:block lg:w-1/2 relative'>
+        <Image src='/images/login-people.jpg' alt='Students learning together' fill className='object-cover' priority />
+        <div className='absolute inset-0 bg-primary/30' />
+      </div>
 
-            <FieldDescription className='text-lg text-center'>
-              Login in to your Momentum Learning account.
-            </FieldDescription>
+      <div className='w-full lg:w-1/2 flex items-center justify-center p-6'>
+        <div className='w-full max-w-md'>
+          <Link
+            href='/'
+            className='inline-flex items-center gap-2 text-muted-foreground hover:text-primary mb-6 transition-colors'
+          >
+            <ArrowLeft size={20} />
+            <span>Back to Home</span>
+          </Link>
 
-            <RoleField />
-          </FieldSet>
-        </FieldGroup>
-        <Button className='rounded-none text-xl w-fit font-bold py-6 px-6 mt-6' size='sm'>
-          <span className='border-b-2 border-b-white'>Login</span>
-        </Button>
-      </form>
+          <h3
+            className={`${playfair.className} text-2xl uppercase text-primary mb-8 tracking-widest font-extrabold text-center`}
+          >
+            Momentum Learning
+          </h3>
+          <form action={login} className='text-primary text-center'>
+            <FieldGroup>
+              <FieldSet className='flex flex-col items-center justify-center w-full text-center gap-y-6'>
+                <FieldLegend className='!text-4xl flex mx-auto mb-4 text-center border-b-2 border-primary'>
+                  Login
+                </FieldLegend>
+
+                <FieldDescription className='text-lg text-center'>
+                  Login in to your Momentum Learning account.
+                </FieldDescription>
+
+                <RoleField />
+              </FieldSet>
+            </FieldGroup>
+            <Button className='rounded-none text-xl w-fit font-bold py-6 px-6 mt-6' size='sm'>
+              <span className='border-b-2 border-b-white'>Login</span>
+            </Button>
+          </form>
+        </div>
+      </div>
     </main>
   );
 }

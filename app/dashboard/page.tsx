@@ -12,9 +12,11 @@ export default async function DashboardPage() {
 
   return (
     <main className='container mx-auto py-8'>
-      <h1 className='text-3xl font-bold mb-6'>Dashboard</h1>
-      {userName && <p className='text-lg mb-2'>Welcome, {userName}!</p>}
-      <p className='text-lg mb-8'>You are logged in as {role}</p>
+      <div className='mb-6'>
+        <h1 className='font-serif text-3xl text-primary'>Dashboard</h1>
+        {userName && <p className='text-muted-foreground mt-1 text-sm'>Welcome, {userName}!</p>}
+        <p className='text-muted-foreground mt-1 text-sm'>You are logged in as {role}</p>
+      </div>
 
       {role === 'tutor' && <TutorDashboardContent />}
       {role === 'parent' && <ParentDashboardContent />}
@@ -27,7 +29,7 @@ async function TutorDashboardContent() {
 
   return (
     <section>
-      <h2 className='text-2xl font-semibold mb-4'>Pending Sessions</h2>
+      <h2 className='font-serif text-2xl text-primary mb-4'>Pending Sessions</h2>
 
       {sessions.length === 0 ? (
         <p className='text-muted-foreground'>No sessions currently need progress reports.</p>
@@ -48,7 +50,7 @@ async function ParentDashboardContent() {
 
   return (
     <section>
-      <h2 className='text-2xl font-semibold mb-4'>Progress Overview</h2>
+      <h2 className='font-serif text-2xl text-primary mb-4'>Progress Overview</h2>
       <ParentProgressDashboard students={students} defaultStudentId={defaultStudentId} grades={grades} />
     </section>
   );

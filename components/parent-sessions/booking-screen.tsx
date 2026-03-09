@@ -3,7 +3,7 @@
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { AddCredits, generateConfirmationCode, type CreditsPurchase } from '@/components/add-credits';
-import { useCredits } from '@/components/add-credits/credits-context';
+import { purchaseCredits, reserveSessionCredits } from '@/components/parent-sessions/booking-credits';
 import {
   selectTutorsForSubject,
   shouldBlockForCredits,
@@ -18,6 +18,7 @@ import { PickSubject } from '@/components/parent-sessions/pick-subjects';
 import { PickTutor, type TutorOption } from '@/components/parent-sessions/pick-tutors';
 import { SuccessCard } from '@/components/success-card';
 import { Card, CardContent } from '@/components/ui/card';
+import type { CreditBalance } from '@/lib/credit-balances';
 import type { SubjectOption, SubjectSelection } from '@/lib/data/subjects';
 import { formatSessionDateTime } from '@/lib/date-utils';
 
@@ -27,9 +28,17 @@ type BookingState =
   | { step: 'tutor'; student: StudentOption; selection: SubjectSelection }
   | { step: 'date'; student: StudentOption; selection: SubjectSelection; tutor: TutorOption; subjectId: number }
   | { step: 'credits'; reservation: Reservation; selection: SubjectSelection }
-  | { step: 'success'; reservation: Reservation; purchase?: CreditsPurchase; confirmationCode: string };
+  | {
+      step: 'success';
+      reservation: Reservation;
+      purchase?: CreditsPurchase;
+      confirmationCode: string;
+      warning?: string;
+    };
 
 type BookingScreenProps = {
+  parentId: number;
+  initialBalance: CreditBalance;
   students: StudentOption[];
   subjects: SubjectOption[];
   tutors: TutorOption[];
@@ -37,10 +46,23 @@ type BookingScreenProps = {
 };
 
 const getFirstName = (fullName: string) => fullName.trim().split(/\s+/)[0] || '';
+const BOOKING_CREDIT_COST = 1;
 
-export function BookingScreen({ students, subjects, tutors, todayStartMs }: BookingScreenProps) {
+function combineMessages(...messages: Array<string | undefined>) {
+  const uniqueMessages = Array.from(new Set(messages.filter(Boolean)));
+  return uniqueMessages.length > 0 ? uniqueMessages.join(' ') : undefined;
+}
+
+export function BookingScreen({
+  parentId,
+  initialBalance,
+  students,
+  subjects,
+  tutors,
+  todayStartMs,
+}: BookingScreenProps) {
   const router = useRouter();
-  const { balance, deductCredits } = useCredits();
+  const [balance, setBalance] = useState(initialBalance);
   const [checkoutError, setCheckoutError] = useState<string | null>(null);
   const [isLowCreditsToastDismissed, setIsLowCreditsToastDismissed] = useState(false);
   const [bookingState, setBookingState] = useState<BookingState>(() => {
@@ -83,31 +105,49 @@ export function BookingScreen({ students, subjects, tutors, todayStartMs }: Book
       }),
     });
 
-    const body = (await response.json().catch(() => null)) as { error?: string } | null;
+    const body = (await response.json().catch(() => null)) as { data?: { id?: number }; error?: string } | null;
     if (!response.ok) {
       throw new Error(body?.error ?? 'Could not complete booking right now. Please try again.');
     }
+
+    const sessionId = body?.data?.id;
+    if (typeof sessionId !== 'number') {
+      throw new Error('Session was created without an id.');
+    }
+
+    return sessionId;
   }
 
-  async function completeBooking(reservation: Reservation, purchase?: CreditsPurchase) {
+  async function completeBooking(
+    reservation: Reservation,
+    currentBalance: CreditBalance,
+    purchase?: CreditsPurchase,
+    warning?: string
+  ) {
     setCheckoutError(null);
 
+    await createSession(reservation);
+    let successWarning = warning;
+
     try {
-      await createSession(reservation);
-      deductCredits(1);
-      // TODO(backend): write credit_transactions and credit_balances updates in the same server transaction.
-      setBookingState({
-        step: 'success',
-        reservation,
-        purchase,
-        confirmationCode: generateConfirmationCode(),
-      });
-    } catch (error) {
-      const message =
-        error instanceof Error ? error.message : 'Could not complete booking right now. Please try again.';
-      setCheckoutError(message);
-      throw error instanceof Error ? error : new Error(message);
+      const reservationResult = await reserveSessionCredits(parentId, BOOKING_CREDIT_COST, currentBalance);
+      setBalance(reservationResult.balance);
+      successWarning = combineMessages(successWarning, reservationResult.warning);
+    } catch {
+      successWarning = combineMessages(
+        successWarning,
+        'Session booked, but credits could not be moved to pending automatically. Refresh before booking another session.'
+      );
     }
+
+    setBookingState({
+      step: 'success',
+      reservation,
+      purchase,
+      confirmationCode: generateConfirmationCode(),
+      warning: successWarning,
+    });
+    router.refresh();
   }
 
   switch (bookingState.step) {
@@ -194,7 +234,11 @@ export function BookingScreen({ students, subjects, tutors, todayStartMs }: Book
                   return;
                 }
 
-                void completeBooking(reservation).catch(() => undefined);
+                void completeBooking(reservation, balance).catch(error => {
+                  const message =
+                    error instanceof Error ? error.message : 'Could not complete booking right now. Please try again.';
+                  setCheckoutError(message);
+                });
               }}
             />
           </main>
@@ -222,9 +266,31 @@ export function BookingScreen({ students, subjects, tutors, todayStartMs }: Book
               })
             }
             onPurchaseCompleteAction={async purchase => {
+              let purchaseResult: {
+                balance: CreditBalance;
+                warning?: string;
+              } | null = null;
+
               try {
-                await completeBooking(bookingState.reservation, purchase);
+                purchaseResult = await purchaseCredits(
+                  parentId,
+                  bookingState.reservation.student.id,
+                  purchase.pkg.credits,
+                  balance
+                );
+                setBalance(purchaseResult.balance);
+                await completeBooking(
+                  bookingState.reservation,
+                  purchaseResult.balance,
+                  purchase,
+                  purchaseResult.warning
+                );
               } catch {
+                setCheckoutError(
+                  purchaseResult
+                    ? 'Credits were added, but the reservation could not be completed. Please choose a new time and try again.'
+                    : 'Could not complete the credit purchase right now. Please try again.'
+                );
                 setBookingState({
                   step: 'date',
                   student: bookingState.reservation.student,
@@ -259,9 +325,14 @@ export function BookingScreen({ students, subjects, tutors, todayStartMs }: Book
           >
             <p className='text-muted-foreground'>
               {wasPurchased
-                ? 'Your credits purchase and session reservation both succeeded. We deducted 1 credit for this booking.'
+                ? 'Your credits purchase and session reservation both succeeded. One credit is now reserved for this booking.'
                 : 'Your session reservation succeeded and your booking is now confirmed.'}
             </p>
+            {bookingState.warning ? (
+              <p className='w-full rounded-md border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-sm text-amber-800'>
+                {bookingState.warning}
+              </p>
+            ) : null}
             <BookingSuccessDetails
               reservation={bookingState.reservation}
               confirmationCode={bookingState.confirmationCode}

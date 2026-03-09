@@ -1,4 +1,3 @@
-import { CreditsProvider } from '@/components/add-credits/credits-context';
 import { ParentCreditWidget } from '@/components/add-credits/parent-credit-widget';
 import { AppSidebar } from '@/components/app-sidebar';
 import { SiteHeader } from '@/components/site-header';
@@ -30,6 +29,5 @@ export default async function DashboardLayout({
     </div>
   );
 
-  // TODO: delete below and "return layout"
-  return userRole === 'parent' ? <CreditsProvider>{layout}</CreditsProvider> : layout;
+  return layout;
 }

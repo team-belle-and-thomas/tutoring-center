@@ -6,6 +6,8 @@ import { SESSION_SELECT_WITH_JOINS } from '@/lib/supabase/types';
 import { pickFirstEmbedded } from '@/lib/utils/normalize';
 import { SessionWithJoinsListSchema, type SessionWithJoins } from '@/lib/validators/sessions';
 
+export { getCurrentUserID, getUserRole, type UserRole } from '@/lib/auth';
+
 export type SessionRow = {
   id: number;
   student_name: string;
@@ -21,20 +23,23 @@ export type SessionRow = {
 };
 
 type SessionLoadErrorReason = 'database' | 'validation';
-type AllowedRole = Exclude<UserRole, 'tutor'>;
 
 const isValidRole = (value: unknown): value is UserRole => value === 'admin' || value === 'parent' || value === 'tutor';
 
-const SESSION_ERROR_MESSAGES = {
+const SESSION_ERROR_MESSAGES: Record<UserRole, Record<SessionLoadErrorReason, string>> = {
   admin: {
     database: 'Session data is temporarily unavailable. Please retry in a moment.',
     validation: 'Session data format is invalid. Please try again later.',
   },
   parent: {
-    database: 'Your session list is temporarily unavailable. Please try again in a moment.',
+    database: 'Your session list is temporarily unavailable. Please retry in a moment.',
     validation: 'There was a problem preparing your students list. Please try again.',
   },
-} as const satisfies Record<AllowedRole, Record<SessionLoadErrorReason, string>>;
+  tutor: {
+    database: 'Your session list is temporarily unavailable. Please retry in a moment.',
+    validation: 'Session data format is invalid. Please try again later.',
+  },
+};
 
 const parseStudentUser = (student: SessionWithJoins['student']) => {
   if (!student) return { name: '—' };
@@ -102,6 +107,7 @@ export async function getSessions(kind: 'all' | 'upcoming' | 'past' = 'all') {
   if (kind === 'upcoming') {
     const now = new Date().toISOString();
     sessionsQuery = sessionsQuery.gte('scheduled_at', now);
+    sessionsQuery = sessionsQuery.neq('status', 'Completed');
   } else if (kind === 'past') {
     const now = new Date().toISOString();
     sessionsQuery = sessionsQuery.lt('scheduled_at', now);
@@ -133,12 +139,12 @@ export async function getSessions(kind: 'all' | 'upcoming' | 'past' = 'all') {
 
   const { data, error } = await sessionsQuery;
   if (error) {
-    throw new Error(SESSION_ERROR_MESSAGES[role as AllowedRole]['database']);
+    throw new Error(SESSION_ERROR_MESSAGES[role]['database']);
   }
 
   const parsedSessions = SessionWithJoinsListSchema.safeParse(data ?? []);
   if (!parsedSessions.success) {
-    throw new Error(SESSION_ERROR_MESSAGES[role as AllowedRole]['validation']);
+    throw new Error(SESSION_ERROR_MESSAGES[role]['validation']);
   }
 
   return parsedSessions.data.map(mapSessionRow);
@@ -245,16 +251,12 @@ export async function getSession(id: number): Promise<SessionDetailType> {
 
   const sessionParentData = data.parent as unknown as { id: number } | Array<{ id: number }> | null;
   const sessionParentId = Array.isArray(sessionParentData) ? sessionParentData[0]?.id : sessionParentData?.id;
-  const sessionTutorId = data.tutor_id;
 
   if (role !== 'admin') {
     const userID = await getCurrentUserID();
 
     if (role === 'tutor') {
-      const { data: tutor } = await supabase.from('tutors').select('id').eq('user_id', userID).single();
-      if (!tutor || sessionTutorId !== tutor.id) {
-        redirect('/dashboard/sessions');
-      }
+      // Tutors can view all sessions (from all tutors)
     } else {
       const { data: parent } = await supabase.from('parents').select('id').eq('user_id', userID).single();
 
@@ -472,4 +474,60 @@ export async function getTutorAssignedSessions(): Promise<TutorAssignedSession[]
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       .map(({ hasProgress, hasMetrics, ...session }) => session)
   );
+}
+
+export type StudentProgressHistory = {
+  sessionId: number;
+  date: string;
+  tutorName: string;
+};
+
+export async function getStudentRecentProgress(
+  studentId: number,
+  sessionIdToExclude: number,
+  limit: number = 5
+): Promise<StudentProgressHistory[]> {
+  const supabase = createSupabaseServiceClient();
+  const now = new Date().toISOString();
+
+  const PROGRESS_HISTORY_SELECT = `
+    id,
+    scheduled_at,
+    tutor:tutors (
+      users:user_id (
+        first_name,
+        last_name
+      )
+    )
+  ` as const;
+
+  const { data, error } = await supabase
+    .from('sessions')
+    .select(PROGRESS_HISTORY_SELECT)
+    .eq('student_id', studentId)
+    .eq('status', 'Completed')
+    .neq('id', sessionIdToExclude)
+    .lt('scheduled_at', now)
+    .order('scheduled_at', { ascending: false })
+    .limit(limit);
+
+  if (error || !data) {
+    return [];
+  }
+
+  const progressHistory: StudentProgressHistory[] = data
+    .filter(session => session.id !== sessionIdToExclude)
+    .map(session => {
+      const tutorData = Array.isArray(session.tutor) ? session.tutor[0] : session.tutor;
+      const tutorUsersData = tutorData?.users;
+      const tutorUser = tutorUsersData ? pickFirstEmbedded(tutorUsersData) : null;
+
+      return {
+        sessionId: session.id,
+        date: session.scheduled_at,
+        tutorName: tutorUser ? [tutorUser.first_name, tutorUser.last_name].filter(Boolean).join(' ') : 'Unknown Tutor',
+      };
+    });
+
+  return progressHistory;
 }

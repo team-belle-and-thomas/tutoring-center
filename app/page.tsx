@@ -44,13 +44,7 @@ export default function Home() {
         </div>
         <div className='w-full lg:w-1/2 relative'>
           <div className='relative w-full h-[300px] md:h-[400px] lg:h-[500px] xl:h-[550px] overflow-hidden rounded-lg shadow-lg'>
-            <Image
-              src='/images/img-3.jpg'
-              alt='Modern classroom with wooden desks and blue elements'
-              fill
-              className='object-cover'
-              priority
-            />
+            <Image src='/images/hero.jpg' alt='Happy student studying' fill className='object-cover' priority />
           </div>
         </div>
       </div>

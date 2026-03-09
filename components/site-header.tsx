@@ -1,6 +1,7 @@
 'use client';
 
 import { Playfair_Display } from 'next/font/google';
+import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { useSidebar } from '@/components/ui/sidebar';
@@ -19,7 +20,7 @@ export function SiteHeader() {
         </Button>
         <Separator orientation='vertical' className='mr-2 h-4' />
         <h3 className={`${playfair.className} text-2xl uppercase text-primary tracking-widest font-extrabold`}>
-          Momentum Learning
+          <Link href='/dashboard'>Momentum Learning</Link>
         </h3>
       </div>
     </header>

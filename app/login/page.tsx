@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import {
   Field,
   FieldContent,
-  // FieldDescription,
+  FieldDescription,
   FieldGroup,
   FieldLabel,
   FieldLegend,
@@ -47,9 +47,9 @@ export default function LoginPage() {
                   Login
                 </FieldLegend>
 
-            <FieldDescription className='text-lg text-center'>
-              Login in to your Momentum Learning account.
-            </FieldDescription>
+                <FieldDescription className='text-lg text-center'>
+                  Login in to your Momentum Learning account.
+                </FieldDescription>
 
                 <RoleField />
               </FieldSet>

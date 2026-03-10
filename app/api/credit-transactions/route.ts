@@ -35,7 +35,7 @@ export async function GET(req: Request) {
   const supabase = createSupabaseServiceClient();
 
   // Count first to avoid out of range errors
-  let countQuery = supabase.from('sessions').select('id', { count: 'exact', head: true });
+  let countQuery = supabase.from('credit_transactions').select('id', { count: 'exact', head: true });
 
   if (parent_id) countQuery = countQuery.eq('parent_id', parent_id);
   if (student_id) countQuery = countQuery.eq('student_id', student_id);

@@ -42,7 +42,7 @@ export const TransactionsWithJoinsSchema = z.object({
   student_id: z.number(),
   session_id: z.number().nullable(),
   amount: z.number().int(),
-  balance_after: z.number().positive().int(),
+  balance_after: z.number().nonnegative().int(),
   type: TransactionTypeSchema,
   created_at: z.string(), // ISO date string
 

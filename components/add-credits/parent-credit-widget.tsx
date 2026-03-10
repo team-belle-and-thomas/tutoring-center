@@ -41,7 +41,7 @@ export function ParentCreditWidget() {
         </div>
         <div>
           <p className={`text-xl font-bold ${balanceColor(amount_available)}`}>
-            {amount_available} <span className='text-sm'>{amount_available > 1 ? 'hours' : 'hour'} avaiable</span>
+            {amount_available} <span className='text-sm'>{amount_available > 1 ? 'hours' : 'hour'} available</span>
           </p>
           {amount_available < LOW_THRESHOLD && (
             <p className='text-xs text-red-500 mt-0.5'>Low credits - please consider topping up.</p>

@@ -68,9 +68,9 @@ function RoleField() {
     <FieldGroup className='w-full max-w-xs'>
       <FieldSet>
         <FieldLegend className='!text-2xl flex mx-auto text-center' variant='label'>
-          Role
+          Select your role.
         </FieldLegend>
-        <FieldDescription className='text-lg text-center'>Select your role.</FieldDescription>
+
         <RadioGroup
           name='role'
           required={true}

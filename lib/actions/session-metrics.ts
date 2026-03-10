@@ -73,8 +73,6 @@ export async function submitSessionMetrics(formData: SessionMetricsFormData) {
   }
 
   if (metricsError) {
-    // eslint-disable-next-line no-console
-    console.error('Metrics error:', metricsError);
     throw new Error(metricsError.message || 'Failed to submit session metrics');
   }
 

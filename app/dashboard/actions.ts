@@ -4,11 +4,10 @@ import { getParentDashboardData, type DateRange, type StudentProgressData } from
 
 export async function fetchParentDashboardData(
   dateRange?: DateRange,
-  subject?: string,
-  studentId?: number
+  subject?: string
 ): Promise<{
   students: StudentProgressData[];
   defaultStudentId: number | null;
 }> {
-  return getParentDashboardData(dateRange, subject, studentId);
+  return getParentDashboardData(dateRange, subject);
 }

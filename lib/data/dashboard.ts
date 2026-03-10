@@ -104,11 +104,6 @@ export async function getStudentProgressData(
   const { data, error } = await query;
 
   if (error) {
-    console.error('[getStudentProgressData] Database error:', {
-      studentId,
-      error: error.message,
-      code: error.code,
-    });
     return {
       studentId,
       studentName,
@@ -179,13 +174,11 @@ export async function getStudentProgressData(
 export async function getStudentsWithProgress(dateRange?: DateRange, subject?: string): Promise<StudentProgressData[]> {
   const role = await getUserRole();
   if (role !== 'parent') {
-    console.warn('[getStudentsWithProgress] Non-parent user attempted access');
     return [];
   }
 
   const userID = await getCurrentUserID();
   if (!userID) {
-    console.error('[getStudentsWithProgress] No user ID found');
     return [];
   }
 
@@ -198,10 +191,6 @@ export async function getStudentsWithProgress(dateRange?: DateRange, subject?: s
     .single();
 
   if (parentError || !parentData) {
-    console.error('[getStudentsWithProgress] Parent not found:', {
-      userID,
-      error: parentError?.message,
-    });
     return [];
   }
 
@@ -221,10 +210,6 @@ export async function getStudentsWithProgress(dateRange?: DateRange, subject?: s
     .eq('parent_id', parentId);
 
   if (studentsError) {
-    console.error('[getStudentsWithProgress] Error fetching students:', {
-      parentId,
-      error: studentsError.message,
-    });
     return [];
   }
 
@@ -276,10 +261,6 @@ export async function getStudentsWithProgress(dateRange?: DateRange, subject?: s
   const { data: sessionsData, error: sessionsError } = await sessionsQuery;
 
   if (sessionsError) {
-    console.error('[getStudentsWithProgress] Error fetching sessions:', {
-      studentIds,
-      error: sessionsError.message,
-    });
     return studentIds.map(id => ({
       studentId: id,
       studentName: studentMap.get(id) || 'Student',
@@ -350,7 +331,7 @@ export async function getStudentsWithProgress(dateRange?: DateRange, subject?: s
   return studentsWithProgress;
 }
 
-export async function getParentDashboardData(dateRange?: DateRange, subject?: string, _studentId?: number) {
+export async function getParentDashboardData(dateRange?: DateRange, subject?: string) {
   const studentsWithProgress = await getStudentsWithProgress(dateRange, subject);
 
   return {
@@ -376,7 +357,6 @@ export async function getStudentGrades(studentId: number): Promise<GradeDataPoin
     .order('created_at', { ascending: true });
 
   if (error) {
-    console.error('[getStudentGrades] Database error:', { studentId, error: error.message });
     return [];
   }
 
@@ -394,7 +374,6 @@ export async function getAllSubjects(): Promise<string[]> {
   const { data, error } = await supabase.from('subjects').select('category').order('category', { ascending: true });
 
   if (error) {
-    console.error('[getAllSubjects] Database error:', error.message);
     return [];
   }
 

@@ -43,7 +43,7 @@ export const columns: ColumnDef<TutorRow>[] = [
     header: () => <div>Actions</div>,
     cell: ({ row }) => (
       <Button asChild variant='default' size='sm'>
-        <Link href={`/dashboard/tutors/${row.original.user_id}`}>View</Link>
+        <Link href={`/dashboard/tutors/${row.original.id}`}>View</Link>
       </Button>
     ),
   },

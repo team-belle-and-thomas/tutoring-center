@@ -15,7 +15,7 @@ export default function Home() {
           Momentum Learning
         </h3>
         <Link
-          href="/about"
+          href='/about'
           className={`${dm_sans.className} text-sm uppercase tracking-widest text-muted-foreground hover:text-primary transition-colors`}
         >
           About
@@ -34,7 +34,7 @@ export default function Home() {
             and insights that matter.
           </p>
           <Button asChild className='rounded-none text-2xl w-fit font-bold py-8 px-10' size='lg'>
-            <Link href="/login" draggable={false}>
+            <Link href='/login' draggable={false}>
               <span className='border-b-2 border-b-white flex items-center gap-2'>
                 Enter Your Portal
                 <ArrowRight className='size-5' strokeWidth={3} />

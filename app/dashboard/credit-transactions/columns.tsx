@@ -37,7 +37,7 @@ export function getColumns(role: UserRole): ColumnDef<CreditTransactionRow>[] {
       cell: ({ row }) => <div>{format(new Date(row.original.created_at), 'MMM d, yyyy')}</div>,
     },
     {
-      id: 'name',
+      id: 'student',
       accessorKey: 'student_name',
       header: () => <div>Student</div>,
       cell: ({ row }) => <div>{row.original.student_name}</div>,
@@ -92,8 +92,9 @@ export function getColumns(role: UserRole): ColumnDef<CreditTransactionRow>[] {
 }
 
 export function CreditTransactionsTable({ role, data }: { role: UserRole; data: CreditTransactionRow[] }) {
+  const searchColumns = role === 'admin' ? ['parent', 'student'] : ['student'];
   return (
-    <DataTable columns={getColumns(role)} data={data}>
+    <DataTable columns={getColumns(role)} data={data} searchColumns={searchColumns}>
       <DataTableToolbar>
         <DataTableFilter
           columnId='type'

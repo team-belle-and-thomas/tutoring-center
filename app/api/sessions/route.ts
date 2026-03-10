@@ -1,4 +1,5 @@
 // app/api/sessions/route.ts
+import { revalidatePath } from 'next/cache';
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 import { isValidRole, USER_ID_COOKIE_NAME, USER_ROLE_COOKIE_NAME } from '@/lib/auth';
@@ -13,6 +14,7 @@ import { pickFirstEmbedded } from '@/lib/utils/normalize';
 import {
   SessionCreateSchema,
   SessionListQuerySchema,
+  SessionUpdateSchema,
   SessionWithJoinsListSchema,
   type SessionWithJoins,
 } from '@/lib/validators/sessions';
@@ -212,4 +214,44 @@ export async function POST(req: Request) {
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 
   return NextResponse.json({ data }, { status: 201 });
+}
+
+export async function PATCH(req: Request) {
+  const body = await req.json().catch(() => null);
+  const parsed = SessionUpdateSchema.safeParse(body);
+
+  if (!parsed.success) {
+    return NextResponse.json({ error: 'Invalid body', issues: parsed.error.flatten() }, { status: 400 });
+  }
+
+  const cookieStore = await cookies();
+  const role = cookieStore.get(USER_ROLE_COOKIE_NAME)?.value;
+
+  if (!isValidRole(role)) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  if (role !== 'admin') {
+    return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+  }
+
+  const supabase = createSupabaseServiceClient();
+  const { data, error } = await supabase
+    .from('sessions')
+    .update({ status: parsed.data.status })
+    .eq('id', parsed.data.id)
+    .select(SESSION_SELECT_FIELDS)
+    .single();
+
+  if (error) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+
+  if (!data) {
+    return NextResponse.json({ error: 'Session not found' }, { status: 404 });
+  }
+
+  revalidatePath('/dashboard');
+
+  return NextResponse.json({ data });
 }

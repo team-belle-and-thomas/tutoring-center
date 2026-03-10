@@ -93,7 +93,7 @@ export const SESSION_SELECT_FIELDS =
 
 export const GRADE_SELECT_FIELDS = 'id,student_id,subject,grade,created_at' as const;
 
-export const CREDIT_TRANSACTION_SELECT_WITH_JOINS = `
+export const CREDIT_TRANSACTION_LIST_SELECT_WITH_JOINS = `
   id,
   amount,
   balance_after,
@@ -102,8 +102,55 @@ export const CREDIT_TRANSACTION_SELECT_WITH_JOINS = `
   session_id,
   student_id,
   type,
+  parent:parents (
+    users:user_id ( first_name, last_name )
+  ),
   student:students (
     users:user_id ( first_name, last_name )
+  )
+` as const;
+
+export const CREDIT_TRANSACTION_DETAIL_SELECT_WITH_JOINS = `
+  id,
+  amount,
+  balance_after,
+  created_at,
+  parent_id,
+  session_id,
+  student_id,
+  type,
+  parent:parents (
+    id,
+    user_id,
+    users:user_id (
+      first_name,
+      last_name,
+      email,
+      phone
+    )
+  ),
+  student:students (
+    id,
+    user_id,
+    grade,
+    users:user_id (
+      first_name,
+      last_name,
+      email,
+      phone
+    )
+  ),
+  session:sessions (
+    id,
+    scheduled_at,
+    ends_at,
+    status,
+    subject:subjects ( category ),
+    tutor:tutors (
+      id,
+      user_id,
+      users:user_id ( first_name, last_name )
+    )
   )
 ` as const;
 
@@ -118,6 +165,10 @@ export const SESSION_SELECT_WITH_JOINS = `
   scheduled_at,
   ends_at,
   status,
+
+  subjects:subject_id (
+    category
+  ),
 
   student:students (
     id,

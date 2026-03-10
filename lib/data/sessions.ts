@@ -13,6 +13,7 @@ export type SessionRow = {
   student_name: string;
   tutor_id: number;
   tutor_name: string;
+  tutor_email: string;
   student_id: number;
   subject_id: number;
   subject_name: string;
@@ -59,7 +60,7 @@ const parseStudentUser = (student: SessionWithJoins['student']) => {
 };
 
 const parseTutorUser = (tutor: SessionWithJoins['tutor']) => {
-  if (!tutor) return { name: '—' };
+  if (!tutor) return { name: '—', email: '' };
 
   const tutorData = Array.isArray(tutor) ? tutor[0] : tutor;
   const usersData = tutorData?.users;
@@ -69,24 +70,38 @@ const parseTutorUser = (tutor: SessionWithJoins['tutor']) => {
     user && typeof user === 'object' ? ((user as Record<string, unknown>).first_name as string | null) : null;
   const lastName =
     user && typeof user === 'object' ? ((user as Record<string, unknown>).last_name as string | null) : null;
+  const email = user && typeof user === 'object' ? ((user as Record<string, unknown>).email as string | null) : null;
 
   return {
     name: [firstName, lastName].filter(Boolean).join(' ') || '—',
+    email: email ?? '',
   };
+};
+
+const parseSubjectCategory = (subject: SessionWithJoins['subjects']) => {
+  const subjectData = subject ? pickFirstEmbedded(subject) : null;
+  const category =
+    subjectData && typeof subjectData === 'object'
+      ? ((subjectData as Record<string, unknown>).category as string | null)
+      : null;
+
+  return category ?? 'Mathematics';
 };
 
 const mapSessionRow = (session: SessionWithJoins): SessionRow => {
   const student = parseStudentUser(session.student);
   const tutor = parseTutorUser(session.tutor);
+  const subjectName = parseSubjectCategory(session.subjects);
 
   return {
     id: session.id,
     student_name: student.name,
     tutor_id: session.tutor_id,
     tutor_name: tutor.name,
+    tutor_email: tutor.email,
     student_id: session.student_id,
     subject_id: session.subject_id,
-    subject_name: 'Mathematics',
+    subject_name: subjectName,
     scheduled_at: session.scheduled_at,
     ends_at: session.ends_at,
     hours: session.slot_units,
@@ -94,7 +109,7 @@ const mapSessionRow = (session: SessionWithJoins): SessionRow => {
   };
 };
 
-export async function getSessions(kind: 'all' | 'upcoming' | 'past' = 'all') {
+export async function getSessions(kind: 'all' | 'upcoming' | 'past' = 'all', dateRange?: { from: Date; to: Date }) {
   const role = await getUserRole();
   if (!isValidRole(role)) {
     throw new Error('Role is required to fetch sessions.');
@@ -104,7 +119,11 @@ export async function getSessions(kind: 'all' | 'upcoming' | 'past' = 'all') {
 
   let sessionsQuery = supabase.from('sessions').select(SESSION_SELECT_WITH_JOINS);
 
-  if (kind === 'upcoming') {
+  if (dateRange) {
+    sessionsQuery = sessionsQuery
+      .gte('scheduled_at', dateRange.from.toISOString())
+      .lte('scheduled_at', dateRange.to.toISOString());
+  } else if (kind === 'upcoming') {
     const now = new Date().toISOString();
     sessionsQuery = sessionsQuery.gte('scheduled_at', now);
     sessionsQuery = sessionsQuery.neq('status', 'Completed');

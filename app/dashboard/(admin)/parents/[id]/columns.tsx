@@ -2,13 +2,12 @@
 
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import type { Student } from '@/lib/mock-data';
+import type { ParentStudentRow } from '@/lib/data/parents';
 import type { ColumnDef } from '@tanstack/react-table';
 
-export const columns: ColumnDef<Student>[] = [
+export const columns: ColumnDef<ParentStudentRow>[] = [
   {
-    id: 'name',
-    accessorFn: row => `${row.first_name} ${row.last_name}`,
+    accessorKey: 'name',
     header: () => <div className='text-left'>Name</div>,
   },
   {

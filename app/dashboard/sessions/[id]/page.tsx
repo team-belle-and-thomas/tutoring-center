@@ -35,7 +35,7 @@ export default async function SingleSessionPage({ params }: { params: Promise<{ 
         <CardHeader>
           <div className='flex items-center justify-between'>
             <div>
-              <CardTitle className='text-2xl'>Session Details</CardTitle>
+              <CardTitle className='font-serif text-2xl text-primary'>Session Details</CardTitle>
               <p className='text-muted-foreground mt-1'>
                 {session.subject_name} with {session.tutor.name}
               </p>
@@ -55,7 +55,7 @@ export default async function SingleSessionPage({ params }: { params: Promise<{ 
         </CardHeader>
         <CardContent className='space-y-6'>
           <section>
-            <h3 className='text-lg font-semibold mb-3'>Session Info</h3>
+            <h3 className='font-serif text-xl text-primary mb-3'>Session Info</h3>
             <div className='grid grid-cols-2 md:grid-cols-3 gap-4 text-sm'>
               <div>
                 <p className='text-muted-foreground'>Date</p>
@@ -75,7 +75,7 @@ export default async function SingleSessionPage({ params }: { params: Promise<{ 
           </section>
 
           <section>
-            <h3 className='text-lg font-semibold mb-3'>Tutor</h3>
+            <h3 className='font-serif text-xl text-primary mb-3'>Tutor</h3>
             <div className='grid grid-cols-2 md:grid-cols-3 gap-4 text-sm'>
               <div>
                 <p className='text-muted-foreground'>Name</p>
@@ -95,7 +95,7 @@ export default async function SingleSessionPage({ params }: { params: Promise<{ 
           </section>
 
           <section>
-            <h3 className='text-lg font-semibold mb-3'>Student</h3>
+            <h3 className='font-serif text-xl text-primary mb-3'>Student</h3>
             <div
               className={`grid gap-4 text-sm ${showParentInfo ? 'grid-cols-2 md:grid-cols-3' : 'grid-cols-1 md:grid-cols-2'}`}
             >
@@ -129,7 +129,7 @@ export default async function SingleSessionPage({ params }: { params: Promise<{ 
           </section>
 
           <section>
-            <h3 className='text-lg font-semibold mb-3'>Progress Report</h3>
+            <h3 className='font-serif text-xl text-primary mb-3'>Progress Report</h3>
             {session.progress ? (
               <div className='grid grid-cols-1 md:grid-cols-3 gap-4 text-sm'>
                 {session.progress.topics && (
@@ -164,7 +164,7 @@ export default async function SingleSessionPage({ params }: { params: Promise<{ 
 
           {metrics?.confidence_score !== null && (
             <section>
-              <h3 className='text-lg font-semibold mb-3'>Performance</h3>
+              <h3 className='font-serif text-xl text-primary mb-3'>Performance</h3>
               <div className='grid grid-cols-2 md:grid-cols-4 gap-4 text-sm'>
                 {metrics?.confidence_score !== null && (
                   <div>

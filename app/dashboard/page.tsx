@@ -50,7 +50,7 @@ async function ParentDashboardContent() {
 
   return (
     <section>
-      <h2 className='text-2xl font-semibold mb-4'>Progress Overview</h2>
+      <h2 className='font-serif text-2xl text-primary mb-4'>Progress Overview</h2>
       <ParentProgressDashboard students={students} defaultStudentId={defaultStudentId} grades={grades} />
     </section>
   );

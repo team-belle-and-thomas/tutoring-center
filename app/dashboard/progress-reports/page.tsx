@@ -2,11 +2,14 @@ import { getUserRole } from '@/lib/auth';
 
 export default async function ProgressReportsPage() {
   const role = await getUserRole();
-  // based on user role we will either filter or display all progress reports
   return (
     <main>
-      <h1>Progress Reports Page</h1>
-      <p>You are logged in as {role}</p>
+      <div className='p-2 md:p-8'>
+        <div className='mb-6'>
+          <h1 className='font-serif text-3xl text-primary'>Progress Reports</h1>
+          <p className='text-muted-foreground mt-1 text-sm'>You are logged in as {role}</p>
+        </div>
+      </div>
     </main>
   );
 }

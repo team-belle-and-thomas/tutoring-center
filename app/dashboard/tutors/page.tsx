@@ -11,8 +11,10 @@ export default async function TutorsPage() {
   await getUserRole();
 
   return (
-    <main className={dm_sans.className}>
-      <h1 className='text-2xl font-bold mb-4'>Tutors Page</h1>
+    <main className={`${dm_sans.className} p-2 md:p-8`}>
+      <div className='mb-6'>
+        <h1 className='font-serif text-3xl text-primary'>Tutors</h1>
+      </div>
 
       <Suspense fallback={<TutorListSkeleton />}>
         <TutorsDataTable />

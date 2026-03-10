@@ -24,7 +24,12 @@ export default async function DashboardLayout({
           <AppSidebar footerSlot={footerSlot}>
             <UserLinks links={links} />
           </AppSidebar>
-          <SidebarInset>{children}</SidebarInset>
+          <SidebarInset>
+            {children}
+            <footer className='border-t py-4 px-6 text-center text-sm text-muted-foreground'>
+              © {new Date().getFullYear()} Momentum Learning. All rights reserved.
+            </footer>
+          </SidebarInset>
         </div>
       </SidebarProvider>
     </div>

@@ -2,7 +2,9 @@
 
 import { createContext, ReactNode, useContext, useState } from 'react';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Switch } from '@/components/ui/switch';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import {
   ColumnDef,
@@ -193,14 +195,42 @@ function DataTableRoot<TData, TValue>({ columns, data, searchColumns, children }
   );
 }
 
+interface DataTableSwitchProps {
+  columnId: string;
+  label: string;
+  value: string;
+}
+
+export function DataTableSwitch({ columnId, label, value }: DataTableSwitchProps) {
+  const { table } = useDataTableContext('DataTable.Switch');
+  const id = `switch-${columnId}`;
+  const currentFilter = table.getColumn(columnId)?.getFilterValue();
+  const checked = currentFilter === value;
+
+  return (
+    <div className='flex items-center gap-2 mr-3'>
+      <Switch
+        id={id}
+        checked={checked}
+        onCheckedChange={on => table.getColumn(columnId)?.setFilterValue(on ? value : undefined)}
+      />
+      <Label htmlFor={id} className='text-sm cursor-pointer'>
+        {label}
+      </Label>
+    </div>
+  );
+}
+
 type DataTableComponent = typeof DataTableRoot & {
   Toolbar: typeof DataTableToolbar;
   Search: typeof DataTableSearch;
   Filter: typeof DataTableFilter;
+  Switch: typeof DataTableSwitch;
 };
 
 export const DataTable = Object.assign(DataTableRoot, {
   Toolbar: DataTableToolbar,
   Search: DataTableSearch,
   Filter: DataTableFilter,
+  Switch: DataTableSwitch,
 }) as DataTableComponent;

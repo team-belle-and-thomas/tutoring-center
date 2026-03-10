@@ -1,36 +1,41 @@
+import { AdminDashboardContent } from '@/components/admin-dashboard/admin-dashboard-content';
 import { DataTable } from '@/components/data-table';
 import { ParentProgressDashboard } from '@/components/parent-progress-dashboard';
+import { parseViewKey } from '@/lib/admin-dashboard-views';
 import { getCurrentUserName, getUserRole } from '@/lib/auth';
 import { getParentDashboardData, getStudentGrades, type GradeDataPoint } from '@/lib/data/dashboard';
 import { getTutorAssignedSessions } from '@/lib/data/sessions';
 import type { TutorAssignedSession } from '@/lib/data/sessions';
 import { tutorSessionColumns } from './tutor-session-columns';
 
-export default async function DashboardPage() {
+export default async function DashboardPage({ searchParams }: { searchParams: Promise<{ view?: string }> }) {
   const role = await getUserRole();
   const userName = await getCurrentUserName();
+  const params = await searchParams;
+  const view = parseViewKey(params.view);
 
   return (
-    <main className='container mx-auto px-6 py-2'>
+    <main className='container mx-auto py-2'>
       <div className='flex items-center p-2 md:p-8 gap-2'>
         <h1 className='font-serif text-3xl text-primary'>Dashboard</h1>
       </div>
-      {userName && <p className='text-lg ml-8 mb-2'>Welcome, {userName}!</p>}
-      <p className='text-lg ml-8 mb-8'>You are logged in as {role}</p>
+      {userName && <p className='text-lg mx-8 mb-2'>Welcome, {userName}!</p>}
+      <p className='text-lg mx-8 mb-8'>You are logged in as {role}</p>
 
+      {role === 'admin' && <AdminDashboardContent view={view} />}
       {role === 'tutor' && <TutorDashboardContent />}
       {role === 'parent' && <ParentDashboardContent />}
     </main>
   );
 }
 
+// Tutor dashboard
 async function TutorDashboardContent() {
   const sessions: TutorAssignedSession[] = await getTutorAssignedSessions();
 
   return (
-    <section className='pl-8'>
+    <section className='px-8'>
       <h2 className='text-2xl font-semibold pl-4'>Pending Sessions</h2>
-
       {sessions.length === 0 ? (
         <p className='text-muted-foreground'>No sessions currently need progress reports.</p>
       ) : (
@@ -40,6 +45,7 @@ async function TutorDashboardContent() {
   );
 }
 
+// Parent dashboard
 async function ParentDashboardContent() {
   const { students, defaultStudentId } = await getParentDashboardData();
 
@@ -49,8 +55,8 @@ async function ParentDashboardContent() {
   }
 
   return (
-    <section>
-      <h2 className='text-2xl font-semibold mb-4'>Progress Overview</h2>
+    <section className='px-8'>
+      <h2 className='text-2xl font-semibold pl-4'>Progress Overview</h2>
       <ParentProgressDashboard students={students} defaultStudentId={defaultStudentId} grades={grades} />
     </section>
   );

@@ -1,10 +1,7 @@
-// TODO: remove 'use client'
-'use client';
-
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
+import { getCurrentParentBalance } from '@/lib/data/parent-credits';
 import { AlertCircle, Coins } from 'lucide-react';
-import { useCredits } from './credits-context';
 
 const LOW_THRESHOLD = 2;
 const MEDIUM_THRESHOLD = 5;
@@ -21,11 +18,8 @@ function borderColor(amount: number) {
   return 'border-border';
 }
 
-// TODO: add async
-export function ParentCreditWidget() {
-  // TODO: Remove and replace useCredits with actual backend call
-  const { balance } = useCredits();
-  const { amount_available } = balance;
+export async function ParentCreditWidget() {
+  const { amount_available } = await getCurrentParentBalance();
 
   return (
     <div className='px-2 py-1'>

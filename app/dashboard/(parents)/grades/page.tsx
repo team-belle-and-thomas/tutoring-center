@@ -14,13 +14,15 @@ export default async function GradesPage() {
 
   return (
     <main>
-      <div className='p-2 md:p-8'>
-        <div className='mb-6'>
-          <h1 className='font-serif text-3xl text-primary'>Add Grade</h1>
-          <p className='text-muted-foreground mt-1 text-sm'>Record a grade for your child</p>
-        </div>
+      <div className='p-2 md:px-8 md:py-12'>
+        <div className='max-w-md mx-auto'>
+          <div className='mb-6'>
+            <h1 className='font-serif text-3xl text-primary'>Add Grade</h1>
+            <p className='text-muted-foreground mt-1 text-sm'>Record a grade for your child</p>
+          </div>
 
-        <GradeForm students={students} subjects={subjects} />
+          <GradeForm students={students} subjects={subjects} />
+        </div>
       </div>
     </main>
   );

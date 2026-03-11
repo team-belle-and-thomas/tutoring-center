@@ -25,6 +25,8 @@ export type SessionRow = {
 
 type SessionLoadErrorReason = 'database' | 'validation';
 
+const SCHEDULED_SESSION_STATUSES = new Set(['Scheduled']);
+
 const isValidRole = (value: unknown): value is UserRole => value === 'admin' || value === 'parent' || value === 'tutor';
 
 const SESSION_ERROR_MESSAGES: Record<UserRole, Record<SessionLoadErrorReason, string>> = {
@@ -109,6 +111,17 @@ const mapSessionRow = (session: SessionWithJoins): SessionRow => {
   };
 };
 
+const compareSessionRows = (left: SessionRow, right: SessionRow) => {
+  const leftBucket = SCHEDULED_SESSION_STATUSES.has(left.status) ? 0 : 1;
+  const rightBucket = SCHEDULED_SESSION_STATUSES.has(right.status) ? 0 : 1;
+
+  if (leftBucket !== rightBucket) {
+    return leftBucket - rightBucket;
+  }
+
+  return new Date(right.scheduled_at).getTime() - new Date(left.scheduled_at).getTime();
+};
+
 export async function getSessions(kind: 'all' | 'upcoming' | 'past' = 'all') {
   const role = await getUserRole();
   if (!isValidRole(role)) {
@@ -162,7 +175,7 @@ export async function getSessions(kind: 'all' | 'upcoming' | 'past' = 'all') {
     throw new Error(SESSION_ERROR_MESSAGES[role]['validation']);
   }
 
-  return parsedSessions.data.map(mapSessionRow);
+  return parsedSessions.data.map(mapSessionRow).sort(compareSessionRows);
 }
 
 export type SessionDetailType = {

@@ -1,4 +1,6 @@
+import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
+import { isValidRole, USER_ID_COOKIE_NAME, USER_ROLE_COOKIE_NAME } from '@/lib/auth';
 import { createSupabaseServiceClient } from '@/lib/supabase/serverClient';
 import { CREDIT_TRANSACTION_SELECT_WITH_JOINS } from '@/lib/supabase/types';
 import { pickFirstEmbedded } from '@/lib/utils/normalize';
@@ -9,11 +11,57 @@ import {
   TransactionsWithJoinsListSchema,
 } from '@/lib/validators/transactions';
 
+async function resolveParentId(requestedParentId?: number, options?: { requireParentIdForAdmin?: boolean }) {
+  const cookieStore = await cookies();
+  const role = cookieStore.get(USER_ROLE_COOKIE_NAME)?.value;
+  const userIdRaw = cookieStore.get(USER_ID_COOKIE_NAME)?.value;
+
+  if (!isValidRole(role)) {
+    return { response: NextResponse.json({ error: 'Unauthorized' }, { status: 401 }) };
+  }
+
+  if (role === 'tutor') {
+    return { response: NextResponse.json({ error: 'Forbidden' }, { status: 403 }) };
+  }
+
+  if (role === 'admin') {
+    if (options?.requireParentIdForAdmin && !requestedParentId) {
+      return { response: NextResponse.json({ error: 'parent_id is required' }, { status: 400 }) };
+    }
+
+    return { parentId: requestedParentId };
+  }
+
+  const userId = Number.parseInt(userIdRaw ?? '', 10);
+  if (!Number.isInteger(userId) || userId <= 0) {
+    return { response: NextResponse.json({ error: 'Unauthorized' }, { status: 401 }) };
+  }
+
+  const supabase = createSupabaseServiceClient();
+  const { data: parent, error: parentError } = await supabase
+    .from('parents')
+    .select('id')
+    .eq('user_id', userId)
+    .single();
+
+  if (parentError || !parent) {
+    return { response: NextResponse.json({ error: 'Forbidden' }, { status: 403 }) };
+  }
+
+  return { parentId: parent.id };
+}
+
 export async function GET(req: Request) {
   const url = new URL(req.url);
+  const parentIdRaw = url.searchParams.get('parent_id');
+  const requestedParentId = parentIdRaw ? Number.parseInt(parentIdRaw, 10) : undefined;
+  const resolvedParent = await resolveParentId(requestedParentId);
+  if (resolvedParent.response) {
+    return resolvedParent.response;
+  }
 
   const parsed = TransactionListQuerySchema.safeParse({
-    parent_id: url.searchParams.get('parent_id') ?? undefined,
+    parent_id: resolvedParent.parentId,
     student_id: url.searchParams.get('student_id') ?? undefined,
     session_id: url.searchParams.get('session_id') ?? undefined,
     type: url.searchParams.get('type') ?? undefined,
@@ -99,14 +147,25 @@ export async function GET(req: Request) {
 }
 
 export async function POST(req: Request) {
-  const supabase = createSupabaseServiceClient();
   const body = await req.json().catch(() => null);
+  const requestedParentId =
+    body && typeof body === 'object' && 'parent_id' in body && typeof body.parent_id === 'number'
+      ? body.parent_id
+      : undefined;
+  const resolvedParent = await resolveParentId(requestedParentId, { requireParentIdForAdmin: true });
+  if (resolvedParent.response) {
+    return resolvedParent.response;
+  }
 
-  const parsed = TransactionCreateSchema.safeParse(body);
+  const parsed = TransactionCreateSchema.safeParse({
+    ...(body && typeof body === 'object' ? body : {}),
+    parent_id: resolvedParent.parentId,
+  });
   if (!parsed.success) {
     return NextResponse.json({ error: 'Invalid request body', issues: parsed.error.flatten() }, { status: 400 });
   }
 
+  const supabase = createSupabaseServiceClient();
   const { parent_id, session_id, student_id, amount, balance_after, type } = parsed.data;
 
   const { data, error } = await supabase

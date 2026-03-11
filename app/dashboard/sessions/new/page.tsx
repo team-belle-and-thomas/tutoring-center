@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation';
 import { BookingScreen } from '@/components/parent-sessions/booking-screen';
 import { getUserRole } from '@/lib/auth';
+import { getCurrentParentCredits } from '@/lib/data/parent-credits';
 import { getStudents } from '@/lib/data/students';
 import { getSubjects } from '@/lib/data/subjects';
 import { getTutorOptionsByIds } from '@/lib/data/tutor-options';
@@ -13,7 +14,11 @@ export default async function NewSessionPage() {
     notFound();
   }
 
-  const [students, subjects] = await Promise.all([getStudents(role), getSubjects(role)]);
+  const [students, subjects, parentCredits] = await Promise.all([
+    getStudents(role),
+    getSubjects(role),
+    getCurrentParentCredits(),
+  ]);
   const tutorIds = subjects.flatMap(subject => subject.assignments.map(assignment => assignment.tutorId));
   const tutors = await getTutorOptionsByIds(role, tutorIds);
 
@@ -21,9 +26,11 @@ export default async function NewSessionPage() {
 
   return (
     <BookingScreen
+      parentId={parentCredits.parentId}
+      initialBalance={parentCredits.balance}
       students={students.map(student => ({
         id: student.id,
-        name: student.name || '—',
+        name: student.name || 'N/A',
         grade: student.grade,
       }))}
       subjects={subjects}

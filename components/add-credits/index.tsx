@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, type ReactNode } from 'react';
-import { useCredits } from '@/components/add-credits/credits-context';
 import { PackageOptions, type Package } from '@/components/add-credits/package-options';
 import { PaymentForm } from '@/components/add-credits/payment-form';
 import { SuccessCard } from '@/components/success-card';
@@ -27,12 +26,13 @@ export type CreditsPurchase = {
 
 type AddCreditsProps = {
   submitButtonText?: string;
-  onPurchaseCompleteAction?: (purchase: CreditsPurchase) => Promise<void> | void;
+  onPurchaseCompleteAction: (purchase: CreditsPurchase) => Promise<void> | void;
   onBackAction?: () => void;
   showSuccessCard?: boolean;
   successTitle?: string;
   successButtonLabel?: string;
   successHref?: Route;
+  warningMessage?: string | null;
   children?: ReactNode;
 };
 
@@ -44,9 +44,9 @@ export function AddCredits({
   successTitle = 'Credits purchased!',
   successButtonLabel = 'View Dashboard',
   successHref = '/dashboard',
+  warningMessage,
   children,
 }: AddCreditsProps) {
-  const { addCredits } = useCredits();
   const [selectedPkg, setSelectedPkg] = useState<Package['id']>(2);
   const [purchased, setPurchased] = useState<CreditsPurchase | null>(null);
 
@@ -54,10 +54,8 @@ export function AddCredits({
 
   async function handlePurchase() {
     const confirmationCode = generateConfirmationCode();
-    addCredits(pkg.credits);
-
     const purchase: CreditsPurchase = { pkg, confirmationCode };
-    await onPurchaseCompleteAction?.(purchase);
+    await onPurchaseCompleteAction(purchase);
 
     if (showSuccessCard) {
       setPurchased(purchase);
@@ -71,6 +69,11 @@ export function AddCredits({
           <span className='font-semibold text-foreground'>{purchased.pkg.credits} credits</span> have been added to your
           available balance and are ready to use for tutoring sessions.
         </p>
+        {warningMessage ? (
+          <p className='w-full rounded-md border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-sm text-amber-800'>
+            {warningMessage}
+          </p>
+        ) : null}
         <Separator className='my-1 w-full' />
         <ul className='w-full space-y-1 text-sm text-muted-foreground text-left list-disc list-inside'>
           <li>Each credit covers one hour of tutoring.</li>

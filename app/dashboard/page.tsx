@@ -1,14 +1,18 @@
+import { AdminDashboardContent } from '@/components/admin-dashboard/admin-dashboard-content';
 import { DataTable } from '@/components/data-table';
 import { ParentProgressDashboard } from '@/components/parent-progress-dashboard';
+import { parseViewKey } from '@/lib/admin-dashboard-views';
 import { getCurrentUserName, getUserRole } from '@/lib/auth';
 import { getParentDashboardData, getStudentGrades, type GradeDataPoint } from '@/lib/data/dashboard';
 import { getTutorAssignedSessions } from '@/lib/data/sessions';
 import type { TutorAssignedSession } from '@/lib/data/sessions';
 import { tutorSessionColumns } from './tutor-session-columns';
 
-export default async function DashboardPage() {
+export default async function DashboardPage({ searchParams }: { searchParams: Promise<{ view?: string }> }) {
   const role = await getUserRole();
   const userName = await getCurrentUserName();
+  const params = await searchParams;
+  const view = parseViewKey(params.view);
 
   return (
     <main className='container mx-auto px-6 py-2'>
@@ -18,6 +22,7 @@ export default async function DashboardPage() {
       {userName && <p className='text-lg ml-8 mb-2'>Welcome, {userName}!</p>}
       <p className='text-lg ml-8 mb-8'>You are logged in as {role}</p>
 
+      {role === 'admin' && <AdminDashboardContent view={view} />}
       {role === 'tutor' && <TutorDashboardContent />}
       {role === 'parent' && <ParentDashboardContent />}
     </main>

@@ -92,8 +92,10 @@ export function getColumns(role: UserRole): ColumnDef<CreditTransactionRow>[] {
 }
 
 export function CreditTransactionsTable({ role, data }: { role: UserRole; data: CreditTransactionRow[] }) {
+  const searchColumns = role === 'admin' ? ['parent', 'student'] : ['student'];
+
   return (
-    <DataTable columns={getColumns(role)} data={data}>
+    <DataTable columns={getColumns(role)} data={data} searchColumns={searchColumns}>
       <DataTableToolbar>
         <DataTableFilter
           columnId='type'

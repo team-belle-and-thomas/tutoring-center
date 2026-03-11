@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { getUserRole } from '@/lib/auth';
+import { getStudentDashboardDetails } from '@/lib/data/student-dashboard';
 import { getStudent } from '@/lib/data/students';
 import { formatSessionDay, formatSessionTime } from '@/lib/date-utils';
 import type { SessionStatus } from '@/lib/validators/sessions';
@@ -27,6 +28,34 @@ const STATUS_VARIANTS: Record<SessionStatus, BadgeVariant> = {
 };
 
 const getStatusVariant = (status: SessionStatus): BadgeVariant => STATUS_VARIANTS[status];
+
+function getTransactionVariant(type: string): BadgeVariant {
+  switch (type) {
+    case 'Purchase':
+      return 'default';
+    case 'Refund':
+      return 'outline';
+    case 'Session Debit':
+    case 'Cancellation Fee':
+      return 'destructive';
+    default:
+      return 'secondary';
+  }
+}
+
+function formatSignedCredits(amount: number) {
+  return amount > 0 ? `+${amount}` : `${amount}`;
+}
+
+function getCreditActivityLabel(amount: number) {
+  if (amount > 0) return 'Added';
+  if (amount < 0) return 'Used';
+  return 'Adjusted';
+}
+
+function formatAbsoluteCredits(amount: number) {
+  return Math.abs(amount);
+}
 
 function RecentSessionsTable({ sessions }: { sessions: StudentSession[] }) {
   if (sessions.length === 0) {
@@ -80,7 +109,12 @@ export default async function SingleStudentPage({ params }: { params: Promise<{ 
   const role = await getUserRole();
   if (role === 'tutor') forbidden();
 
-  const student = await getStudent(Number(id), role);
+  const studentId = Number(id);
+  const [student, dashboardDetails] = await Promise.all([
+    getStudent(studentId, role),
+    getStudentDashboardDetails(studentId, role),
+  ]);
+  const { creditHistory, progressReports } = dashboardDetails;
 
   return (
     <main>
@@ -157,26 +191,120 @@ export default async function SingleStudentPage({ params }: { params: Promise<{ 
           </CardContent>
         </Card>
 
-        {/* Placeholders */}
         <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
           <Card>
             <CardHeader>
-              <CardTitle className='text-lg font-bold text-muted-foreground'>Credit History</CardTitle>
+              <div className='flex items-center gap-2'>
+                <CardTitle className='text-lg font-bold'>Credit History</CardTitle>
+                <Badge variant='secondary'>{creditHistory.length}</Badge>
+              </div>
             </CardHeader>
-            <CardContent className='flex flex-col items-center justify-center py-12 text-muted-foreground'>
-              <CreditCard size={36} className='mb-3 opacity-20' />
-              <p className='text-sm font-medium'>Coming soon</p>
-              <p className='text-xs mt-1'>Credit transactions will appear here</p>
+            <CardContent className='space-y-4'>
+              {creditHistory.length > 0 ? (
+                creditHistory.map(transaction => (
+                  <div key={transaction.id} className='rounded-lg border bg-muted/10 p-4 text-sm'>
+                    <div className='flex items-start justify-between gap-3'>
+                      <div className='space-y-1'>
+                        <div className='flex flex-wrap items-center gap-2'>
+                          <Badge variant={getTransactionVariant(transaction.type)}>{transaction.type}</Badge>
+                          <p className='text-xs text-muted-foreground'>
+                            {format(parseISO(transaction.created_at), 'MMM d, yyyy')}
+                          </p>
+                        </div>
+                        <p className='font-medium'>
+                          {getCreditActivityLabel(transaction.amount)} {formatAbsoluteCredits(transaction.amount)}{' '}
+                          credit
+                          {formatAbsoluteCredits(transaction.amount) === 1 ? '' : 's'}
+                        </p>
+                        <p className='text-xs text-muted-foreground'>
+                          Balance after transaction: {transaction.balance_after}
+                        </p>
+                      </div>
+                      <div className='text-right'>
+                        <p
+                          className={
+                            transaction.amount >= 0 ? 'font-semibold text-green-600' : 'font-semibold text-red-600'
+                          }
+                        >
+                          {formatSignedCredits(transaction.amount)}
+                        </p>
+                        <p className='text-xs text-muted-foreground'>credits</p>
+                      </div>
+                    </div>
+                    <div className='mt-3'>
+                      <Button size='sm' variant='outline' asChild className='text-xs'>
+                        <Link href={`/dashboard/credit-transactions/${transaction.id}`}>View Transaction</Link>
+                      </Button>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className='flex flex-col items-center justify-center py-12 text-muted-foreground'>
+                  <CreditCard size={36} className='mb-3 opacity-20' />
+                  <p className='text-sm font-medium'>No credit transactions yet</p>
+                  <p className='text-xs mt-1'>Credits will appear here once transactions are recorded.</p>
+                </div>
+              )}
             </CardContent>
           </Card>
           <Card>
             <CardHeader>
-              <CardTitle className='text-lg font-bold text-muted-foreground'>Progress Reports</CardTitle>
+              <div className='flex items-center gap-2'>
+                <CardTitle className='text-lg font-bold'>Progress Reports</CardTitle>
+                <Badge variant='secondary'>{progressReports.length}</Badge>
+              </div>
             </CardHeader>
-            <CardContent className='flex flex-col items-center justify-center py-12 text-muted-foreground'>
-              <TrendingUp size={36} className='mb-3 opacity-20' />
-              <p className='text-sm font-medium'>Coming soon</p>
-              <p className='text-xs mt-1'>Session progress and metrics will appear here</p>
+            <CardContent className='space-y-4'>
+              {progressReports.length > 0 ? (
+                progressReports.map(report => {
+                  const hasReportBody = Boolean(report.topics || report.public_notes || report.homework_assigned);
+
+                  return (
+                    <div key={report.session_id} className='rounded-lg border bg-muted/10 p-4 text-sm space-y-3'>
+                      <div className='flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between'>
+                        <div className='space-y-2'>
+                          <div className='flex flex-wrap items-center gap-2'>
+                            <p className='font-semibold'>{report.subject_name}</p>
+                            <Badge variant='outline'>{report.status}</Badge>
+                            {!hasReportBody && <Badge variant='secondary'>Report Submitted</Badge>}
+                          </div>
+                          <p className='text-xs text-muted-foreground'>
+                            {format(parseISO(report.scheduled_at), 'MMM d, yyyy')} with {report.tutor_name}
+                          </p>
+                        </div>
+                        <Button size='sm' asChild className='text-xs'>
+                          <Link href={`/dashboard/sessions/${report.session_id}`}>View Session</Link>
+                        </Button>
+                      </div>
+                      {report.topics && (
+                        <div>
+                          <p className='text-xs uppercase text-muted-foreground'>Topics Covered</p>
+                          <p className='mt-1 leading-relaxed'>{report.topics}</p>
+                        </div>
+                      )}
+                      {report.public_notes && (
+                        <div>
+                          <p className='text-xs uppercase text-muted-foreground'>Tutor Notes</p>
+                          <p className='mt-1 leading-relaxed'>{report.public_notes}</p>
+                        </div>
+                      )}
+                      {report.homework_assigned && (
+                        <div>
+                          <p className='text-xs uppercase text-muted-foreground'>Homework Assigned</p>
+                          <p className='mt-1 leading-relaxed'>{report.homework_assigned}</p>
+                        </div>
+                      )}
+                      {!hasReportBody && <p className='text-xs text-muted-foreground'>Progress report submitted.</p>}
+                    </div>
+                  );
+                })
+              ) : (
+                <div className='flex flex-col items-center justify-center py-12 text-muted-foreground'>
+                  <TrendingUp size={36} className='mb-3 opacity-20' />
+                  <p className='text-sm font-medium'>No progress reports yet</p>
+                  <p className='text-xs mt-1'>Completed session reports will appear here.</p>
+                </div>
+              )}
             </CardContent>
           </Card>
         </div>

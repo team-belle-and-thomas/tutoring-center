@@ -73,7 +73,6 @@ async function TutorDetail({ id }: { id: number }) {
 }
 
 export default async function SingleTutorPage({ params }: { params: Promise<{ id: string }> }) {
-  const role = await getUserRole();
   const { id } = await params;
 
   if (Number.isNaN(Number(id))) {
@@ -82,7 +81,6 @@ export default async function SingleTutorPage({ params }: { params: Promise<{ id
 
   return (
     <main className={dm_sans.className}>
-      <p className='mb-4'>You are logged in as {role}</p>
       <TutorDetail id={Number(id)} />
     </main>
   );

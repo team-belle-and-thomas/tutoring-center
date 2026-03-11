@@ -30,7 +30,6 @@ export default async function SingleSessionPage({ params }: { params: Promise<{ 
 
   return (
     <main>
-      <p className='mb-4'>You are logged in as {role}</p>
       <Card className='w-full'>
         <CardHeader>
           <div className='flex items-center justify-between'>

@@ -25,8 +25,6 @@ export default async function SessionsPage({ searchParams }: { searchParams: Pro
               <Badge variant='secondary'>{data.length}</Badge>
             </div>
             <p className='text-muted-foreground mt-1 text-sm'>{description}</p>
-
-            <p className='text-muted-foreground'>You are logged in as {role}</p>
           </div>
           {role === 'parent' && (
             <Button asChild>

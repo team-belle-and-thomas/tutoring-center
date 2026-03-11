@@ -16,11 +16,10 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
 
   return (
     <main className='container mx-auto px-6 py-2'>
-      <div className='flex items-center p-2 md:p-8 gap-2'>
+      <div className='flex items-center p-2 gap-2'>
         <h1 className='font-serif text-3xl text-primary'>Dashboard</h1>
       </div>
-      {userName && <p className='text-lg ml-8 mb-2'>Welcome, {userName}!</p>}
-      <p className='text-lg ml-8 mb-8'>You are logged in as {role}</p>
+      {userName && <p className='text-lg ml-2 mb-2'>Welcome, {userName}!</p>}
 
       {role === 'admin' && <AdminDashboardContent view={view} />}
       {role === 'tutor' && <TutorDashboardContent />}

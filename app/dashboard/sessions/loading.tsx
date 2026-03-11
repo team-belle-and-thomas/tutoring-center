@@ -28,7 +28,7 @@ export function SessionListSkeleton() {
 export default function SessionsLoading() {
   return (
     <main>
-      <div className='flex flex-col gap-4'>
+      <div className='flex flex-col p-6 gap-4'>
         <div className='flex items-center justify-between'>
           <div>
             <Skeleton className='h-8 w-48' />

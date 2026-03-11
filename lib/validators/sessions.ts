@@ -57,8 +57,14 @@ export const SessionListQuerySchema = z.object({
   page_size: pageSize,
 });
 
+export const SessionUpdateSchema = z.object({
+  id,
+  status: StatusSchema,
+});
+
 export type SessionCreateInput = z.infer<typeof SessionCreateSchema>;
 export type SessionListQuery = z.infer<typeof SessionListQuerySchema>;
+export type SessionUpdateInput = z.infer<typeof SessionUpdateSchema>;
 
 // Output validation for sessions + joins
 const EmbeddedRecordSchema = z.record(z.unknown());
@@ -75,6 +81,7 @@ export const SessionWithJoinsSchema = z.object({
   ends_at: z.string(),
   status: StatusSchema,
 
+  subjects: EmbeddedOneSchema,
   student: EmbeddedOneSchema,
   tutor: EmbeddedOneSchema,
   parent: EmbeddedOneSchema,

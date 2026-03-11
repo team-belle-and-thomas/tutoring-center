@@ -272,9 +272,11 @@ export default async function SingleStudentPage({ params }: { params: Promise<{ 
                             {format(parseISO(report.scheduled_at), 'MMM d, yyyy')} with {report.tutor_name}
                           </p>
                         </div>
-                        <Button size='sm' asChild className='text-xs'>
-                          <Link href={`/dashboard/sessions/${report.session_id}`}>View Session</Link>
-                        </Button>
+                        <div className='hidden sm:block'>
+                          <Button size='sm' asChild className='text-xs'>
+                            <Link href={`/dashboard/sessions/${report.session_id}`}>View Session</Link>
+                          </Button>
+                        </div>
                       </div>
                       {report.topics && (
                         <div>
@@ -295,6 +297,11 @@ export default async function SingleStudentPage({ params }: { params: Promise<{ 
                         </div>
                       )}
                       {!hasReportBody && <p className='text-xs text-muted-foreground'>Progress report submitted.</p>}
+                      <div className='sm:hidden'>
+                        <Button size='sm' asChild className='text-xs'>
+                          <Link href={`/dashboard/sessions/${report.session_id}`}>View Session</Link>
+                        </Button>
+                      </div>
                     </div>
                   );
                 })

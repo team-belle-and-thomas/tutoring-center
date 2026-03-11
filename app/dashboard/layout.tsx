@@ -1,6 +1,7 @@
 import { CreditsProvider } from '@/components/add-credits/credits-context';
 import { ParentCreditWidget } from '@/components/add-credits/parent-credit-widget';
 import { AppSidebar } from '@/components/app-sidebar';
+import { NewSessionButton } from '@/components/new-session-button';
 import { SiteHeader } from '@/components/site-header';
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
 import { UserLinks } from '@/components/user-links';
@@ -14,6 +15,7 @@ export default async function DashboardLayout({
 }>) {
   const userRole = await getUserRole();
   const links = getUserLinks(userRole);
+  const headerSlot = userRole === 'parent' ? <NewSessionButton /> : null;
   const footerSlot = userRole === 'parent' ? <ParentCreditWidget /> : null;
 
   const layout = (
@@ -21,7 +23,7 @@ export default async function DashboardLayout({
       <SidebarProvider className='flex flex-col'>
         <SiteHeader />
         <div className='flex flex-1'>
-          <AppSidebar footerSlot={footerSlot}>
+          <AppSidebar headerSlot={headerSlot} footerSlot={footerSlot}>
             <UserLinks links={links} />
           </AppSidebar>
           <SidebarInset>

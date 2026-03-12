@@ -23,7 +23,7 @@ export async function ParentCreditWidget() {
 
   return (
     <div className='px-2 py-1'>
-      <div className={`rounded-lg bg-muted/30 border border-border p-3 space-y-2 ${borderColor(amount_available)}`}>
+      <div className={`rounded-2xl bg-muted/30 border border-border p-3 space-y-2 ${borderColor(amount_available)}`}>
         <div className='flex items-center justify-between'>
           <div className='flex items-center gap-1.5'>
             <Coins size={14} className='text-muted-foreground' />

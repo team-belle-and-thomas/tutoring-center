@@ -34,7 +34,7 @@ export async function AdminDashboardContent({ view }: { view: ViewKey }) {
   const viewUrl = (nextView: ViewKey) => `/dashboard?view=${nextView}` as Route<string>;
 
   return (
-    <div className='space-y-8 px-8'>
+    <div className='space-y-8'>
       <section>
         <p className='text-xs uppercase tracking-widest text-muted-foreground font-semibold mb-3'>Live</p>
         <div className='grid grid-cols-2 gap-4'>

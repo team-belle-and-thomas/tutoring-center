@@ -13,16 +13,14 @@ export default async function GradesPage() {
   const [students, subjects] = await Promise.all([getStudentsForGradeForm(role), getSubjectsForGradeForm()]);
 
   return (
-    <main>
-      <div className='p-2 md:px-8 md:py-12'>
-        <div className='max-w-md mx-auto'>
-          <div className='mb-6'>
-            <h1 className='font-serif text-3xl text-primary'>Add Grade</h1>
-            <p className='text-muted-foreground mt-1 text-sm'>Record a grade for your child</p>
-          </div>
-
-          <GradeForm students={students} subjects={subjects} />
+    <main className='p-2 md:p-8'>
+      <div className='max-w-md mx-auto'>
+        <div className='mb-6'>
+          <h1 className='font-serif text-3xl text-primary'>Add Grade</h1>
+          <p className='text-muted-foreground mt-1 text-sm'>Record a grade for your child</p>
         </div>
+
+        <GradeForm students={students} subjects={subjects} />
       </div>
     </main>
   );

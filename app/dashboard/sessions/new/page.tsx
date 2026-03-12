@@ -25,17 +25,19 @@ export default async function NewSessionPage() {
   const today = startOfDay(new Date());
 
   return (
-    <BookingScreen
-      parentId={parentCredits.parentId}
-      initialBalance={parentCredits.balance}
-      students={students.map(student => ({
-        id: student.id,
-        name: student.name || 'N/A',
-        grade: student.grade,
-      }))}
-      subjects={subjects}
-      tutors={tutors}
-      todayStartMs={today.getTime()}
-    />
+    <main className='p-2 md:p-8'>
+      <BookingScreen
+        parentId={parentCredits.parentId}
+        initialBalance={parentCredits.balance}
+        students={students.map(student => ({
+          id: student.id,
+          name: student.name || 'N/A',
+          grade: student.grade,
+        }))}
+        subjects={subjects}
+        tutors={tutors}
+        todayStartMs={today.getTime()}
+      />
+    </main>
   );
 }

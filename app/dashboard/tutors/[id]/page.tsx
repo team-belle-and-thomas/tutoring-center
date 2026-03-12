@@ -1,10 +1,7 @@
-import { DM_Sans } from 'next/font/google';
 import { notFound } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { getTutor, getUserRole } from '@/lib/data/tutor-detail';
 import { CircleCheck, CircleX } from 'lucide-react';
-
-const dm_sans = DM_Sans({ subsets: ['latin'] });
 
 async function TutorDetail({ id }: { id: number }) {
   const tutor = await getTutor(id);
@@ -80,7 +77,7 @@ export default async function SingleTutorPage({ params }: { params: Promise<{ id
   }
 
   return (
-    <main className={dm_sans.className}>
+    <main className='p-2 md:p-8'>
       <TutorDetail id={Number(id)} />
     </main>
   );

@@ -1,4 +1,3 @@
-import { DM_Sans } from 'next/font/google';
 import { Suspense } from 'react';
 import { DataTable } from '@/components/data-table';
 import { Badge } from '@/components/ui/badge';
@@ -6,17 +5,15 @@ import { getTutors, getUserRole } from '@/lib/data/tutors';
 import { columns } from './columns';
 import { TutorListSkeleton } from './loading';
 
-const dm_sans = DM_Sans({ subsets: ['latin'] });
-
 export default async function TutorsPage() {
   const role = await getUserRole();
   const description = role === 'admin' ? 'All tutors' : 'Your assigned tutors';
   const data = await getTutors(role);
 
   return (
-    <main className={dm_sans.className}>
+    <main className='p-2 md:p-8'>
       <div className='mb-6 flex items-center justify-between'>
-        <div className='p-2 md:p-8'>
+        <div>
           <div className='flex items-center gap-2'>
             <h1 className='font-serif text-3xl text-primary'>Tutors</h1>
             <Badge variant='secondary'>{data.length}</Badge>
@@ -44,9 +41,5 @@ async function TutorsDataTable() {
     );
   }
 
-  return (
-    <div className='p-2 md:p-8'>
-      <DataTable columns={columns} data={tutors} />
-    </div>
-  );
+  return <DataTable columns={columns} data={tutors} />;
 }

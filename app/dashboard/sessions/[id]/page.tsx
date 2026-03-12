@@ -29,7 +29,7 @@ export default async function SingleSessionPage({ params }: { params: Promise<{ 
     : [];
 
   return (
-    <main>
+    <main className='p-2 md:p-8'>
       <Card className='w-full'>
         <CardHeader>
           <div className='flex items-center justify-between'>

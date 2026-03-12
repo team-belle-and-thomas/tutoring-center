@@ -18,7 +18,7 @@ export default async function ProgressReportPage({ params }: { params: Promise<{
   const session = await getSession(sessionId);
 
   return (
-    <main className='container mx-auto py-8'>
+    <main className='p-2 md:p-8'>
       <Button variant='ghost' asChild className='mb-4'>
         <Link href={`/dashboard/sessions/${sessionId}`}>
           <ArrowLeft className='mr-2 h-4 w-4' />

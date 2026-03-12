@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { DataTable } from '@/components/data-table';
+import { DataTable, DataTableToolbar } from '@/components/data-table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { getUserRole } from '@/lib/auth';
@@ -12,14 +12,14 @@ export default async function SessionsPage({ searchParams }: { searchParams: Pro
   const kind = params.kind as 'all' | 'upcoming' | 'past' | undefined;
   const sessions = await getSessions(kind);
 
-  const description = role === 'admin' ? 'All tutors' : 'Your assigned tutors';
+  const description = role === 'admin' ? 'All scheduled sessions' : 'Your scheduled sessions';
   const data = await getSessions(kind);
 
   return (
-    <main>
+    <main className='p-2 md:p-8'>
       <div className='flex flex-col gap-4'>
         <div className='flex items-center justify-between'>
-          <div className='p-2 md:p-8'>
+          <div>
             <div className='flex items-center gap-2'>
               <h1 className='font-serif text-3xl text-primary'>Sessions</h1>
               <Badge variant='secondary'>{data.length}</Badge>
@@ -33,21 +33,36 @@ export default async function SessionsPage({ searchParams }: { searchParams: Pro
           )}
         </div>
 
-        <div className='flex px-2 md:px-8 gap-2'>
-          <Button variant={!kind || kind === 'all' ? 'default' : 'outline'} size='sm' asChild>
-            <Link href='/dashboard/sessions?kind=all'>All Sessions</Link>
-          </Button>
-          <Button variant={kind === 'upcoming' ? 'default' : 'outline'} size='sm' asChild>
-            <Link href='/dashboard/sessions?kind=upcoming'>Upcoming</Link>
-          </Button>
-          <Button variant={kind === 'past' ? 'default' : 'outline'} size='sm' asChild>
-            <Link href='/dashboard/sessions?kind=past'>Past</Link>
-          </Button>
-        </div>
-
-        <div className='p-2 md:p-8'>
-          <DataTable columns={columns} data={sessions} />
-        </div>
+        <DataTable columns={columns} data={sessions}>
+          <DataTableToolbar>
+            <div className='mr-auto flex gap-2'>
+              <Button
+                variant={!kind || kind === 'all' ? 'default' : 'outline'}
+                size='sm'
+                className={!kind || kind === 'all' ? undefined : 'border-zinc-400 bg-transparent'}
+                asChild
+              >
+                <Link href='/dashboard/sessions?kind=all'>All Sessions</Link>
+              </Button>
+              <Button
+                variant={kind === 'upcoming' ? 'default' : 'outline'}
+                size='sm'
+                className={kind === 'upcoming' ? undefined : 'border-zinc-400 bg-transparent'}
+                asChild
+              >
+                <Link href='/dashboard/sessions?kind=upcoming'>Upcoming</Link>
+              </Button>
+              <Button
+                variant={kind === 'past' ? 'default' : 'outline'}
+                size='sm'
+                className={kind === 'past' ? undefined : 'border-zinc-400 bg-transparent'}
+                asChild
+              >
+                <Link href='/dashboard/sessions?kind=past'>Past</Link>
+              </Button>
+            </div>
+          </DataTableToolbar>
+        </DataTable>
       </div>
     </main>
   );

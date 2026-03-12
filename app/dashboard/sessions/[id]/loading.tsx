@@ -4,7 +4,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 
 export default function SessionDetailLoading() {
   return (
-    <main className='container mx-auto py-8'>
+    <main className='p-2 md:p-8'>
       <div className='space-y-3'>
         <Skeleton className='h-8 w-48' />
         <Skeleton className='h-4 w-32' />

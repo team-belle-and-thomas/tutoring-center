@@ -92,7 +92,7 @@ export function GradeForm({ students, subjects }: GradeFormProps) {
           <div className='space-y-2'>
             <Label htmlFor='student'>Student</Label>
             <Select value={studentId} onValueChange={setStudentId}>
-              <SelectTrigger id='student'>
+              <SelectTrigger id='student' className='bg-sidebar'>
                 <SelectValue placeholder='Select a student' />
               </SelectTrigger>
               <SelectContent>
@@ -108,7 +108,7 @@ export function GradeForm({ students, subjects }: GradeFormProps) {
           <div className='space-y-2'>
             <Label htmlFor='subject'>Subject</Label>
             <Select value={subjectId} onValueChange={setSubjectId}>
-              <SelectTrigger id='subject'>
+              <SelectTrigger id='subject' className='bg-sidebar'>
                 <SelectValue placeholder='Select a subject' />
               </SelectTrigger>
               <SelectContent>

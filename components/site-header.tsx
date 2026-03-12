@@ -1,13 +1,10 @@
 'use client';
 
-import { Playfair_Display } from 'next/font/google';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { useSidebar } from '@/components/ui/sidebar';
 import { SidebarIcon } from 'lucide-react';
-
-const playfair = Playfair_Display({ style: 'italic', subsets: ['latin'] });
 
 export function SiteHeader() {
   const { toggleSidebar } = useSidebar();
@@ -21,7 +18,7 @@ export function SiteHeader() {
         <Separator orientation='vertical' className='mr-2 h-4' />
         <Link
           href='/'
-          className={`${playfair.className} text-lg uppercase tracking-widest font-extrabold text-primary hover:opacity-80 transition-opacity`}
+          className='font-serif text-lg uppercase tracking-widest font-extrabold text-primary hover:opacity-80 transition-opacity'
         >
           Momentum Learning
         </Link>

@@ -1,4 +1,3 @@
-import { Playfair_Display } from 'next/font/google';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
@@ -16,7 +15,6 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { login } from '@/lib/auth';
 import { ArrowLeft, GraduationCap, UserRound, UserRoundCog } from 'lucide-react';
 
-const playfair = Playfair_Display({ style: 'italic', subsets: ['latin'] });
 export default function LoginPage() {
   return (
     <main className='min-h-screen flex'>
@@ -35,9 +33,7 @@ export default function LoginPage() {
             <span>Back to Home</span>
           </Link>
 
-          <h3
-            className={`${playfair.className} text-2xl uppercase text-primary mb-8 tracking-widest font-extrabold text-center`}
-          >
+          <h3 className='font-serif text-2xl uppercase text-primary mb-8 tracking-widest font-extrabold text-center'>
             Momentum Learning
           </h3>
           <form action={login} className='text-primary text-center'>
@@ -48,13 +44,13 @@ export default function LoginPage() {
                 </FieldLegend>
 
                 <FieldDescription className='text-lg text-center'>
-                  Login in to your Momentum Learning account.
+                  Log in to your Momentum Learning account.
                 </FieldDescription>
 
                 <RoleField />
               </FieldSet>
             </FieldGroup>
-            <Button className='rounded-none text-xl w-fit font-bold py-6 px-6 mt-6' size='sm'>
+            <Button className='text-xl w-fit font-bold py-6 px-6 mt-6' size='sm'>
               <span className='border-b-2 border-b-white'>Login</span>
             </Button>
           </form>
@@ -71,11 +67,7 @@ function RoleField() {
           Select your role.
         </FieldLegend>
 
-        <RadioGroup
-          name='role'
-          required={true}
-          className='flex flex-row items-center justify-center w-full gap-6 bg-secondary'
-        >
+        <RadioGroup name='role' required={true} className='flex flex-row items-center justify-center w-full gap-6'>
           <FieldLabel htmlFor='parent' className='cursor-pointer border'>
             <Field orientation='vertical' className='items-center'>
               <FieldContent className='flex flex-col items-center'>

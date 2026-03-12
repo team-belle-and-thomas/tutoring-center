@@ -73,6 +73,57 @@ export const STUDENT_DETAIL_SELECT_WITH_JOINS = `
     ${STUDENT_DETAIL_SESSION_SELECT}
   )
 ` as const;
+
+export const PARENT_DETAIL_STUDENT_SELECT = `
+  id,
+  user_id,
+  grade,
+  users:user_id (
+    first_name,
+    last_name,
+    email,
+    phone
+  )
+` as const;
+
+export const PARENT_SELECT_WITH_JOINS = `
+  id,
+  user_id,
+  billing_address,
+  notification_preferences,
+  users:user_id (
+    first_name,
+    last_name,
+    email,
+    phone
+  ),
+  credit_balances (
+    amount_available
+  ),
+  students (
+    id
+  )
+` as const;
+
+export const PARENT_DETAIL_SELECT_WITH_JOINS = `
+  id,
+  user_id,
+  billing_address,
+  notification_preferences,
+  users:user_id (
+    first_name,
+    last_name,
+    email,
+    phone
+  ),
+  credit_balances (
+    amount_available
+  ),
+  students (
+    ${PARENT_DETAIL_STUDENT_SELECT}
+  )
+` as const;
+
 export const TUTOR_SELECT_WITH_JOINS = `
   id,
   user_id,

@@ -15,11 +15,11 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
   const view = parseViewKey(params.view);
 
   return (
-    <main className='container mx-auto px-6 py-2'>
-      <div className='flex items-center p-2 gap-2'>
+    <main className='p-2 md:p-8'>
+      <div className='flex items-center gap-2 mb-1'>
         <h1 className='font-serif text-3xl text-primary'>Dashboard</h1>
       </div>
-      {userName && <p className='text-lg ml-2 mb-2'>Welcome, {userName}!</p>}
+      {userName && <p className='text-lg mb-6'>Welcome, {userName}!</p>}
 
       {role === 'admin' && <AdminDashboardContent view={view} />}
       {role === 'tutor' && <TutorDashboardContent />}
@@ -32,8 +32,8 @@ async function TutorDashboardContent() {
   const sessions: TutorAssignedSession[] = await getTutorAssignedSessions();
 
   return (
-    <section className='pl-8'>
-      <h2 className='text-2xl font-semibold pl-4'>Pending Sessions</h2>
+    <section>
+      <h2 className='text-2xl font-semibold mb-4'>Pending Sessions</h2>
 
       {sessions.length === 0 ? (
         <p className='text-muted-foreground'>No sessions currently need progress reports.</p>

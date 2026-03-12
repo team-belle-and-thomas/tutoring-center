@@ -13,17 +13,15 @@ export default async function CreditTransactionsPage() {
   const description = role === 'admin' ? 'All credit transactions' : 'Your transaction history';
 
   return (
-    <main>
-      <div className='p-2 md:p-8'>
-        <div className='mb-6 flex items-center justify-between'>
-          <div>
-            <h1 className='font-serif text-3xl text-primary'>Credit Transactions</h1>
-            <p className='text-muted-foreground mt-1 text-sm'>{description}</p>
-          </div>
+    <main className='p-2 md:p-8'>
+      <div className='mb-6 flex items-center justify-between'>
+        <div>
+          <h1 className='font-serif text-3xl text-primary'>Credit Transactions</h1>
+          <p className='text-muted-foreground mt-1 text-sm'>{description}</p>
         </div>
-
-        <CreditTransactionsTable role={role} data={result} />
       </div>
+
+      <CreditTransactionsTable role={role} data={result} />
     </main>
   );
 }

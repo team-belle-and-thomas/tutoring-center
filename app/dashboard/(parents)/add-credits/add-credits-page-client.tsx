@@ -19,7 +19,7 @@ export function AddCreditsPageClient({ parentId, initialBalance, defaultStudentI
 
   if (defaultStudentId === null) {
     return (
-      <main className='mx-auto max-w-3xl p-8 text-sm text-muted-foreground'>
+      <main className='mx-auto max-w-3xl p-2 md:p-8 text-sm text-muted-foreground'>
         Add a student before purchasing credits.
       </main>
     );

@@ -14,19 +14,17 @@ export default async function StudentsPage() {
   const description = role === 'admin' ? 'All enrolled students' : 'Your enrolled children';
 
   return (
-    <main>
-      <div className='p-2 md:p-8'>
-        <div className='mb-6 flex items-center justify-between'>
-          <div>
-            <div className='flex items-center gap-2'>
-              <h1 className='font-serif text-3xl text-primary'>Students</h1>
-              <Badge variant='secondary'>{data.length}</Badge>
-            </div>
-            <p className='text-muted-foreground mt-1 text-sm'>{description}</p>
+    <main className='p-2 md:p-8'>
+      <div className='mb-6 flex items-center justify-between'>
+        <div>
+          <div className='flex items-center gap-2'>
+            <h1 className='font-serif text-3xl text-primary'>Students</h1>
+            <Badge variant='secondary'>{data.length}</Badge>
           </div>
+          <p className='text-muted-foreground mt-1 text-sm'>{description}</p>
         </div>
-        <DataTable columns={columns} data={data} />
       </div>
+      <DataTable columns={columns} data={data} />
     </main>
   );
 }

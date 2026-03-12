@@ -24,7 +24,7 @@ export default async function SessionMetricsPage({ params }: { params: Promise<{
   }
 
   return (
-    <main className='container mx-auto py-8'>
+    <main className='p-2 md:p-8'>
       <SessionMetricsForm
         sessionId={session.id}
         studentName={session.student.name}

@@ -117,8 +117,8 @@ export default async function SingleStudentPage({ params }: { params: Promise<{ 
   const { creditHistory, progressReports } = dashboardDetails;
 
   return (
-    <main>
-      <div className='p-2 md:p-8 space-y-6'>
+    <main className='p-2 md:p-8'>
+      <div className='space-y-6'>
         {/* Profile */}
         <Card className='w-full'>
           <CardHeader className='bg-muted/10 pb-6'>

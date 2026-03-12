@@ -56,8 +56,8 @@ export default async function SingleCreditTransactionPage({ params }: { params: 
   const linkedSessionId = transaction.session_id;
 
   return (
-    <main>
-      <div className='space-y-6 p-2 md:p-8'>
+    <main className='p-2 md:p-8'>
+      <div className='space-y-6'>
         <Card className='w-full'>
           <CardHeader className='bg-muted/10 pb-6'>
             <div className='flex flex-col gap-4 md:flex-row md:items-center md:justify-between'>

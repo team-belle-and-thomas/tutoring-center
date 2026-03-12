@@ -3,14 +3,14 @@ import { Skeleton } from '@/components/ui/skeleton';
 
 export default function Loading() {
   return (
-    <main>
-      <div className='p-2 md:p-8'>
+    <main className='p-2 md:p-8'>
+      <div className='max-w-md mx-auto'>
         <div className='mb-6'>
           <Skeleton className='h-9 w-48' />
           <Skeleton className='mt-2 h-4 w-64' />
         </div>
 
-        <Card className='max-w-md'>
+        <Card>
           <CardHeader>
             <CardTitle>Grade Information</CardTitle>
           </CardHeader>

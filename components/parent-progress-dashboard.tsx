@@ -138,7 +138,7 @@ export function ParentProgressDashboard({
               value={selectedStudentId?.toString() ?? ''}
               onValueChange={(value: string) => handleStudentChange(Number(value))}
             >
-              <SelectTrigger className='w-full sm:w-[200px]'>
+              <SelectTrigger className='w-full sm:w-[200px] bg-sidebar'>
                 <SelectValue placeholder='Select student' />
               </SelectTrigger>
               <SelectContent side='bottom'>
@@ -155,7 +155,7 @@ export function ParentProgressDashboard({
             <label className='text-sm font-medium'>Subject</label>
             <div className='flex items-center gap-2'>
               <Select value={selectedSubject} onValueChange={handleSubjectChange}>
-                <SelectTrigger className='w-full sm:w-[180px]'>
+                <SelectTrigger className='w-full sm:w-[180px] bg-sidebar'>
                   <SelectValue placeholder='All subjects' />
                 </SelectTrigger>
                 <SelectContent side='bottom'>
@@ -182,6 +182,7 @@ export function ParentProgressDashboard({
                 key={option.value}
                 variant={dateRange === option.value ? 'default' : 'outline'}
                 size='sm'
+                className={dateRange === option.value ? undefined : 'border-zinc-400 bg-transparent'}
                 onClick={() => handleDateRangeChange(option.value)}
               >
                 {option.label}

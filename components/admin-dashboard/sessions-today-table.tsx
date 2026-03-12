@@ -51,7 +51,7 @@ function StatusCell({ row }: { row: { original: SessionRow } }) {
 
   return (
     <Select value={status} onValueChange={value => handleChange(value as Status)} disabled={isPending}>
-      <SelectTrigger className='h-7 w-32 text-xs'>
+      <SelectTrigger className='h-7 w-32 text-xs bg-sidebar'>
         <SelectValue />
       </SelectTrigger>
       <SelectContent>

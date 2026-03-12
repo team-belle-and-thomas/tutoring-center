@@ -1,10 +1,10 @@
 import { DataTable } from '@/components/data-table';
 import { Badge } from '@/components/ui/badge';
-import { getParents } from '@/lib/mock-api';
+import { getParents } from '@/lib/data/parents';
 import { columns } from './columns';
 
 export default async function ParentsPage() {
-  const data = await getParents();
+  const data = await getParents('admin');
   return (
     <div className='p-2 md:p-8'>
       <div className='mb-6 flex items-center justify-between'>

@@ -2,13 +2,19 @@
 
 **Industry:** Private Education / Tutoring
 
-**The expensive problem:** Churn and revenue leakage — parents leave when they don’t see progress, and centers lose money on untracked sessions.
+**The expensive problem:** Churn and revenue leakage — parents leave when they don't see progress, and centers lose money on untracked sessions.
 
-**The solution (MVP):** Inventory of time. Parents buy “Credit Blocks” (e.g., 10 hours). The system auto-deducts credits per session.
+**The solution (MVP):** Inventory of time. Parents buy "Credit Blocks" (e.g., 10 hours). The system auto-deducts credits per session.
 
 - **ROI dashboard** — Visual progress tracker (grades/goals) so parents see the value.
 - **Session continuity notes** — Tutors log notes so the next tutor knows exactly where to pick up.
 - **Business value** — Increases customer LTV and prevents unbilled hours.
+
+---
+
+## Tech Stack
+
+![Next.js](https://img.shields.io/badge/next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white) ![React](https://img.shields.io/badge/react-%2320232a.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB) ![TypeScript](https://img.shields.io/badge/typescript-%23007ACC.svg?style=for-the-badge&logo=typescript&logoColor=white) ![Tailwind CSS](https://img.shields.io/badge/tailwindcss-%2338B2AC.svg?style=for-the-badge&logo=tailwind-css&logoColor=white) ![Supabase](https://img.shields.io/badge/Supabase-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white) ![Vitest](https://img.shields.io/badge/vitest-6D4AFF?style=for-the-badge&logo=vitest&logoColor=white) ![ESLint](https://img.shields.io/badge/eslint-4B32C3?style=for-the-badge&logo=eslint&logoColor=white) ![Prettier](https://img.shields.io/badge/prettier-F7B93E?style=for-the-badge&logo=prettier&logoColor=white) ![Husky](https://img.shields.io/badge/husky-FF6B35?style=for-the-badge&logo=husky&logoColor=white)
 
 ---
 
